@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>How Wishwood Engine works · in plain English</title>
+<meta name="description" content="Step-by-step explanation of how the Wishwood automation system works. Plain English, simple analogies, real examples. For anyone who wants to understand exactly what they're getting.">
+<meta name="theme-color" content="#18171a">
+<style>
+:root{
+  --woodsmoke:#18171a;
+  --deep:#1f1e22;
+  --surface:#27262b;
+  --raised:#302f35;
+  --moss:#2d4a3e;
+  --moss-bright:#3d6a55;
+  --leaf:#6b9d6f;
+  --ember:#c97a3d;
+  --ember-glow:rgba(201,122,61,0.12);
+  --gold:#c9a84c;
+  --linen:#ebe5d6;
+  --text:#d4cfc8;
+  --muted:#7a7681;
+  --border:rgba(235,229,214,0.08);
+  --border-strong:rgba(235,229,214,0.18);
+  --good:#6b9d6f;
+  --bad:#c75a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--woodsmoke);
+  color:var(--text);
+  font-family:-apple-system,system-ui,sans-serif;
+  font-size:17px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--ember);text-decoration:none}
+
+/* Header */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(24,23,26,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:14px 28px;display:flex;justify-content:space-between;align-items:center;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);letter-spacing:0.02em}
+.brand .glyph{color:var(--ember);font-size:28px}
+.nav{display:flex;gap:22px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase}
+.nav a{color:var(--muted)}
+.nav a:hover{color:var(--ember)}
+
+/* Hero */
+.hero{
+  padding:80px 28px 50px;
+  background:radial-gradient(ellipse at top,var(--moss) 0%,var(--woodsmoke) 70%);
+  border-bottom:1px solid var(--border);text-align:center;
+}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--ember);margin-bottom:16px;
+}
+h1{
+  font-family:'Cormorant Garamond',serif;font-size:62px;line-height:1.1;color:var(--linen);
+  margin:0 auto 18px;font-weight:400;max-width:780px;
+}
+h1 em{color:var(--ember);font-style:italic}
+.hero-sub{
+  font-size:19px;color:var(--text);max-width:580px;margin:0 auto;line-height:1.7;
+}
+
+/* Section */
+section{padding:64px 28px;max-width:820px;margin:0 auto}
+.h2{
+  font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--linen);
+  margin-bottom:18px;font-weight:400;line-height:1.2;
+}
+.h2 em{color:var(--ember);font-style:italic}
+.h2 .num{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:14px;
+  color:var(--ember);background:var(--ember-glow);
+  width:34px;height:34px;border-radius:50%;text-align:center;line-height:34px;
+  margin-right:12px;vertical-align:middle;border:1px solid var(--ember);
+}
+.lead{font-size:18px;color:var(--text);line-height:1.8;margin-bottom:18px}
+p{margin-bottom:16px}
+strong{color:var(--linen)}
+em.gold{color:var(--gold);font-style:normal}
+
+/* Analogy box */
+.analogy{
+  background:linear-gradient(135deg,var(--moss) 0%,var(--deep) 100%);
+  border:1px solid var(--moss-bright);
+  border-radius:8px;padding:30px 36px;margin:30px 0;
+}
+.analogy-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--leaf);margin-bottom:14px;
+}
+.analogy-text{
+  font-family:'Cormorant Garamond',serif;font-size:22px;line-height:1.6;
+  color:var(--linen);font-style:italic;
+}
+.analogy-text em{color:var(--ember);font-style:italic}
+
+/* Flow diagram */
+.flow{
+  background:var(--deep);border:1px solid var(--border);border-radius:8px;
+  padding:30px;margin:24px 0;overflow-x:auto;
+}
+.flow-row{
+  display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr;
+  align-items:center;gap:12px;margin-bottom:18px;
+}
+.flow-row:last-child{margin-bottom:0}
+.flow-step{
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:18px 14px;text-align:center;font-size:13px;color:var(--text);
+}
+.flow-step.start{border-color:var(--leaf);background:rgba(107,157,111,0.08)}
+.flow-step.middle{border-color:var(--ember);background:var(--ember-glow)}
+.flow-step.end{border-color:var(--gold);background:rgba(201,168,76,0.08)}
+.flow-step .glyph{font-size:28px;color:var(--ember);display:block;margin-bottom:8px}
+.flow-step .label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.flow-step .title{font-weight:600;color:var(--linen);font-size:14px;margin-bottom:4px}
+.flow-step .desc{font-size:12px;color:var(--muted);line-height:1.5}
+.flow-arrow{
+  text-align:center;color:var(--ember);font-size:24px;
+}
+@media (max-width:780px){
+  .flow-row{grid-template-columns:1fr;gap:8px}
+  .flow-arrow{transform:rotate(90deg);font-size:18px;margin:4px 0}
+}
+
+/* Number list */
+.steps-list{
+  list-style:none;padding:0;margin:24px 0;
+}
+.steps-list li{
+  display:grid;grid-template-columns:50px 1fr;gap:18px;
+  padding:20px 0;border-bottom:1px solid var(--border);
+}
+.steps-list li:last-child{border-bottom:0}
+.steps-list .step-n{
+  font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--ember);
+  line-height:1;font-weight:500;
+}
+.steps-list .step-body strong{display:block;color:var(--linen);font-size:17px;margin-bottom:6px}
+.steps-list .step-body p{margin-bottom:0;color:var(--text);font-size:15px;line-height:1.7}
+
+/* Money diagram */
+.money-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:30px 0;
+}
+@media (max-width:680px){.money-grid{grid-template-columns:1fr}}
+.money-card{
+  background:var(--deep);border:1px solid var(--border);border-radius:8px;
+  padding:24px 28px;
+}
+.money-card.bad{border-left:4px solid var(--bad)}
+.money-card.good{border-left:4px solid var(--leaf)}
+.money-card h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:8px}
+.money-card .price{font-family:'Cormorant Garamond',serif;font-size:48px;color:var(--linen);font-weight:500;line-height:1;margin:8px 0}
+.money-card.bad .price small{color:var(--bad);font-size:18px;display:block;margin-top:4px}
+.money-card.good .price small{color:var(--leaf);font-size:18px;display:block;margin-top:4px}
+.money-card ul{list-style:none;padding:0;margin-top:14px;font-size:14px;color:var(--text)}
+.money-card li{padding:6px 0;display:flex;justify-content:space-between;border-bottom:1px dashed var(--border)}
+.money-card li:last-child{border-bottom:0;font-weight:700;color:var(--linen);padding-top:10px;border-top:1px solid var(--border-strong);margin-top:6px}
+
+/* Comparison */
+.compare-simple{
+  background:var(--deep);border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;margin:20px 0;
+}
+.compare-simple .row{
+  display:grid;grid-template-columns:1fr 100px 100px;
+  padding:14px 22px;border-bottom:1px solid var(--border);align-items:center;
+}
+.compare-simple .row:last-child{border-bottom:0}
+.compare-simple .row.h{
+  background:var(--surface);
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--muted);
+}
+.compare-simple .yes{color:var(--leaf);text-align:center;font-size:18px}
+.compare-simple .no{color:var(--bad);text-align:center;font-size:18px}
+.compare-simple .label{color:var(--text);font-size:14px}
+
+/* Big question / answer */
+.qa{
+  background:var(--deep);border:1px solid var(--border);border-radius:8px;
+  padding:24px 28px;margin:16px 0;
+}
+.qa-q{
+  font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--ember);
+  margin-bottom:10px;font-weight:400;
+}
+.qa-a{color:var(--text);font-size:15px;line-height:1.7}
+
+/* CTA */
+.cta-box{
+  background:linear-gradient(135deg,var(--ember-glow) 0%,var(--deep) 100%);
+  border:1px solid var(--ember);border-radius:8px;
+  padding:44px 46px;text-align:center;margin:40px 0;
+}
+.cta-box h2{font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--linen);margin-bottom:14px;font-weight:400}
+.cta-box p{font-size:16px;color:var(--text);max-width:520px;margin:0 auto 24px}
+.btn{
+  padding:14px 28px;border-radius:4px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;
+  text-decoration:none;display:inline-block;
+  background:var(--ember);color:var(--woodsmoke);
+}
+.btn:hover{background:#d68850}
+.btn.secondary{background:transparent;color:var(--linen);border:1px solid var(--border-strong);margin-left:10px}
+.btn.secondary:hover{border-color:var(--ember);color:var(--ember)}
+
+/* Tech details (collapsible) */
+.tech-details{margin-top:30px}
+.tech-details summary{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--ember);cursor:pointer;padding:14px 18px;
+  background:var(--deep);border:1px solid var(--border);border-radius:6px;
+  list-style:none;
+}
+.tech-details summary::-webkit-details-marker{display:none}
+.tech-details summary:before{content:"▸ ";margin-right:6px}
+.tech-details[open] summary:before{content:"▾ "}
+.tech-details > div{
+  background:var(--deep);border:1px solid var(--border);border-top:0;
+  border-radius:0 0 6px 6px;padding:24px 28px;
+}
+.tech-details code{
+  background:var(--surface);padding:2px 6px;border-radius:3px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);
+}
+.tech-details pre{
+  background:var(--surface);border:1px solid var(--border);border-radius:5px;
+  padding:14px 18px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:var(--text);line-height:1.7;overflow-x:auto;
+}
+
+/* TOC */
+.toc{
+  background:var(--deep);border:1px solid var(--border);border-radius:6px;
+  padding:18px 22px;margin:24px 0;
+}
+.toc-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.toc ol{list-style:none;padding:0;counter-reset:toc;margin:0}
+.toc li{
+  padding:6px 0;counter-increment:toc;
+  font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text);
+}
+.toc li:before{
+  content:counter(toc) ".";color:var(--ember);font-weight:600;
+  margin-right:12px;display:inline-block;min-width:24px;
+}
+.toc a{color:var(--text)}.toc a:hover{color:var(--ember)}
+
+/* Footer */
+footer{
+  background:var(--deep);border-top:1px solid var(--border);
+  padding:36px 28px;text-align:center;
+}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);margin-bottom:8px}
+.footer-text{color:var(--muted);font-size:13px;line-height:1.7;max-width:480px;margin:0 auto 12px}
+.footer-seal{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ember);letter-spacing:0.16em;text-transform:uppercase;margin-top:14px}
+
+@media (max-width:780px){
+  h1{font-size:38px}.h2{font-size:28px}section{padding:50px 22px}
+  .analogy-text{font-size:18px}.cta-box{padding:30px 24px}.cta-box h2{font-size:24px}
+  .money-card .price{font-size:36px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <span class="glyph">◊</span>
+    <span>Wishwood Engine · how it works</span>
+  </div>
+  <nav class="nav">
+    <a href="index.html">Pitch</a>
+    <a href="hub.html">Hub</a>
+    <a href="book.html">Booking site</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" style="max-width:none;margin:0">
+  <div class="eyebrow">no jargon · no marketing speak · what it actually does</div>
+  <h1>How it <em>actually works.</em></h1>
+  <p class="hero-sub">
+    Read this whole page and you'll understand exactly what the Wishwood Engine does, where your money goes, where the messages go, and what happens if you ever want to stop using it.
+    Written so a 12-year-old can follow it.
+  </p>
+</section>
+
+<!-- TOC -->
+<section style="padding-top:40px;padding-bottom:0">
+  <div class="toc">
+    <div class="toc-label">In this page</div>
+    <ol>
+      <li><a href="#one-sentence">In one sentence</a></li>
+      <li><a href="#analogy">The simple analogy</a></li>
+      <li><a href="#message-flow">What happens when someone messages you</a></li>
+      <li><a href="#airbnb-flow">What happens when someone books on Airbnb</a></li>
+      <li><a href="#direct-flow">What happens when someone books direct</a></li>
+      <li><a href="#money">Where the money goes</a></li>
+      <li><a href="#data">Where your data lives</a></li>
+      <li><a href="#offgrid">How it works off-grid</a></li>
+      <li><a href="#leave">What if you want to stop using it</a></li>
+      <li><a href="#under-hood">The technical bits (for the curious)</a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 1. ONE SENTENCE -->
+<section id="one-sentence">
+  <h2 class="h2"><span class="num">1</span> In one sentence.</h2>
+
+  <p class="lead">
+    The Wishwood Engine is <strong>a private inbox + calendar + booking page</strong> that pulls together every channel you sell on (Airbnb, Booking.com, Facebook, Instagram, Pitchup, your own site) so you only ever look at <strong>one screen</strong>.
+  </p>
+
+  <p>It also drafts your replies in your voice, syncs your calendar so you can't get double-booked, takes direct bookings on your own site (saving the 15% Airbnb takes), and sends the right message to every guest at the right time without you remembering.</p>
+
+  <p style="color:var(--muted);font-size:15px;font-style:italic">That's it. Everything else on this page is just unpacking that.</p>
+</section>
+
+<!-- 2. ANALOGY -->
+<section id="analogy">
+  <h2 class="h2"><span class="num">2</span> The simple <em>analogy</em>.</h2>
+
+  <p class="lead">Imagine you run a little farm shop selling honey, and you sell your honey through:</p>
+
+  <ul class="steps-list">
+    <li><span class="step-n">A</span><div class="step-body"><strong>The big supermarket</strong><p>They take 15p out of every £1 you sell. They own the customer relationship. They send all your customer messages to a separate room you have to visit.</p></div></li>
+    <li><span class="step-n">B</span><div class="step-body"><strong>The farmers' market</strong><p>They take 17p out of every £1. Different room for messages. Different way of paying you.</p></div></li>
+    <li><span class="step-n">C</span><div class="step-body"><strong>The village Facebook page</strong><p>Customers message you there. You sometimes miss them. Different room again.</p></div></li>
+    <li><span class="step-n">D</span><div class="step-body"><strong>Walk-ins to your front door</strong><p>You keep 100% — but you have to be home, and there's no payment system, and you can't be in two places at once.</p></div></li>
+  </ul>
+
+  <div class="analogy">
+    <div class="analogy-label">◊ The Wishwood Engine</div>
+    <p class="analogy-text">
+      …is like hiring <em>a really smart shop assistant</em> who sits at the back of your shop with a screen that shows messages from <em>every</em> place at once. They write your reply for you (in your voice), wait for you to nod, and send it.
+      <br><br>
+      They also put up a little sign at your front door that says "<em>buy honey direct</em>" — and when people knock, they handle the payment and the receipt, and the money goes straight to your bank.
+      <br><br>
+      And they <em>never</em> take a cut. They just live in your computer.
+    </p>
+  </div>
+</section>
+
+<!-- 3. MESSAGE FLOW -->
+<section id="message-flow">
+  <h2 class="h2"><span class="num">3</span> When someone <em>messages</em> you.</h2>
+
+  <p class="lead">A guest called Sarah is thinking about booking the Vintage Caravan for her anniversary. She sends a question on Airbnb at 8am while you're still in bed.</p>
+
+  <p>Here's what happens, in order:</p>
+
+  <div class="flow">
+    <div class="flow-row">
+      <div class="flow-step start">
+        <span class="glyph">📩</span>
+        <div class="label">8:00am</div>
+        <div class="title">Sarah types her message</div>
+        <div class="desc">"Hi! Looking at Aug 14-17 for our anniversary in the vintage caravan. Is the wood burner easy to get going?"</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step middle">
+        <span class="glyph">⚙</span>
+        <div class="label">8:00am · auto</div>
+        <div class="title">Engine pulls it in</div>
+        <div class="desc">The hub fetches the message from Airbnb (via your email forwarding) within 60 seconds.</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step middle">
+        <span class="glyph">✎</span>
+        <div class="label">8:00am · auto</div>
+        <div class="title">AI drafts reply</div>
+        <div class="desc">Looks at your past 4,200 replies, learns your voice, writes a draft in your style.</div>
+      </div>
+    </div>
+
+    <div class="flow-row">
+      <div class="flow-step middle">
+        <span class="glyph">🔔</span>
+        <div class="label">8:30am</div>
+        <div class="title">You wake up · check the hub</div>
+        <div class="desc">One screen. One message waiting. Reply already drafted.</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step middle">
+        <span class="glyph">✓</span>
+        <div class="label">8:31am · 1 tap</div>
+        <div class="title">You tap "approve"</div>
+        <div class="desc">Or edit first if you want. Or skip if it's wrong. You're in charge of every send.</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step end">
+        <span class="glyph">📤</span>
+        <div class="label">8:31am · auto</div>
+        <div class="title">Reply sent back via Airbnb</div>
+        <div class="desc">Sarah gets her reply in the Airbnb app · she has no idea AI was involved.</div>
+      </div>
+    </div>
+  </div>
+
+  <p>The same flow works for messages from <strong>Booking.com, Facebook, Instagram, WhatsApp, Pitchup, your direct site</strong> — they all land in the same inbox.</p>
+
+  <p>You go from <strong>7 different apps</strong> to check, to <strong>one screen</strong> to swipe through.</p>
+</section>
+
+<!-- 4. AIRBNB BOOKING FLOW -->
+<section id="airbnb-flow">
+  <h2 class="h2"><span class="num">4</span> When someone books on <em>Airbnb</em>.</h2>
+
+  <p class="lead">Same Sarah from before — she decided to book the caravan for Aug 14-17. She pays Airbnb £330. Here's what happens:</p>
+
+  <ol class="steps-list">
+    <li><span class="step-n">1</span><div class="step-body"><strong>Airbnb takes 15% (£50)</strong><p>That's the fee for sending you Sarah. Unavoidable when she books via Airbnb. Sarah doesn't see this — she just sees £330.</p></div></li>
+    <li><span class="step-n">2</span><div class="step-body"><strong>Airbnb tells your engine within 60 seconds</strong><p>The hub's calendar syncs with Airbnb every minute. Sarah's booking shows up in the Vintage Caravan row, coloured Airbnb-pink.</p></div></li>
+    <li><span class="step-n">3</span><div class="step-body"><strong>Your direct site is blocked for those nights · instantly</strong><p>Within 60 seconds, your wishwood.co.uk/book page also shows the caravan as taken for Aug 14-17. So two people can never book the same nights from different channels.</p></div></li>
+    <li><span class="step-n">4</span><div class="step-body"><strong>The "welcome" sequence kicks off automatically</strong><p>Aug 7 (7 days before arrival): pre-arrival email goes out — directions, what to pack, off-grid prep. Aug 13 (1 day before): SMS with gate code + tomorrow's weather. Aug 14 morning: welcome email + "the firewood is in the porch." Aug 16: mid-stay check-in. Aug 18: review request + a 10%-off code for if she books direct next time.</p></div></li>
+    <li><span class="step-n">5</span><div class="step-body"><strong>After Sarah leaves: review reply auto-drafted</strong><p>When her 5★ review pops up on Airbnb, the engine drafts your thank-you in your voice. You tap approve. Done.</p></div></li>
+  </ol>
+
+  <p style="background:var(--surface);padding:18px 22px;border-radius:6px;border-left:3px solid var(--ember);font-size:15px">
+    <strong style="color:var(--ember)">The big idea:</strong> the engine doesn't replace Airbnb — it just makes everything that happens <em>around</em> the Airbnb booking automatic and consistent. Every Airbnb guest gets the full Wishwood welcome treatment, even when you're asleep or on holiday.
+  </p>
+</section>
+
+<!-- 5. DIRECT BOOKING FLOW -->
+<section id="direct-flow">
+  <h2 class="h2"><span class="num">5</span> When someone books <em>direct</em>.</h2>
+
+  <p class="lead">A different guest, David, has stayed at Wishwood before. He gets your post-stay email with the WOOD10 discount code. Next time he wants to book, he goes to <strong>wishwood.co.uk/book</strong> instead of Airbnb. Here's what happens:</p>
+
+  <ol class="steps-list">
+    <li><span class="step-n">1</span><div class="step-body"><strong>David picks cabin + dates on your site</strong><p>The booking page is yours — wishwood.co.uk/book — same look as the Airbnb listing but no platform middle-man. He uses the WOOD10 code, gets 10% off.</p></div></li>
+    <li><span class="step-n">2</span><div class="step-body"><strong>He pays through Stripe</strong><p>Stripe is the payment system most online shops use (Apple Pay, Google Pay, all cards). It takes 1.4% + 20p — that's it. The rest goes straight to your bank.</p></div></li>
+    <li><span class="step-n">3</span><div class="step-body"><strong>You get the full amount minus £14 (on a £1,000 booking)</strong><p>Same £1,000 booking through Airbnb = you get £850. Same £1,000 booking direct = you get £986. <em class="gold">£136 difference. In your pocket.</em></p></div></li>
+    <li><span class="step-n">4</span><div class="step-body"><strong>The calendar blocks across every channel · instantly</strong><p>Airbnb, Booking.com, Pitchup — they all see those nights are taken, within 60 seconds. No double-booking risk.</p></div></li>
+    <li><span class="step-n">5</span><div class="step-body"><strong>The same welcome sequence kicks off</strong><p>Direct guests get the exact same care as Airbnb guests — pre-arrival, gate code, welcome, check-in, review request. No drop in service quality.</p></div></li>
+  </ol>
+</section>
+
+<!-- 6. MONEY -->
+<section id="money">
+  <h2 class="h2"><span class="num">6</span> Where the <em>money</em> goes.</h2>
+
+  <p class="lead">Take a £1,000 booking and follow the money — three ways:</p>
+
+  <div class="money-grid">
+    <div class="money-card bad">
+      <h3>Via Airbnb</h3>
+      <div class="price">£850<small>you keep</small></div>
+      <ul>
+        <li><span>Guest pays</span><span>£1,000</span></li>
+        <li><span>Airbnb host fee (15%)</span><span style="color:var(--bad)">−£150</span></li>
+        <li><span>Payment processing</span><span>included</span></li>
+        <li><span>You receive</span><span>£850</span></li>
+      </ul>
+    </div>
+    <div class="money-card bad">
+      <h3>Via Booking.com</h3>
+      <div class="price">£830<small>you keep</small></div>
+      <ul>
+        <li><span>Guest pays</span><span>£1,000</span></li>
+        <li><span>Booking fee (17%)</span><span style="color:var(--bad)">−£170</span></li>
+        <li><span>Payment processing</span><span>included</span></li>
+        <li><span>You receive</span><span>£830</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="money-card good" style="max-width:520px;margin:18px auto">
+    <h3 style="color:var(--ember)">Via your direct site (Stripe)</h3>
+    <div class="price" style="color:var(--ember)">£986<small>you keep</small></div>
+    <ul>
+      <li><span>Guest pays</span><span>£1,000</span></li>
+      <li><span>Stripe (1.4% + 20p)</span><span style="color:var(--leaf)">−£14</span></li>
+      <li><span>Wishwood Engine fee</span><span style="color:var(--leaf)">£0</span></li>
+      <li><span>You receive</span><span style="color:var(--ember)">£986</span></li>
+    </ul>
+  </div>
+
+  <p style="font-size:18px;color:var(--ember);text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;margin-top:24px">
+    Every direct booking = £136 more in your pocket than the same Airbnb booking.
+  </p>
+
+  <p>Over a year of running at current bookings, mixing channels 50/50 between direct and Airbnb instead of 100% Airbnb adds up to roughly <strong>£3,150 more in your pocket annually</strong> — just from where the booking comes through.</p>
+</section>
+
+<!-- 7. DATA -->
+<section id="data">
+  <h2 class="h2"><span class="num">7</span> Where your <em>data</em> lives.</h2>
+
+  <p class="lead">Quick reality check: where is all this information actually stored?</p>
+
+  <div class="compare-simple">
+    <div class="row h"><div class="label">What</div><div style="text-align:center">Engine</div><div style="text-align:center">SaaS tools</div></div>
+    <div class="row"><div class="label">Bookings + guest details</div><div class="yes">your CF account</div><div class="no">their server</div></div>
+    <div class="row"><div class="label">Past messages + AI training</div><div class="yes">your CF account</div><div class="no">their server</div></div>
+    <div class="row"><div class="label">Calendar history</div><div class="yes">your CF account</div><div class="no">their server</div></div>
+    <div class="row"><div class="label">API keys (Stripe, Claude)</div><div class="yes">your CF account (encrypted)</div><div class="no">their server</div></div>
+    <div class="row"><div class="label">Photos + content</div><div class="yes">your GitHub Pages</div><div class="no">their server</div></div>
+    <div class="row"><div class="label">If they go bust</div><div class="yes">unaffected</div><div class="no">data lost</div></div>
+  </div>
+
+  <p><strong>CF = Cloudflare.</strong> It's the same internet plumbing that runs about 20% of the web. Free tier covers what Wishwood needs forever (100,000 requests per day · you'll use maybe 5,000).</p>
+
+  <p>Your Cloudflare account is in your name, with your email, your password. If you ever wanted to stop paying me (you're not paying me monthly anyway), the engine keeps running. No one can lock you out.</p>
+</section>
+
+<!-- 8. OFFGRID -->
+<section id="offgrid">
+  <h2 class="h2"><span class="num">8</span> How it works <em>off-grid</em>.</h2>
+
+  <p class="lead">The Wishwood site is off-grid. So is your 4G. So the hub had to be built for that reality.</p>
+
+  <ul class="steps-list">
+    <li><span class="step-n">⚡</span><div class="step-body"><strong>It works on 4G</strong><p>Whole hub is under 50KB to load — about the size of one phone photo. Loads on patchy signal.</p></div></li>
+    <li><span class="step-n">📵</span><div class="step-body"><strong>It works fully offline once loaded</strong><p>Open it once on wifi, it'll keep working offline · saves to your browser. Comes back online: syncs the messages it queued.</p></div></li>
+    <li><span class="step-n">🔋</span><div class="step-body"><strong>It tracks your off-grid kit</strong><p>Optional: hook up your solar inverter (Victron, Renogy) and the dashboard shows battery state, water tank levels, propane bottles, log stock. Cleaner schedule auto-generated from bookings.</p></div></li>
+    <li><span class="step-n">🌧</span><div class="step-body"><strong>Weather aware</strong><p>The day-before SMS to guests includes tomorrow's forecast pulled live · so they pack the right stuff.</p></div></li>
+    <li><span class="step-n">📱</span><div class="step-body"><strong>Works on your phone like an app</strong><p>You can "install" the hub on your phone's home screen — looks and behaves exactly like a normal app, but it's just a webpage. No app store needed.</p></div></li>
+  </ul>
+</section>
+
+<!-- 9. LEAVE -->
+<section id="leave">
+  <h2 class="h2"><span class="num">9</span> If you ever want to <em>stop using it</em>.</h2>
+
+  <p class="lead">Most software locks you in. This doesn't. Here's exactly what happens if you decide to walk away tomorrow:</p>
+
+  <ol class="steps-list">
+    <li><span class="step-n">1</span><div class="step-body"><strong>Click "Export estate JSON" in Settings</strong><p>You get a single file with every booking, message, guest detail, pricing rule, journey email — your whole estate. Save it wherever you like.</p></div></li>
+    <li><span class="step-n">2</span><div class="step-body"><strong>Turn off the Cloudflare Worker</strong><p>It's a free service · just stop using it. No subscription to cancel.</p></div></li>
+    <li><span class="step-n">3</span><div class="step-body"><strong>The book.html page can stay or go</strong><p>If you want to keep your direct booking site, it costs £0 to host on GitHub Pages forever. If you'd rather take it down, delete the repo.</p></div></li>
+    <li><span class="step-n">4</span><div class="step-body"><strong>Airbnb, Booking.com, FB, your iCals — all unaffected</strong><p>The engine reads from them; it doesn't own them. They keep running normally without it.</p></div></li>
+  </ol>
+
+  <p style="background:var(--moss);padding:18px 22px;border-radius:6px;color:var(--linen);font-size:15px">
+    <strong>The code is yours.</strong> MIT licensed · meaning you can take it, change it, give it to a friend, sell it. I don't need to be involved. If I disappear tomorrow, the engine keeps running unchanged.
+  </p>
+</section>
+
+<!-- 10. TECHNICAL DETAILS -->
+<section id="under-hood">
+  <h2 class="h2"><span class="num">10</span> Under the <em>hood</em>.</h2>
+
+  <p class="lead">If you're curious about the technical bits, click below. If not, skip — you don't need to know any of this to use it.</p>
+
+  <details class="tech-details">
+    <summary>What it's built with</summary>
+    <div>
+      <p>Pure vanilla JavaScript · zero frameworks (no React, Vue, Angular). Each page is one HTML file. No build step. Open the file directly and it runs.</p>
+      <p><strong>Storage:</strong> Cloudflare Workers KV (for bookings/messages/journey queue · runs on Cloudflare's free tier indefinitely for Wishwood-scale traffic).</p>
+      <p><strong>AI drafts:</strong> Anthropic's Claude API · your own API key, paid per use (~£5/mo at Wishwood volume).</p>
+      <p><strong>Payments:</strong> Stripe (UK-domestic card: 1.4% + 20p · international: 2.9% + 20p).</p>
+      <p><strong>Calendar sync:</strong> standard iCal (RFC 5545) · the same format Airbnb, Booking.com, Google Calendar all use natively.</p>
+    </div>
+  </details>
+
+  <details class="tech-details">
+    <summary>How channel sync actually works</summary>
+    <div>
+      <p>Every channel (Airbnb, Booking.com, Pitchup) exposes a public iCal URL you can copy. The engine fetches each one every 60 seconds. If a booking shows up, it's stored in your KV. The engine also generates its own iCal URLs you paste into each channel — so a direct booking shows up on Airbnb's calendar within a minute, blocking those dates.</p>
+      <pre>your-direct-booking → KV
+                  → iCal URL → Airbnb reads it
+                  → iCal URL → Booking.com reads it
+                  → iCal URL → Pitchup reads it
+                  → all calendars synced within 60s</pre>
+    </div>
+  </details>
+
+  <details class="tech-details">
+    <summary>How the AI draft works · why it sounds like you</summary>
+    <div>
+      <p>When a message arrives, the engine sends it to Claude (Anthropic's AI) along with a system prompt that says: "Reply as Chrissy. She runs Wishwood Glamping. Off-grid. 3 cabins. Dogs welcome. Tone: warm, brief, uses · instead of commas, signs off Chrissy."</p>
+      <p>To learn your specific voice, the engine reads your past 4,200 sent messages once a week and refines the tone. You can tune it in Settings → AI draft voice.</p>
+      <p>Every draft is <em>just a suggestion</em>. You always tap approve, edit, or skip before it sends.</p>
+    </div>
+  </details>
+
+  <details class="tech-details">
+    <summary>How webhooks work (FB, Instagram, Stripe, WhatsApp)</summary>
+    <div>
+      <p>A "webhook" is just a URL that another service calls when something happens. Facebook calls your engine when someone DMs your page. Stripe calls it when a payment completes. The engine receives the call, files the message or booking in your KV, and routes it to your inbox.</p>
+      <p>You set these up once per channel (paste your engine's URL into Facebook's settings, Stripe's settings, etc). After that they run forever.</p>
+    </div>
+  </details>
+
+  <details class="tech-details">
+    <summary>Privacy + security</summary>
+    <div>
+      <p>API keys are stored as Cloudflare Worker "secrets" — encrypted, never visible client-side, never sent to me. Guest data lives in your KV namespace, which only your worker can read. Nothing is sent to any analytics or tracking service · ever. Nothing leaves your browser without being explicitly sent (every message you approve and send is the only data flow).</p>
+    </div>
+  </details>
+
+  <details class="tech-details">
+    <summary>Source code + the open protocols</summary>
+    <div>
+      <p>Everything's on GitHub under MIT license: <a href="https://github.com/sjgant80-hub/wishwood" target="_blank">github.com/sjgant80-hub/wishwood</a>.</p>
+      <p>The direct-booking site also publishes a <code>stays.json</code> file (open <a href="stays.json" target="_blank">stays.json</a>) following the <a href="https://sjgant80-hub.github.io/roost/protocol.html" target="_blank">stays-protocol v1 spec</a> · meaning any other booking aggregator (like roost) can list Wishwood automatically · sending you direct bookings.</p>
+    </div>
+  </details>
+</section>
+
+<!-- CTA -->
+<section>
+  <div class="cta-box">
+    <div class="eyebrow">If this makes sense to you</div>
+    <h2>Ready to switch it on?</h2>
+    <p>£499 once · I connect everything for you · the system is yours forever · no monthly fee, ever.</p>
+    <div>
+      <a href="mailto:ainativesolutions@gmail.com?subject=Wishwood%20Engine%20-%20Yes%20let%27s%20talk" class="btn">Yes · let's talk →</a>
+      <a href="hub.html" class="btn secondary">See the hub again</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">◊ Wishwood Engine</div>
+  <p class="footer-text">A sovereign multi-channel automation system for off-grid hospitality. Built speculatively for Chrissy at Wishwood Glamping. Open-source MIT.</p>
+  <div><a href="index.html">Pitch</a> · <a href="hub.html">Hub demo</a> · <a href="book.html">Booking site demo</a> · <a href="https://github.com/sjgant80-hub/wishwood" target="_blank">GitHub</a></div>
+  <div class="footer-seal">◊ · κ = 1 · powered by Konomi</div>
+</footer>
+
+</body>
+</html>
