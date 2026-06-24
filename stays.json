@@ -1,0 +1,81 @@
+{
+  "protocol": "stays-protocol/1.0",
+  "host": {
+    "id": "wishwood",
+    "name": "Wishwood Glamping & Forestry",
+    "domain": "https://sjgant80-hub.github.io/wishwood/",
+    "location": "Calcott, Canterbury, Kent · England",
+    "lat": 51.31,
+    "lng": 1.10,
+    "owner": "Chrissy",
+    "email": "chrissy@wishwood.org",
+    "bio": "16 acres of ancient Kent woodland adjacent to Blean Woods National Nature Reserve. Three off-grid units, nine years hosting, 779 reviews at 4.81★. Wood-burner in every unit. Fire pit at every door.",
+    "founded": "2017-04-01",
+    "values": ["off-grid", "sovereign", "slow-travel", "family", "dog-friendly", "ancient-woodland"],
+    "channels": ["airbnb", "facebook", "instagram", "pitchup", "tripadvisor", "glamping_hub", "heycamping"]
+  },
+  "stays": [
+    {
+      "id": "hobbit",
+      "name": "The Hobbit Hut",
+      "type": "hut",
+      "sleeps": 3,
+      "beds": "1 double · 1 twin",
+      "price_from": 95,
+      "price_currency": "GBP",
+      "min_nights": 2,
+      "description": "Storybook hobbit hole tucked into ancient Kent woodland. Wood-burner, outdoor kitchen, fire pit, composting loo. Looks like it grew there.",
+      "amenities": ["wood-burner", "outdoor-kitchen", "compost-loo", "fire-pit", "log-net", "gas-bbq"],
+      "dogs": true,
+      "kids": true,
+      "off_grid": true,
+      "wifi": false,
+      "ical_url": "https://wishwood-engine.workers.dev/ical/hobbit",
+      "book_url": "https://sjgant80-hub.github.io/wishwood/book.html#hobbit",
+      "tags": ["storybook", "couples", "families"]
+    },
+    {
+      "id": "caravan",
+      "name": "The Vintage Caravan",
+      "type": "caravan",
+      "sleeps": 2,
+      "beds": "1 double",
+      "price_from": 85,
+      "price_currency": "GBP",
+      "min_nights": 2,
+      "description": "Restored vintage caravan with wood-burner. Couple's hideaway. Private outdoor kitchen and fire circle.",
+      "amenities": ["wood-burner", "outdoor-kitchen", "compost-loo", "fire-pit", "log-net", "gas-bbq"],
+      "dogs": true,
+      "kids": false,
+      "off_grid": true,
+      "wifi": false,
+      "ical_url": "https://wishwood-engine.workers.dev/ical/caravan",
+      "book_url": "https://sjgant80-hub.github.io/wishwood/book.html#caravan",
+      "tags": ["retro", "couples", "romantic"]
+    },
+    {
+      "id": "yurt",
+      "name": "The Family Yurt",
+      "type": "yurt",
+      "sleeps": 6,
+      "beds": "1 double · 2 twin · 1 air bed",
+      "price_from": 135,
+      "price_currency": "GBP",
+      "min_nights": 2,
+      "description": "Family-sized yurt with wood-burner, full outdoor kitchen, big fire circle, walk-in shower. Bluebells in spring, log fires in autumn.",
+      "amenities": ["wood-burner", "outdoor-kitchen", "compost-loo", "fire-pit", "log-net", "gas-bbq", "walk-in-shower"],
+      "dogs": true,
+      "kids": true,
+      "off_grid": true,
+      "wifi": false,
+      "ical_url": "https://wishwood-engine.workers.dev/ical/yurt",
+      "book_url": "https://sjgant80-hub.github.io/wishwood/book.html#yurt",
+      "tags": ["family", "yurt", "spring-bluebells"]
+    }
+  ],
+  "cooperative": {
+    "member": true,
+    "member_id": "wishwood",
+    "since": "2026-06-24"
+  }
+}
