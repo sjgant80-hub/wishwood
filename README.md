@@ -1,6 +1,6 @@
 # ◊ Wishwood Engine
 
-> Sovereign multi-channel automation for off-grid hospitality. Built speculatively for Wishwood Glamping & Forestry · Canterbury, Kent · designed for any glamping host with multiple booking channels.
+> Sovereign multi-channel automation for off-grid hospitality. Built for Wishwood Glamping & Forestry · Canterbury, Kent · hers to switch on whenever. Same engine works for any small accommodation host with multiple booking channels.
 
 **Live demo:** [sjgant80-hub.github.io/wishwood](https://sjgant80-hub.github.io/wishwood/)
 
@@ -52,7 +52,7 @@ A complete sovereign replacement for the SaaS channel-manager stack (Hospitable 
 | `data/cabins.json` | Cabin definitions (real Wishwood data) |
 | `data/demo-inbox.json` | Sample messages for demo |
 | `data/demo-calendar.json` | Sample bookings for demo |
-| `PITCH.md` | Sales pitch to send Chrissy |
+| `PITCH.md` | Handover note to send Chrissy |
 
 ## Multi-tenant / white-label
 

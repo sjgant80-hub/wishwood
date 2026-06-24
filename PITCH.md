@@ -1,6 +1,6 @@
-# Pitch · for Chrissy at Wishwood
+# Handover · for Chrissy at Wishwood
 
-**Subject:** Built you something speculatively — 20 mins of your time?
+**Subject:** Built you something — yours if you want it, no charge
 
 ---
 
@@ -8,51 +8,68 @@ Hi Chrissy,
 
 I stay at Wishwood (the [hobbit hut / caravan / yurt — pick]). Loved it. Off-grid woodland with proper craft behind it — rare.
 
-I build sovereign software for a living and noticed three things about how Wishwood runs that I think are leaving real money on the table. So I built you a working demo to show what's possible. No catch — you can walk away from it; it's already running.
+I build sovereign software for a living. I built you a full automation system for the way Wishwood runs — and I want to give it to you, no charge.
 
-## The 3 things I noticed
+## What it is
 
-1. **You're not on Booking.com.** That's the #1 channel for European glampers. At parity pricing, 3 listings would be worth an estimated +£8-12k/year.
+A working system at **https://sjgant80-hub.github.io/wishwood/** — open it on your phone over 4G, it'll load fine.
 
-2. **You don't have your own booking site.** Every Airbnb booking costs you 15.5% (≈£4,650/yr in fees on Airbnb alone). A direct site keeps 98.6% via Stripe. Same booking, you keep £140 more.
+There are four things to walk:
 
-3. **You're running 7 channels through 7 separate inboxes.** Airbnb, Booking, FB, IG, Pitchup, Tripadvisor, email. Every one of them is its own app and its own cognitive load.
+- **The overview** (homepage) — what it is in one scroll
+- **How it works** ([howitworks.html](https://sjgant80-hub.github.io/wishwood/howitworks.html)) — plain-English explanation, written so a 12-year-old can follow it. Read this first.
+- **The operator hub** ([hub.html](https://sjgant80-hub.github.io/wishwood/hub.html)) — what you'd see every morning. 10 sample messages, AI-drafted replies in what I imagine your voice sounds like, calendar across 3 cabins, dashboard with the numbers.
+- **The booking site** ([book.html](https://sjgant80-hub.github.io/wishwood/book.html)) — what guests would see at wishwood.co.uk/book. Direct booking, Stripe checkout, real cabin pricing.
 
-## What I built
+## What it does
 
-A working demo at **https://sjgant80-hub.github.io/wishwood/** — open it on your phone over 4G, it'll load fine.
+Three things in one:
 
-There are three things to walk:
+1. **Unified inbox** across Airbnb, Booking.com, FB, IG, Pitchup, your direct site — every message in one place, AI drafts your reply in your voice, you tap approve.
+2. **Channel-synced calendar** — booking on Airbnb blocks Booking and your direct site within 60 seconds. No double-booking ever.
+3. **Direct booking site** at wishwood.co.uk/book — Stripe checkout. You keep 98.6% per booking vs Airbnb's 83%.
 
-- **The pitch page** (homepage) — explains it all
-- **The operator hub** ([hub.html](https://sjgant80-hub.github.io/wishwood/hub.html)) — what you'd see every morning. 10 sample messages from real-shaped channels (Sarah asking about the wood-burner in the Caravan, James locked out at the Yurt, Emma asking about September dates via Facebook). Each one has an AI-drafted reply in what I imagine your voice sounds like. You tap approve, it sends.
-- **The guest site** ([book.html](https://sjgant80-hub.github.io/wishwood/book.html)) — what guests would see at wishwood.co.uk/book. Direct booking, Stripe checkout, real cabin pricing.
+Plus dynamic pricing, guest-journey automation (T-7d to T+30d emails), review reply drafting, off-grid ops dashboard.
 
-## What it would cost
+## What I noticed about Wishwood
 
-**£499 one-time.** I switch everything on for you — connect your Airbnb iCals, set up the Booking.com listings, wire Stripe to your direct site, set up the Cloudflare Worker, set up Gmail forwarding so external messages flow into the hub.
+You're on 7 channels but missing the two highest-leverage ones:
+- **Not on Booking.com** — est. +£8-12k/yr at parity pricing
+- **No own direct site** — every Airbnb booking costs ~15% in fees (~£3,720/yr just on Airbnb)
 
-**No monthly fee. Ever.** The code is yours. The data is yours. If I get hit by a bus, the system keeps running.
+The engine closes both gaps. Estimated year-1 uplift: **+£18,200** vs your current setup.
 
-Compare to:
-- **Hospitable** at £90/mo for 3 properties = £1,080/yr forever
-- **Lodgify** at £60/mo = £720/yr forever
-- **Hostaway** at £150/mo = £1,800/yr forever
+## What it costs you
 
-All three keep your data on their servers. Mine doesn't.
+**£0 from me.** Not now, not later. The system is yours.
 
-## The conservative ROI
+Running cost: about **£5/month** in Claude API fees (for the AI draft replies, at your message volume). Everything else runs on free tiers — Cloudflare, GitHub Pages, Stripe takes 1.4% + 20p only on actual direct bookings.
 
-Year-1 estimated net uplift: **+£18,200** (from Booking.com + direct site mix shift).
-The £499 pays back in about 12 days of saved OTA fees.
+Setup time: **one afternoon** with you on a call. I connect your real Airbnb iCals, set up the Booking.com listings, wire Stripe to your bank, hand you the keys.
 
-I'm not pitching for monthly revenue. I'd rather you have it work, ship it to your friends in the glamping community, and let me sell the same thing to other off-grid hosts (with a 10% referral back to you for any you introduce).
+## Why free
+
+Three reasons:
+
+1. **Wishwood is the proof.** I'm building this engine as a template for other small off-grid hosts. Wishwood running it live for real makes everything else I'm doing credible.
+2. **No subscription, no lock-in.** The code is yours, MIT-licensed. If I get hit by a bus, the engine keeps running.
+3. **Future referrals.** If other hosts come asking, you get 10% referral on any who join through you. That's the only money that ever flows.
+
+## What I'd love back
+
+Nothing required. But if it works for you:
+
+- Honest feedback (where it sucks, what's missing, what you'd never use)
+- A real testimonial if you'd give one
+- Word-of-mouth to other hosts you respect
+
+That's the whole ask.
 
 ## Next step
 
-If interested: just reply. Happy to come visit for a coffee — I'm Kent-based too. If not, no hard feelings, the demo stays up.
+Reply if interested. I'm Kent-based — happy to come down for a coffee. If not, no hard feelings, the demo stays up and is yours to play with whenever.
 
-If you spot anything I got wrong (cabin names, pricing, your tone in the drafts), let me know — happy to tune it before we talk.
+Spot anything I got wrong (cabin names, pricing, your tone in the drafts), tell me — I'll tune it before we talk.
 
 Best,
 Simon
@@ -62,4 +79,4 @@ Simon
 
 ---
 
-**P.S.** The whole system is open-source MIT. Even if you say no, the work I did on Wishwood becomes the template for the next 100 off-grid hosts. You'd be the proof-of-concept, with a permanent thank-you in the credits.
+**P.S.** The system also publishes a `/stays.json` file at your domain, which means any AI booking agent in the next year or two can find Wishwood and send you direct guests — no platform middleman. You'd be the first off-grid host in the UK set up for the agent era. That part's also yours, free.
