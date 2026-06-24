@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Book direct · Wishwood Glamping & Forestry · Kent</title>
+<meta name="description" content="Book direct with Wishwood — 16 acres of ancient Kent woodland near Canterbury. Hobbit Hut, Vintage Caravan, Family Yurt. Off-grid. No middleman.">
+<meta name="theme-color" content="#18171a">
+<style>
+:root{
+  --woodsmoke:#18171a;
+  --deep:#1f1e22;
+  --surface:#27262b;
+  --raised:#302f35;
+  --moss:#2d4a3e;
+  --moss-bright:#3d6a55;
+  --leaf:#6b9d6f;
+  --ember:#c97a3d;
+  --ember-glow:rgba(201,122,61,0.12);
+  --gold:#c9a84c;
+  --linen:#ebe5d6;
+  --text:#d4cfc8;
+  --muted:#7a7681;
+  --border:rgba(235,229,214,0.08);
+  --border-strong:rgba(235,229,214,0.18);
+  --good:#6b9d6f;
+  --bad:#c75a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--woodsmoke);
+  color:var(--text);
+  font-family:-apple-system,system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--ember);text-decoration:none}
+button{font-family:inherit;color:inherit;cursor:pointer}
+
+/* Header */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(24,23,26,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:14px 28px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);letter-spacing:0.02em}
+.brand .glyph{color:var(--ember);font-size:26px}
+.brand .sub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase;margin-left:10px}
+.book-direct{
+  background:var(--ember);color:var(--woodsmoke);
+  padding:9px 18px;border-radius:4px;border:0;
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;
+}
+.book-direct:hover{background:#d68850}
+
+/* Hero */
+.hero{
+  position:relative;
+  min-height:60vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:80px 28px;
+  background:radial-gradient(ellipse at top,var(--moss) 0%,var(--woodsmoke) 70%);
+  text-align:center;
+  border-bottom:1px solid var(--border);
+}
+.hero-inner{max-width:760px}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.24em;text-transform:uppercase;
+  color:var(--ember);margin-bottom:18px;
+}
+h1{
+  font-family:'Cormorant Garamond',serif;font-size:64px;line-height:1.05;color:var(--linen);
+  margin-bottom:18px;font-weight:400;
+}
+h1 em{color:var(--ember);font-style:italic}
+.lead{font-size:18px;color:var(--text);max-width:580px;margin:0 auto 24px;line-height:1.7}
+.trust-row{
+  display:flex;justify-content:center;gap:24px;margin-top:22px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--muted);flex-wrap:wrap;
+}
+.trust-row b{color:var(--linen)}
+.trust-row .gold{color:var(--gold)}
+
+/* Section */
+section{padding:64px 28px;max-width:1100px;margin:0 auto}
+.section-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ember);margin-bottom:8px}
+.section-h2{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--linen);margin-bottom:14px;font-weight:400;line-height:1.15}
+.section-lead{font-size:16px;color:var(--muted);max-width:600px;margin-bottom:36px;line-height:1.7}
+
+/* Cabin grid */
+.cabins{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.cabin-card{
+  background:var(--deep);border:1px solid var(--border);border-radius:6px;overflow:hidden;
+  transition:all 0.2s;display:flex;flex-direction:column;
+}
+.cabin-card:hover{border-color:var(--ember);transform:translateY(-2px)}
+.cabin-img{
+  height:200px;
+  background:linear-gradient(135deg,var(--moss) 0%,var(--woodsmoke) 100%);
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.cabin-img .glyph{
+  font-size:120px;color:var(--ember);
+  text-shadow:0 0 40px rgba(201,122,61,0.4);
+  font-family:'Cormorant Garamond',serif;
+}
+.cabin-body{padding:22px 24px;flex:1;display:flex;flex-direction:column}
+.cabin-name{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);margin-bottom:4px}
+.cabin-type{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.cabin-desc{color:var(--text);font-size:13px;line-height:1.6;margin-bottom:14px;flex:1}
+.cabin-meta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding-top:12px;border-top:1px solid var(--border)}
+.cabin-price{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--ember)}
+.cabin-price small{font-family:-apple-system,system-ui,sans-serif;font-size:13px;color:var(--muted);margin-left:4px}
+.cabin-sleeps{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
+.cabin-cta{
+  background:var(--ember);color:var(--woodsmoke);
+  padding:11px;border-radius:4px;border:0;text-align:center;width:100%;
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;
+}
+.cabin-cta:hover{background:#d68850}
+
+/* Availability */
+.avail-section{background:var(--deep);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.avail-wrap{max-width:1100px;margin:0 auto;padding:48px 28px}
+.cal-mini{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:24px}
+.cal-mini-row{display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--border)}
+.cal-mini-row:last-child{border-bottom:0}
+.cal-mini-row.h{background:var(--raised)}
+.cal-mini-cabin{padding:14px;color:var(--linen);font-weight:600;font-size:13px;border-right:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.cal-mini-cabin .g{color:var(--ember);font-size:16px}
+.cal-mini-days{display:grid;grid-template-columns:repeat(14,1fr);position:relative;min-height:48px}
+.cal-mini-h{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-align:center;padding:8px 0;letter-spacing:0.06em}
+.cal-mini-cell{border-right:1px solid var(--border);min-height:36px}
+.cal-mini-cell.taken{background:rgba(199,90,74,0.15)}
+.cal-mini-cell.free{background:rgba(107,157,111,0.08)}
+.cal-mini-legend{display:flex;gap:18px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase}
+.cal-mini-legend .sw{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:middle;margin-right:5px}
+
+/* Why direct */
+.why{background:linear-gradient(135deg,var(--moss) 0%,var(--woodsmoke) 100%);padding:64px 28px;border-top:1px solid var(--moss-bright);border-bottom:1px solid var(--border)}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1100px;margin:30px auto 0}
+.why-item{padding:0}
+.why-item h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.why-item h3 .g{color:var(--ember);font-size:22px}
+.why-item p{color:var(--text);font-size:14px;line-height:1.7}
+
+/* About */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.about-img{
+  aspect-ratio:4/3;border-radius:6px;
+  background:linear-gradient(135deg,var(--moss-bright) 0%,var(--woodsmoke) 100%);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--moss-bright);
+}
+.about-img .glyph{font-size:140px;color:var(--leaf);font-family:'Cormorant Garamond',serif}
+@media (max-width:780px){.about-grid{grid-template-columns:1fr}}
+
+/* Booking form modal */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.85);
+  z-index:100;
+  align-items:center;justify-content:center;
+  padding:20px;overflow-y:auto;
+}
+.modal-bg.show{display:flex}
+.modal{
+  background:var(--deep);
+  border:1px solid var(--border);
+  border-radius:8px;
+  max-width:540px;width:100%;
+  padding:34px 36px;
+  position:relative;
+  max-height:90vh;overflow-y:auto;
+}
+.modal-close{
+  position:absolute;top:14px;right:16px;
+  background:none;border:0;color:var(--muted);font-size:24px;cursor:pointer;
+}
+.modal h3{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--linen);margin-bottom:6px;font-weight:400}
+.modal-sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+.field{margin-bottom:16px}
+.field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  padding:10px 12px;border-radius:4px;color:var(--text);
+  font-family:inherit;font-size:14px;
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--ember)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.quote-box{
+  background:var(--surface);border:1px solid var(--ember-glow);border-radius:5px;
+  padding:16px 18px;margin:20px 0;
+}
+.quote-line{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;color:var(--text)}
+.quote-line.total{border-top:1px solid var(--border-strong);margin-top:6px;padding-top:10px;font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--ember)}
+.modal-cta{
+  background:var(--ember);color:var(--woodsmoke);
+  width:100%;padding:14px;border:0;border-radius:4px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;
+  margin-top:8px;
+}
+.modal-cta:hover{background:#d68850}
+.payment-note{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--muted);text-align:center;margin-top:12px;text-transform:uppercase}
+
+/* Footer */
+footer{
+  background:var(--deep);border-top:1px solid var(--border);
+  padding:42px 28px 32px;
+}
+.footer-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);margin-bottom:8px}
+.footer-blurb{color:var(--muted);font-size:13px;line-height:1.7;max-width:300px}
+.footer-col h4{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--linen);margin-bottom:10px}
+.footer-col a{display:block;color:var(--muted);font-size:13px;padding:3px 0}
+.footer-col a:hover{color:var(--ember)}
+.footer-bottom{max-width:1100px;margin:30px auto 0;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--dim);text-transform:uppercase}
+@media (max-width:780px){.footer-grid{grid-template-columns:1fr 1fr}h1{font-size:42px}.section-h2{font-size:30px}}
+
+/* Demo banner */
+.demo-banner{
+  background:var(--ember);color:var(--woodsmoke);
+  padding:8px 16px;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;
+}
+.demo-banner a{color:var(--woodsmoke);text-decoration:underline}
+
+.confirmation{
+  text-align:center;padding:30px 0;
+}
+.confirmation .check{font-size:60px;color:var(--leaf);margin-bottom:16px}
+.confirmation h3{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--linen);margin-bottom:10px}
+.confirmation p{color:var(--text);margin-bottom:8px}
+
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  ◊ Demo build · book direct site for Wishwood · sample cabin pricing · <a href="index.html">see the operator pitch</a>
+</div>
+
+<header class="site-header">
+  <div class="brand">
+    <span class="glyph">◊</span>
+    <span>Wishwood</span>
+    <span class="sub">Kent · 16 acres · off-grid</span>
+  </div>
+  <button class="book-direct" onclick="document.getElementById('cabins').scrollIntoView({behavior:'smooth'})">Book direct →</button>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Wishwood Glamping & Forestry · Canterbury, Kent</div>
+    <h1>An escape from the <em>rat run</em>.</h1>
+    <p class="lead">
+      Sixteen acres of ancient Kent woodland. Three storybook cabins — a hobbit hut, a vintage caravan, a family yurt. Off-grid by design.
+      Wood-burner in every unit. Fire pit at every door. The bluebells in spring, the log smoke in autumn.
+    </p>
+    <button class="book-direct" style="padding:14px 26px;font-size:12px" onclick="document.getElementById('cabins').scrollIntoView({behavior:'smooth'})">Pick a cabin →</button>
+    <div class="trust-row">
+      <span>★ <b>4.81</b> / 5 · <span class="gold">779 reviews</span></span>
+      <span><b>9 years</b> hosting</span>
+      <span>Family + <b>dog</b> friendly</span>
+      <span>Adjacent <b>Blean Woods</b> NNR</span>
+    </div>
+  </div>
+</section>
+
+<!-- CABINS -->
+<section id="cabins">
+  <div class="section-eyebrow">The three cabins</div>
+  <h2 class="section-h2">Pick your <em style="font-style:italic;color:var(--ember)">corner of the wood</em>.</h2>
+  <p class="section-lead">Each is independent, private, off-grid. All have wood-burners, outdoor kitchens, composting loos and a fire pit. Log nets included.</p>
+
+  <div class="cabins" id="cabin-grid"></div>
+</section>
+
+<!-- AVAILABILITY -->
+<section class="avail-section">
+  <div class="avail-wrap">
+    <div class="section-eyebrow">Live availability · next 14 days</div>
+    <h2 class="section-h2">What's open <em style="font-style:italic;color:var(--ember)">this fortnight</em></h2>
+    <p class="section-lead">Synced from Airbnb + Pitchup + direct bookings every 60 seconds. What you see here is bookable now.</p>
+    <div class="cal-mini" id="cal-mini"></div>
+    <div class="cal-mini-legend">
+      <div><span class="sw" style="background:rgba(107,157,111,0.4)"></span>Available</div>
+      <div><span class="sw" style="background:rgba(199,90,74,0.4)"></span>Booked</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY DIRECT -->
+<section class="why">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-eyebrow">Why book direct</div>
+    <h2 class="section-h2" style="max-width:700px">You pay less. We keep more. <em style="font-style:italic;color:var(--ember)">Better for both of us.</em></h2>
+    <p class="section-lead">Airbnb charges 15-17%, Booking 17%. We bake that into the OTA price. Book direct and the middleman vanishes — same stay, lower cost, money stays in Kent.</p>
+    <div class="why-grid">
+      <div class="why-item">
+        <h3><span class="g">£</span> 5-10% saving</h3>
+        <p>Direct prices match or beat the OTA-listed rate. Use code <b style="color:var(--ember)">WOOD10</b> for an extra 10% off your first direct stay.</p>
+      </div>
+      <div class="why-item">
+        <h3><span class="g">✉</span> Talk to humans</h3>
+        <p>Chrissy and Andy reply within an hour. No app, no notifications, no automated chatbot. Just us.</p>
+      </div>
+      <div class="why-item">
+        <h3><span class="g">⌬</span> Better cancellation</h3>
+        <p>14-day full refund · 50% inside that with re-let attempt. We're flexible when life happens.</p>
+      </div>
+      <div class="why-item">
+        <h3><span class="g">★</span> Returning-guest rate</h3>
+        <p>Booked once with us? You get our quiet midweek rate forever — silent, just message us when you want to come back.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section>
+  <div class="about-grid">
+    <div>
+      <div class="section-eyebrow">Who we are</div>
+      <h2 class="section-h2">Chrissy & Andy.<br><em style="font-style:italic;color:var(--ember)">Kent woodland keepers.</em></h2>
+      <p style="color:var(--text);font-size:15px;line-height:1.8;margin-bottom:18px">
+        We've been running Wishwood for nine years. What started as a single hobbit hut in 16 acres is now three units, 779 reviews, and a slow-grown reputation in slow travel.
+      </p>
+      <p style="color:var(--text);font-size:15px;line-height:1.8">
+        Off-grid isn't a gimmick. There's no mains water, no mains power, no hot tubs, no wifi by design. There's a fire pit, a wood-burner, an outdoor kitchen, and 16 acres of ancient woodland 10 minutes from Herne Bay and 20 from Whitstable.
+      </p>
+    </div>
+    <div class="about-img">
+      <span class="glyph">⌬</span>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-eyebrow">Common questions</div>
+  <h2 class="section-h2">Before you book.</h2>
+  <div style="max-width:760px;margin-top:30px">
+    <details style="border-bottom:1px solid var(--border);padding:18px 0">
+      <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">Is it really off-grid? How does that work day-to-day?</summary>
+      <p style="margin-top:12px;color:var(--muted);line-height:1.7">Solar powers low-draw lights. Wood-burner heats the cabin and the water (with the gas backup for the shower). Composting loos. Gas hob in the outdoor kitchen for cooking. You're not roughing it — you've just stepped out of the grid for a few days.</p>
+    </details>
+    <details style="border-bottom:1px solid var(--border);padding:18px 0">
+      <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">Can we bring our dog(s)?</summary>
+      <p style="margin-top:12px;color:var(--muted);line-height:1.7">Yes — all three cabins are dog-friendly. £15 per dog flat for the whole stay. Outdoor warm-water rinse by the boiler shed. 16 acres to roam. Just keep them on the lead near the boundary.</p>
+    </details>
+    <details style="border-bottom:1px solid var(--border);padding:18px 0">
+      <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">Wifi? Phone signal?</summary>
+      <p style="margin-top:12px;color:var(--muted);line-height:1.7">No wifi by design. Phone signal is patchy (decent for EE, less for O2). If you genuinely need to work remotely, this isn't the spot. If you want to be unreachable for 48 hours, it's perfect.</p>
+    </details>
+    <details style="border-bottom:1px solid var(--border);padding:18px 0">
+      <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">What's included? What should we bring?</summary>
+      <p style="margin-top:12px;color:var(--muted);line-height:1.7">We provide: bedding, towels, kitchen kit, gas cylinder, one log net, kindling and firelighters, candles, basic cleaning kit. Bring: warm clothes (even in summer evenings), torches, food, drinks. Extra log nets £5 if you go through one.</p>
+    </details>
+    <details style="border-bottom:1px solid var(--border);padding:18px 0">
+      <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">What's the cancellation policy?</summary>
+      <p style="margin-top:12px;color:var(--muted);line-height:1.7">Full refund up to 14 days before check-in. Inside 14 days: 50% refund + we try to re-let; if we re-let, full refund. Life happens — message us.</p>
+    </details>
+    <details style="border-bottom:1px solid var(--border);padding:18px 0">
+      <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">Where exactly is it?</summary>
+      <p style="margin-top:12px;color:var(--muted);line-height:1.7">CT3 4NG, between Calcott, Sturry and Broad Oak, adjacent to Blean Woods National Nature Reserve. Canterbury 20 min, Whitstable 20 min, Herne Bay 10 min. Full directions sent T-1 day before arrival.</p>
+    </details>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">◊ Wishwood</div>
+      <p class="footer-blurb">Wishwood Glamping & Forestry · 16 acres of ancient Kent woodland near Canterbury · off-grid by design · nine years of slow hosting</p>
+    </div>
+    <div class="footer-col">
+      <h4>Book</h4>
+      <a href="#cabins">Cabins</a>
+      <a href="#cabins">Availability</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>Find us</h4>
+      <a href="https://facebook.com/wishwood.org" target="_blank">Facebook</a>
+      <a href="https://instagram.com/wishwoodglamping" target="_blank">Instagram</a>
+      <a href="mailto:chrissy@wishwood.org">Email</a>
+    </div>
+    <div class="footer-col">
+      <h4>Other channels</h4>
+      <a href="https://airbnb.co.uk/users/show/110090665" target="_blank">Airbnb</a>
+      <a href="https://pitchup.com" target="_blank">Pitchup</a>
+      <a href="https://tripadvisor.co.uk" target="_blank">Tripadvisor</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>◊ · κ = 1 · sovereign · MIT</span>
+    <span>Powered by Konomi · 0 SaaS</span>
+  </div>
+</footer>
+
+<!-- BOOKING MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const CABINS=[
+  {id:"hobbit",name:"The Hobbit Hut",glyph:"⌬",type:"Hut · storybook",sleeps:3,beds:"1 double · 1 twin",base:95,weekend:120,peak:145,description:"Storybook hobbit hole tucked into ancient woodland. Wood-burner, outdoor kitchen, fire pit. Looks like it grew there.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq"],dogs:true},
+  {id:"caravan",name:"The Vintage Caravan",glyph:"◬",type:"Camper · retro",sleeps:2,beds:"1 double",base:85,weekend:110,peak:130,description:"Restored vintage caravan with wood-burner. The couple's hideaway. Private outdoor kitchen and fire circle.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq"],dogs:true},
+  {id:"yurt",name:"The Family Yurt",glyph:"◊",type:"Yurt · family",sleeps:6,beds:"1 double · 2 twin · 1 air bed",base:135,weekend:165,peak:195,description:"Family-sized yurt with wood-burner, full outdoor kitchen, big fire circle. Bluebells in spring, log fires in autumn.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq","walk-in-shower"],dogs:true}
+];
+
+const BOOKED=[
+  {cabin:"yurt",in:"2026-06-24",out:"2026-06-26"},
+  {cabin:"hobbit",in:"2026-06-28",out:"2026-07-02"},
+  {cabin:"caravan",in:"2026-06-27",out:"2026-06-30"},
+  {cabin:"yurt",in:"2026-07-05",out:"2026-07-12"}
+];
+
+function renderCabins(){
+  document.getElementById("cabin-grid").innerHTML=CABINS.map(c=>`
+    <div class="cabin-card">
+      <div class="cabin-img"><span class="glyph">${c.glyph}</span></div>
+      <div class="cabin-body">
+        <div class="cabin-name">${c.name}</div>
+        <div class="cabin-type">${c.type} · sleeps ${c.sleeps} · ${c.beds}</div>
+        <p class="cabin-desc">${c.description}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px">
+          ${c.amenities.slice(0,4).map(a=>`<span style="background:var(--surface);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 6px;border-radius:2px;letter-spacing:0.05em">${a}</span>`).join("")}
+        </div>
+        <div class="cabin-meta">
+          <span class="cabin-price">£${c.base}<small>/ night from</small></span>
+          <span class="cabin-sleeps">Sleeps ${c.sleeps}</span>
+        </div>
+        <button class="cabin-cta" onclick="openBooking('${c.id}')">Book ${c.name.replace('The ','')} →</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderMiniCal(){
+  const today=new Date("2026-06-24");
+  let html=`<div class="cal-mini-row h"><div class="cal-mini-cabin" style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600">Cabin</div><div class="cal-mini-days">`;
+  for(let i=0;i<14;i++){
+    const d=new Date(today);d.setDate(d.getDate()+i);
+    html+=`<div class="cal-mini-h">${d.getDate()}<br>${["S","M","T","W","T","F","S"][d.getDay()]}</div>`;
+  }
+  html+=`</div></div>`;
+  CABINS.forEach(c=>{
+    html+=`<div class="cal-mini-row"><div class="cal-mini-cabin"><span class="g">${c.glyph}</span>${c.name.replace('The ','')}</div><div class="cal-mini-days">`;
+    for(let i=0;i<14;i++){
+      const d=new Date(today);d.setDate(d.getDate()+i);
+      const dStr=d.toISOString().slice(0,10);
+      const taken=BOOKED.some(b=>b.cabin===c.id&&dStr>=b.in&&dStr<b.out);
+      html+=`<div class="cal-mini-cell ${taken?'taken':'free'}"></div>`;
+    }
+    html+=`</div></div>`;
+  });
+  document.getElementById("cal-mini").innerHTML=html;
+}
+
+let bookingCabin=null,bookingNights=2,bookingDogs=0,bookingCode="";
+function openBooking(cabinId){
+  bookingCabin=CABINS.find(c=>c.id===cabinId);
+  renderBookingForm();
+  document.getElementById("modal-bg").classList.add("show");
+}
+function closeModal(){document.getElementById("modal-bg").classList.remove("show")}
+
+function renderBookingForm(){
+  const c=bookingCabin;
+  const base=c.base;
+  const total=base*bookingNights;
+  const dogsFee=bookingDogs*15;
+  const longStay=bookingNights>=7?Math.round(total*0.12):0;
+  const code=bookingCode.trim().toUpperCase()==="WOOD10"?Math.round(total*0.10):0;
+  const subtotal=total+dogsFee-longStay-code;
+
+  document.getElementById("modal-body").innerHTML=`
+    <h3>${c.name}</h3>
+    <p class="modal-sub">${c.type} · sleeps ${c.sleeps} · ${c.beds}</p>
+
+    <div class="field-row">
+      <div class="field"><label>Check-in</label><input type="date" id="ci" value="2026-07-15"></div>
+      <div class="field"><label>Check-out</label><input type="date" id="co" value="2026-07-${15+bookingNights}" onchange="updateNights()"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Adults</label><select><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+      <div class="field"><label>Dogs · £15 each</label><select id="dogs-sel" onchange="bookingDogs=+this.value;renderBookingForm()"><option ${bookingDogs===0?'selected':''}>0</option><option ${bookingDogs===1?'selected':''}>1</option><option ${bookingDogs===2?'selected':''}>2</option></select></div>
+    </div>
+    <div class="field">
+      <label>Promo code (optional)</label>
+      <input type="text" id="code" placeholder="WOOD10 for FB/IG followers" value="${bookingCode}" onchange="bookingCode=this.value;renderBookingForm()">
+    </div>
+
+    <div class="quote-box">
+      <div class="quote-line"><span>${c.name} · ${bookingNights} nights</span><span>£${total}</span></div>
+      ${bookingDogs?`<div class="quote-line"><span>${bookingDogs} dog${bookingDogs>1?'s':''}</span><span>+£${dogsFee}</span></div>`:""}
+      ${longStay?`<div class="quote-line" style="color:var(--leaf)"><span>Long-stay discount (12%)</span><span>−£${longStay}</span></div>`:""}
+      ${code?`<div class="quote-line" style="color:var(--leaf)"><span>WOOD10 follower code (10%)</span><span>−£${code}</span></div>`:""}
+      <div class="quote-line total"><span>Total</span><span>£${subtotal}</span></div>
+    </div>
+
+    <div class="field">
+      <label>Your name</label><input type="text" placeholder="First last">
+    </div>
+    <div class="field">
+      <label>Email</label><input type="email" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label>Mobile</label><input type="tel" placeholder="07…">
+    </div>
+    <div class="field">
+      <label>Anything we should know?</label><textarea rows="2" placeholder="First-time glampers · gluten-free · etc"></textarea>
+    </div>
+
+    <button class="modal-cta" onclick="finishBooking()">Pay £${subtotal} · Stripe · Secure →</button>
+    <p class="payment-note">Card secured by Stripe · We keep 98.6% (vs 83% on Airbnb)</p>
+  `;
+}
+
+function updateNights(){
+  const ci=document.getElementById("ci").value,co=document.getElementById("co").value;
+  if(ci&&co){
+    bookingNights=Math.max(1,Math.round((new Date(co)-new Date(ci))/86400000));
+    renderBookingForm();
+  }
+}
+
+function finishBooking(){
+  document.getElementById("modal-body").innerHTML=`
+    <div class="confirmation">
+      <div class="check">✓</div>
+      <h3>Demo booking captured</h3>
+      <p>In production this hands off to Stripe for payment, then triggers:</p>
+      <ul style="text-align:left;display:inline-block;color:var(--text);margin-top:14px;line-height:2">
+        <li>Calendar block across all channels (60s sync)</li>
+        <li>Confirmation email with directions + prep guide</li>
+        <li>T-7d pre-arrival sequence</li>
+        <li>T-1d gate code + weather SMS</li>
+        <li>Post-stay review request + return-guest code</li>
+      </ul>
+      <button class="modal-cta" style="margin-top:24px" onclick="closeModal()">Close demo</button>
+    </div>
+  `;
+}
+
+renderCabins();
+renderMiniCal();
+</script>
+</body>
+</html>

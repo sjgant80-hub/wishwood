@@ -1,0 +1,27 @@
+{
+  "bookings": [
+    {"id":"b1","cabin":"yurt","channel":"airbnb","guest":"Linda C.","checkin":"2026-06-20","checkout":"2026-06-23","nights":3,"revenue":405,"status":"completed"},
+    {"id":"b2","cabin":"hobbit","channel":"airbnb","guest":"Marcus T.","checkin":"2026-06-28","checkout":"2026-07-02","nights":4,"revenue":380,"status":"confirmed"},
+    {"id":"b3","cabin":"caravan","channel":"airbnb","guest":"Sarah M.","checkin":"2026-08-14","checkout":"2026-08-17","nights":3,"revenue":330,"status":"inquiry"},
+    {"id":"b4","cabin":"caravan","channel":"direct","guest":"Anna & Mike","checkin":"2026-06-27","checkout":"2026-06-30","nights":3,"revenue":295,"status":"confirmed"},
+    {"id":"b5","cabin":"yurt","channel":"airbnb","guest":"James K.","checkin":"2026-06-24","checkout":"2026-06-26","nights":2,"revenue":270,"status":"in-house"},
+    {"id":"b6","cabin":"yurt","channel":"pitchup","guest":"The Patel Family","checkin":"2026-07-05","checkout":"2026-07-12","nights":7,"revenue":1365,"status":"confirmed"},
+    {"id":"b7","cabin":"yurt","channel":"direct","guest":"David & Helen","checkin":"2026-10-25","checkout":"2026-10-30","nights":5,"revenue":705,"status":"inquiry"},
+    {"id":"b8","cabin":"caravan","channel":"airbnb","guest":"Rachel & Tom","checkin":"2026-07-15","checkout":"2026-07-18","nights":3,"revenue":330,"status":"confirmed"},
+    {"id":"b9","cabin":"hobbit","channel":"facebook","guest":"Will & Lou","checkin":"2026-09-04","checkout":"2026-09-07","nights":3,"revenue":285,"status":"confirmed"},
+    {"id":"b10","cabin":"yurt","channel":"direct","guest":"The Mitchells","checkin":"2026-08-22","checkout":"2026-08-29","nights":7,"revenue":1155,"status":"confirmed"}
+  ],
+  "summary": {
+    "ytd_revenue": 32840,
+    "ytd_bookings": 73,
+    "occupancy_rate_30d": 0.78,
+    "occupancy_rate_90d": 0.64,
+    "saas_avoided_ytd": 980,
+    "ota_fees_paid_ytd": 4248,
+    "direct_pct": 0.21,
+    "avg_response_time_hrs": 1.4,
+    "auto_drafts_approved_pct": 0.87,
+    "channels_count": 7,
+    "messages_handled_30d": 142
+  }
+}

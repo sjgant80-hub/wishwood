@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wishwood · Operator Hub</title>
+<meta name="description" content="Unified inbox · calendar · ops dashboard for off-grid glamping. Sovereign · no SaaS · works on 4G.">
+<meta name="theme-color" content="#18171a">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Wishwood Hub","short_name":"Wishwood","start_url":".","display":"standalone","background_color":"%2318171a","theme_color":"%23c97a3d","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect width=%22192%22 height=%22192%22 fill=%22%2318171a%22/%3E%3Ctext x=%2296%22 y=%22132%22 font-family=%22serif%22 font-size=%22120%22 text-anchor=%22middle%22 fill=%22%23c97a3d%22%3E%E2%97%8A%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+<style>
+:root{
+  --woodsmoke:#18171a;
+  --deep:#1f1e22;
+  --surface:#27262b;
+  --raised:#302f35;
+  --moss:#2d4a3e;
+  --moss-bright:#3d6a55;
+  --leaf:#6b9d6f;
+  --ember:#c97a3d;
+  --ember-glow:rgba(201,122,61,0.12);
+  --gold:#c9a84c;
+  --linen:#ebe5d6;
+  --text:#d4cfc8;
+  --muted:#7a7681;
+  --dim:#48454d;
+  --border:rgba(235,229,214,0.08);
+  --border-strong:rgba(235,229,214,0.18);
+  --good:#6b9d6f;
+  --warn:#d4a83d;
+  --bad:#c75a4a;
+  --info:#5a8db8;
+  --pulse:rgba(201,168,76,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--woodsmoke);
+  color:var(--text);
+  font-family:'Inter',-apple-system,system-ui,sans-serif;
+  font-size:13px;
+  line-height:1.45;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:var(--ember);text-decoration:none}
+
+/* Layout shell */
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:48px 1fr;height:100vh}
+.topbar{
+  grid-column:1/-1;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  background:var(--deep);
+  border-bottom:1px solid var(--border);
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen);letter-spacing:0.02em}
+.brand .glyph{color:var(--ember);font-size:22px}
+.brand .tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase;margin-left:8px;padding:3px 8px;border:1px solid var(--border);border-radius:3px}
+.topbar-right{display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 6px var(--good)}
+.dot.warn{background:var(--warn);box-shadow:0 0 6px var(--warn)}
+.dot.bad{background:var(--bad);box-shadow:0 0 6px var(--bad)}
+.conn-info{color:var(--muted);font-size:10px}
+.conn-info b{color:var(--leaf)}
+
+/* Sidebar */
+.sidebar{
+  background:var(--deep);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+.nav-section{padding:14px 12px 4px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.16em;color:var(--dim);text-transform:uppercase}
+.nav-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;margin:1px 6px;
+  color:var(--text);
+  border-radius:4px;cursor:pointer;
+  font-size:13px;
+  transition:background 0.15s;
+}
+.nav-item:hover{background:var(--surface)}
+.nav-item.active{background:var(--raised);color:var(--linen);border-left:2px solid var(--ember);padding-left:12px}
+.nav-item .glyph{color:var(--ember);font-size:14px;width:18px;display:inline-block}
+.nav-item .count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:var(--surface);padding:1px 6px;border-radius:9px}
+.nav-item.active .count{background:var(--ember);color:var(--woodsmoke);font-weight:600}
+.sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;text-align:center}
+.sidebar-footer .seal{color:var(--ember);font-size:11px;margin-bottom:4px;letter-spacing:0.16em}
+
+/* Main */
+.main{overflow:hidden;display:flex;flex-direction:column;background:var(--woodsmoke)}
+.view{flex:1;display:none;overflow:hidden;flex-direction:column}
+.view.active{display:flex}
+
+/* INBOX VIEW */
+.inbox{display:grid;grid-template-columns:380px 1fr;height:100%}
+.inbox-list{border-right:1px solid var(--border);overflow-y:auto;background:var(--deep)}
+.inbox-toolbar{
+  padding:12px 14px;border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;gap:8px;
+  background:var(--deep);position:sticky;top:0;z-index:2;
+}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{
+  font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;
+  padding:4px 9px;border:1px solid var(--border);border-radius:11px;
+  cursor:pointer;color:var(--muted);
+  transition:all 0.15s;
+}
+.chip:hover{color:var(--linen);border-color:var(--border-strong)}
+.chip.active{background:var(--ember);color:var(--woodsmoke);border-color:var(--ember);font-weight:600}
+.inbox-search{
+  background:var(--surface);border:1px solid var(--border);
+  padding:7px 10px;border-radius:4px;color:var(--text);
+  font-size:12px;font-family:inherit;
+}
+.inbox-search:focus{outline:none;border-color:var(--ember)}
+
+.msg{
+  padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;
+  transition:background 0.12s;position:relative;
+}
+.msg:hover{background:var(--surface)}
+.msg.active{background:var(--raised);border-left:2px solid var(--ember);padding-left:14px}
+.msg.unread::before{content:'';position:absolute;left:6px;top:50%;width:5px;height:5px;border-radius:50%;background:var(--ember);transform:translateY(-50%)}
+.msg-row1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
+.msg-from{font-weight:600;color:var(--linen);font-size:13px}
+.msg-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+.msg-row2{display:flex;gap:6px;align-items:center;margin-bottom:5px}
+.badge{
+  font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.1em;text-transform:uppercase;
+  padding:2px 6px;border-radius:2px;font-weight:600;
+}
+.badge.airbnb{background:#ff5a5f22;color:#ff8a8e}
+.badge.booking_com{background:#003b9522;color:#5d8fd6}
+.badge.facebook{background:#1877f222;color:#5a9af5}
+.badge.instagram{background:#e1306c22;color:#e96499}
+.badge.direct{background:var(--ember-glow);color:var(--ember)}
+.badge.pitchup{background:#8b5a2b22;color:#c9904c}
+.badge.whatsapp{background:#25d36622;color:#5fd98a}
+.badge.cabin{background:var(--moss);color:var(--linen)}
+.badge.urgent{background:#c75a4a33;color:#e88577;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.msg-preview{font-size:12px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.msg-subject{font-size:12px;color:var(--text);margin-bottom:3px}
+
+/* Message detail */
+.detail{overflow-y:auto;padding:28px 36px;background:var(--woodsmoke)}
+.detail-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic}
+.detail-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:24px}
+.detail-meta{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.detail-from{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);margin-bottom:4px}
+.detail-subject{font-size:14px;color:var(--text);margin-bottom:6px;font-weight:500}
+.detail-info{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.06em}
+.detail-body{
+  background:var(--surface);
+  padding:18px 22px;border-radius:5px;
+  font-size:14px;line-height:1.7;color:var(--text);
+  margin-bottom:28px;
+  white-space:pre-wrap;
+  border-left:2px solid var(--moss-bright);
+}
+
+.draft-label{
+  display:flex;align-items:center;gap:10px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--ember);margin-bottom:10px;
+}
+.draft-label .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--ember);box-shadow:0 0 8px var(--ember);animation:pulse 2s infinite}
+.draft-box{
+  background:var(--deep);
+  border:1px solid var(--ember-glow);
+  border-radius:5px;padding:0;
+  margin-bottom:18px;
+}
+.draft-textarea{
+  width:100%;min-height:130px;
+  background:transparent;border:0;
+  padding:18px 22px;
+  font-family:'Inter',sans-serif;font-size:14px;color:var(--linen);line-height:1.7;
+  resize:vertical;outline:none;
+  white-space:pre-wrap;
+}
+.draft-meta{
+  padding:10px 22px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.06em;
+}
+
+.action-bar{display:flex;gap:10px;flex-wrap:wrap}
+.btn{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+  padding:11px 22px;border-radius:4px;cursor:pointer;font-weight:600;
+  transition:all 0.15s;
+  border:1px solid transparent;
+}
+.btn.primary{background:var(--ember);color:var(--woodsmoke)}
+.btn.primary:hover{background:#d68850;box-shadow:0 0 14px var(--ember-glow)}
+.btn.secondary{background:transparent;color:var(--linen);border-color:var(--border-strong)}
+.btn.secondary:hover{border-color:var(--ember);color:var(--ember)}
+.btn.ghost{background:transparent;color:var(--muted);border-color:var(--border)}
+.btn.ghost:hover{color:var(--bad);border-color:var(--bad)}
+
+/* CALENDAR VIEW */
+.cal-wrap{padding:24px 32px;overflow:auto;height:100%}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.cal-title{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--linen)}
+.cal-controls{display:flex;gap:10px;align-items:center}
+.cal-grid{
+  background:var(--deep);
+  border:1px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+}
+.cal-row{display:grid;grid-template-columns:140px 1fr;border-bottom:1px solid var(--border);min-height:64px}
+.cal-row:last-child{border-bottom:0}
+.cal-row.header{background:var(--surface);min-height:36px}
+.cal-row.header .cal-cabin{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase;font-weight:600;display:flex;align-items:center;padding:0 14px}
+.cal-cabin{padding:12px 14px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center}
+.cal-cabin-name{color:var(--linen);font-weight:600;font-size:13px}
+.cal-cabin-type{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
+.cal-days{display:grid;grid-template-columns:repeat(30,minmax(28px,1fr));position:relative}
+.cal-day-h{
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);
+  text-align:center;padding:6px 0;border-right:1px solid var(--border);
+}
+.cal-day-h.today{background:var(--ember-glow);color:var(--ember);font-weight:600}
+.cal-day-h.weekend{background:var(--surface)}
+.cal-cell{border-right:1px solid var(--border);background:var(--deep);min-height:44px;position:relative}
+.cal-cell.weekend{background:rgba(255,255,255,0.02)}
+.cal-cell.today{background:var(--ember-glow)}
+.cal-booking{
+  position:absolute;top:6px;bottom:6px;
+  border-radius:3px;
+  display:flex;align-items:center;
+  padding:0 10px;
+  color:var(--linen);font-size:11px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;
+  border-left:3px solid;
+}
+.cal-booking.airbnb{background:rgba(255,90,95,0.18);border-left-color:#ff5a5f;color:#ffaaad}
+.cal-booking.booking_com{background:rgba(0,59,149,0.25);border-left-color:#5d8fd6;color:#9ec0e8}
+.cal-booking.direct{background:var(--ember-glow);border-left-color:var(--ember);color:var(--ember)}
+.cal-booking.facebook{background:rgba(24,119,242,0.18);border-left-color:#5a9af5;color:#9ec5f8}
+.cal-booking.pitchup{background:rgba(139,90,43,0.25);border-left-color:#c9904c;color:#dca87a}
+.cal-booking.in-house{box-shadow:0 0 0 1px var(--ember);animation:pulse 2.5s infinite}
+
+.cal-legend{display:flex;gap:14px;margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;flex-wrap:wrap}
+.cal-legend-item{display:flex;align-items:center;gap:6px}
+.cal-legend-sw{width:12px;height:12px;border-radius:2px}
+
+/* DASHBOARD */
+.dash{padding:30px 36px;overflow-y:auto;height:100%}
+.dash-title{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--linen);margin-bottom:6px}
+.dash-sub{color:var(--muted);font-size:13px;margin-bottom:28px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:28px}
+.card{
+  background:var(--deep);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:22px 24px;
+  position:relative;
+  overflow:hidden;
+}
+.card.hero{background:linear-gradient(135deg,var(--moss) 0%,var(--deep) 100%);border-color:var(--moss-bright)}
+.card.uplift{background:linear-gradient(135deg,rgba(201,122,61,0.18) 0%,var(--deep) 100%);border-color:var(--ember)}
+.card-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.card-value{font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--linen);line-height:1;margin-bottom:6px;font-weight:500}
+.card-value.ember{color:var(--ember)}
+.card-value.gold{color:var(--gold)}
+.card-value.leaf{color:var(--leaf)}
+.card-sub{font-size:12px;color:var(--muted)}
+.card-trend{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 6px;border-radius:2px;margin-top:6px;letter-spacing:0.06em}
+.card-trend.up{background:rgba(107,157,111,0.18);color:var(--leaf)}
+.card-trend.dn{background:rgba(199,90,74,0.18);color:var(--bad)}
+
+.section-title{
+  font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);
+  margin-bottom:14px;padding-top:8px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-title .glyph{color:var(--ember);font-size:18px}
+
+.channels-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.channel-card{
+  background:var(--deep);border:1px solid var(--border);border-radius:5px;
+  padding:18px 20px;display:flex;justify-content:space-between;align-items:center;
+}
+.channel-card.disconnected{opacity:0.6;border-style:dashed}
+.channel-info{display:flex;flex-direction:column;gap:3px}
+.channel-name{font-weight:600;color:var(--linen);font-size:14px}
+.channel-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.06em}
+.channel-status{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase}
+.status-live{color:var(--leaf)}
+.status-off{color:var(--muted)}
+.status-warn{color:var(--warn)}
+
+.opportunity{
+  background:linear-gradient(135deg,var(--ember-glow) 0%,var(--deep) 100%);
+  border:1px solid var(--ember);
+  border-radius:5px;padding:18px 22px;margin-top:10px;
+}
+.opportunity-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ember);margin-bottom:6px}
+.opportunity-text{color:var(--linen);font-size:13px;line-height:1.6}
+
+/* OPS / SETTINGS / PRICING tables */
+.table{width:100%;border-collapse:collapse;margin-top:10px}
+.table th{
+  text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--muted);padding:10px 14px;
+  border-bottom:1px solid var(--border-strong);
+}
+.table td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)}
+.table tr:hover td{background:var(--surface)}
+
+/* Pricing page */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}
+.price-card{background:var(--deep);border:1px solid var(--border);border-radius:5px;padding:20px}
+.price-card-name{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:4px}
+.price-card-type{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px}
+.price-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--border);font-size:13px}
+.price-row:last-child{border-bottom:0}
+.price-row .label{color:var(--muted)}
+.price-row .val{color:var(--linen);font-family:'JetBrains Mono',monospace;font-weight:600}
+
+/* Scrollbars */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--woodsmoke)}
+::-webkit-scrollbar-thumb{background:var(--surface);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--raised)}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--moss);color:var(--linen);
+  padding:14px 22px;border-radius:5px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;
+  border-left:3px solid var(--leaf);
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  animation:slideIn 0.3s ease-out;z-index:100;
+}
+@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* Responsive */
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .inbox{grid-template-columns:1fr}
+  .detail{display:none}
+  .detail.mobile-show{display:block;position:fixed;inset:48px 0 0 0;z-index:50;background:var(--woodsmoke);overflow-y:auto}
+}
+
+/* Empty channel cards */
+.add-channel{
+  background:transparent;border:1px dashed var(--border-strong);border-radius:5px;
+  padding:18px 20px;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:6px;
+  cursor:pointer;color:var(--muted);
+  transition:all 0.15s;
+}
+.add-channel:hover{border-color:var(--ember);color:var(--ember)}
+.add-channel .plus{font-size:22px;font-weight:300}
+.add-channel-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase}
+
+/* Demo banner */
+.demo-banner{
+  background:var(--ember);color:var(--woodsmoke);
+  padding:6px 16px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;
+  text-align:center;
+}
+.demo-banner a{color:var(--woodsmoke);text-decoration:underline;font-weight:700}
+
+/* Ops dashboard specifics */
+.gauge{
+  position:relative;width:100%;height:8px;background:var(--surface);border-radius:4px;overflow:hidden;margin-top:8px;
+}
+.gauge-fill{height:100%;background:linear-gradient(90deg,var(--leaf),var(--ember));transition:width 0.6s}
+
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  ◊ Demo build for Chrissy & Andy at Wishwood · all data is illustrative · click any message to see the AI-draft flow · <a href="index.html">← back to pitch</a>
+</div>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="glyph">◊</span>
+      <span>Wishwood · Hub</span>
+      <span class="tag">v1.0 · sovereign</span>
+    </div>
+    <div class="topbar-right">
+      <span class="conn-info"><span class="dot"></span> 7 channels live</span>
+      <span class="conn-info">Last sync: <b id="last-sync">just now</b></span>
+      <span class="conn-info"><b id="net-info">checking…</b></span>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="nav-section">Operate</div>
+    <div class="nav-item active" data-view="inbox"><span><span class="glyph">✉</span> Inbox</span><span class="count" id="unread-count">5</span></div>
+    <div class="nav-item" data-view="calendar"><span><span class="glyph">▦</span> Calendar</span><span class="count">10</span></div>
+    <div class="nav-item" data-view="dashboard"><span><span class="glyph">◐</span> Dashboard</span></div>
+
+    <div class="nav-section">Estate</div>
+    <div class="nav-item" data-view="channels"><span><span class="glyph">≋</span> Channels</span><span class="count">7</span></div>
+    <div class="nav-item" data-view="cabins"><span><span class="glyph">⌂</span> Cabins</span><span class="count">3</span></div>
+    <div class="nav-item" data-view="pricing"><span><span class="glyph">£</span> Pricing</span></div>
+    <div class="nav-item" data-view="reviews"><span><span class="glyph">★</span> Reviews</span><span class="count">779</span></div>
+
+    <div class="nav-section">Growth</div>
+    <div class="nav-item" data-view="journey"><span><span class="glyph">⟶</span> Guest journey</span></div>
+    <div class="nav-item" data-view="ops"><span><span class="glyph">⚙</span> Off-grid ops</span></div>
+
+    <div class="nav-section">System</div>
+    <div class="nav-item" data-view="settings"><span><span class="glyph">⚙</span> Settings</span></div>
+
+    <div class="sidebar-footer">
+      <div class="seal">◊ · κ = 1</div>
+      <div>Powered by Konomi</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- INBOX -->
+    <div class="view active" id="view-inbox">
+      <div class="inbox">
+
+        <div class="inbox-list">
+          <div class="inbox-toolbar">
+            <div class="chips" id="channel-chips">
+              <span class="chip active" data-channel="all">All <span id="all-count"></span></span>
+              <span class="chip" data-channel="airbnb">Airbnb</span>
+              <span class="chip" data-channel="booking_com">Booking</span>
+              <span class="chip" data-channel="facebook">FB</span>
+              <span class="chip" data-channel="instagram">IG</span>
+              <span class="chip" data-channel="direct">Direct</span>
+              <span class="chip" data-channel="pitchup">Pitchup</span>
+            </div>
+            <input class="inbox-search" type="text" placeholder="Search messages…" id="msg-search">
+          </div>
+          <div id="msg-list"></div>
+        </div>
+
+        <div class="detail" id="msg-detail">
+          <div class="detail-empty">Select a message to begin · AI drafts auto-load</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="view" id="view-calendar">
+      <div class="cal-wrap">
+        <div class="cal-header">
+          <div>
+            <div class="cal-title">Channel-synced calendar</div>
+            <div class="dash-sub">Two-way iCal sync · Airbnb · Booking.com · Pitchup · Direct · updated every 60s</div>
+          </div>
+          <div class="cal-controls">
+            <button class="btn secondary" onclick="prevMonth()">◀</button>
+            <span id="cal-month-label" style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);min-width:180px;text-align:center"></span>
+            <button class="btn secondary" onclick="nextMonth()">▶</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <div class="cal-legend-item"><div class="cal-legend-sw" style="background:#ff5a5f"></div>Airbnb</div>
+          <div class="cal-legend-item"><div class="cal-legend-sw" style="background:#5d8fd6"></div>Booking.com</div>
+          <div class="cal-legend-item"><div class="cal-legend-sw" style="background:var(--ember)"></div>Direct</div>
+          <div class="cal-legend-item"><div class="cal-legend-sw" style="background:#5a9af5"></div>Facebook</div>
+          <div class="cal-legend-item"><div class="cal-legend-sw" style="background:#c9904c"></div>Pitchup</div>
+          <div class="cal-legend-item"><div class="cal-legend-sw" style="background:var(--ember);box-shadow:0 0 6px var(--ember)"></div>In-house now</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="view" id="view-dashboard">
+      <div class="dash">
+        <div class="dash-title">The estate at a glance</div>
+        <div class="dash-sub">Year-to-date · 3 cabins · 7 channels · 0 SaaS subscriptions</div>
+
+        <div class="dash-grid">
+          <div class="card hero">
+            <div class="card-label">YTD revenue</div>
+            <div class="card-value">£32,840</div>
+            <div class="card-sub">73 bookings · 2,167 nights sold</div>
+            <span class="card-trend up">+18% vs same period 2025</span>
+          </div>
+          <div class="card uplift">
+            <div class="card-label">Projected year-1 uplift</div>
+            <div class="card-value ember">+£18,200</div>
+            <div class="card-sub">From Booking.com listing + direct site</div>
+            <span class="card-trend up">+£980 SaaS avoided · +£2,200 fee savings</span>
+          </div>
+          <div class="card">
+            <div class="card-label">30-day occupancy</div>
+            <div class="card-value gold">78%</div>
+            <div class="gauge"><div class="gauge-fill" style="width:78%"></div></div>
+            <div class="card-sub" style="margin-top:8px">90-day rolling: 64%</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Direct booking share</div>
+            <div class="card-value leaf">21%</div>
+            <div class="gauge"><div class="gauge-fill" style="width:21%"></div></div>
+            <div class="card-sub" style="margin-top:8px">Goal: 50% by end of year 1</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Avg response time</div>
+            <div class="card-value">1.4 <span style="font-size:18px;color:var(--muted)">hr</span></div>
+            <div class="card-sub">AI-drafted · 87% approved as-written</div>
+          </div>
+          <div class="card">
+            <div class="card-label">OTA fees paid YTD</div>
+            <div class="card-value" style="color:var(--bad)">£4,248</div>
+            <div class="card-sub">Airbnb 15.5% · Pitchup 8% · saveable via direct</div>
+          </div>
+        </div>
+
+        <div class="section-title"><span class="glyph">≋</span> Channels live</div>
+        <div class="channels-grid" id="channels-grid"></div>
+
+      </div>
+    </div>
+
+    <!-- CHANNELS -->
+    <div class="view" id="view-channels">
+      <div class="dash">
+        <div class="dash-title">All channels · one inbox</div>
+        <div class="dash-sub">Every booking and message routes here · approve or auto-send · zero SaaS layer</div>
+        <table class="table">
+          <thead>
+            <tr><th>Channel</th><th>Status</th><th>Fee</th><th>Listings</th><th>YTD bookings</th><th>YTD fees</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge airbnb">AIRBNB</span> Airbnb (host #110090665)</td><td><span class="dot"></span> Live · iCal + email</td><td>15.5%</td><td>3</td><td>52</td><td>£3,720</td></tr>
+            <tr><td><span class="badge booking_com">BOOKING</span> Booking.com</td><td><span class="dot bad"></span> Not listed · <b style="color:var(--ember)">opportunity</b></td><td>17%</td><td>0</td><td>0</td><td>£0</td></tr>
+            <tr><td><span class="badge direct">DIRECT</span> Direct site (wishwood.co.uk)</td><td><span class="dot warn"></span> Stub · ready to deploy</td><td>1.4%</td><td>3 cabins</td><td>15</td><td>£62</td></tr>
+            <tr><td><span class="badge facebook">FB</span> Facebook (wishwood.org)</td><td><span class="dot"></span> Live · 2,146 likes</td><td>0%</td><td>—</td><td>4</td><td>£0</td></tr>
+            <tr><td><span class="badge instagram">IG</span> Instagram (@wishwoodglamping)</td><td><span class="dot"></span> Live</td><td>0%</td><td>—</td><td>0</td><td>£0</td></tr>
+            <tr><td><span class="badge pitchup">PITCHUP</span> Pitchup.com</td><td><span class="dot"></span> Live</td><td>8%</td><td>1</td><td>2</td><td>£218</td></tr>
+            <tr><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span> Tripadvisor</td><td><span class="dot"></span> Live · 4.0★ · 7 reviews</td><td>—</td><td>—</td><td>0</td><td>£0</td></tr>
+          </tbody>
+        </table>
+
+        <div class="opportunity">
+          <div class="opportunity-label">◊ Biggest single lever</div>
+          <div class="opportunity-text">
+            Wishwood is on 7 channels but missing the two highest-leverage ones: <b>Booking.com</b> (est. +£8-12k/yr at parity pricing) and <b>your own direct site</b> (98.6% kept per booking vs 83% on Airbnb).
+            The hub already routes both — you just need to list on Booking.com and enable the direct stub. Each takes about 90 minutes.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CABINS -->
+    <div class="view" id="view-cabins">
+      <div class="dash">
+        <div class="dash-title">The three cabins</div>
+        <div class="dash-sub">All in 16 acres of ancient Kent woodland · adjacent Blean Woods NNR</div>
+        <div class="price-grid" id="cabin-cards"></div>
+      </div>
+    </div>
+
+    <!-- PRICING -->
+    <div class="view" id="view-pricing">
+      <div class="dash">
+        <div class="dash-title">Dynamic pricing engine</div>
+        <div class="dash-sub">Base · weekend uplift · peak season · last-minute · long-stay · auto-pushes to every channel</div>
+        <table class="table">
+          <thead><tr><th>Cabin</th><th>Base / night</th><th>Weekend</th><th>Peak (Jul-Aug)</th><th>Long-stay 7+</th><th>Last-min 14d-empty</th></tr></thead>
+          <tbody>
+            <tr><td><span style="color:var(--ember)">⌬</span> Hobbit Hut</td><td>£95</td><td>£120</td><td>£145</td><td>-12%</td><td>-15%</td></tr>
+            <tr><td><span style="color:var(--ember)">◬</span> Vintage Caravan</td><td>£85</td><td>£110</td><td>£130</td><td>-12%</td><td>-15%</td></tr>
+            <tr><td><span style="color:var(--ember)">◊</span> Family Yurt</td><td>£135</td><td>£165</td><td>£195</td><td>-12%</td><td>-15%</td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">⟳</span> Pricing rules</div>
+        <table class="table">
+          <thead><tr><th>Rule</th><th>Trigger</th><th>Effect</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Weekend uplift</td><td>Fri-Sat nights</td><td>+~25% over base</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>Peak season</td><td>Jul-Aug + UK bank holidays</td><td>+~50% over base</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>Long-stay discount</td><td>≥7 night booking</td><td>-12% total</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>Last-minute fill</td><td>≤14d empty + 7d gap</td><td>-15% total</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>FB/IG follower</td><td>Code WOOD10 at checkout</td><td>-10%</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>Returning guest</td><td>Booked before · direct now</td><td>-10% (silent · email-coded)</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>Local event boost</td><td>Canterbury Festival / school hols</td><td>+10-20% as detected</td><td><span class="dot warn"></span> Calibrating</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="view" id="view-reviews">
+      <div class="dash">
+        <div class="dash-title">Reviews · 779 across the estate</div>
+        <div class="dash-sub">4.81★ Airbnb · 4.0★ Tripadvisor (7) · 7.1 HeyCamping · AI drafts replies in your voice for one-tap approval</div>
+        <div class="dash-grid">
+          <div class="card hero">
+            <div class="card-label">Airbnb · 9 years hosting</div>
+            <div class="card-value">4.81<span style="font-size:24px;color:var(--gold)">★</span></div>
+            <div class="card-sub">779 reviews · Superhost-tier</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Tripadvisor</div>
+            <div class="card-value">4.0<span style="font-size:18px;color:var(--gold)">★</span></div>
+            <div class="card-sub">7 reviews · #13 specialty lodging Canterbury</div>
+          </div>
+          <div class="card">
+            <div class="card-label">HeyCamping</div>
+            <div class="card-value">7.1<span style="font-size:18px;color:var(--muted)">/10</span></div>
+            <div class="card-sub">Listed</div>
+          </div>
+          <div class="card uplift">
+            <div class="card-label">Pending review replies</div>
+            <div class="card-value ember">3</div>
+            <div class="card-sub">AI-drafted in your voice · awaiting approve</div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">★</span> Recent reviews</div>
+        <table class="table">
+          <thead><tr><th>Guest</th><th>Channel</th><th>Cabin</th><th>Rating</th><th>Snippet</th><th>Reply</th></tr></thead>
+          <tbody>
+            <tr><td>Linda C.</td><td><span class="badge airbnb">AIRBNB</span></td><td>Family Yurt</td><td>5★</td><td>"The most peaceful weekend we've had in years. The bluebells, the fire pit at night…"</td><td><span style="color:var(--ember)">draft ready</span></td></tr>
+            <tr><td>Davtinbl</td><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span></td><td>—</td><td>5★</td><td>"So peaceful and beautiful with the blue bells everywhere. Hosts are lovely and helpful."</td><td><span style="color:var(--ember)">draft ready</span></td></tr>
+            <tr><td>Luke J</td><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span></td><td>—</td><td>5★</td><td>"Could not think of enough good words to say about the place."</td><td><span style="color:var(--leaf)">sent</span></td></tr>
+            <tr><td>Frenchfay</td><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span></td><td>Hobbit Hut</td><td>4★</td><td>"Treat for our Grandson, stayed in a Hobbit Hut! Host really lovely…"</td><td><span style="color:var(--ember)">draft ready</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- JOURNEY -->
+    <div class="view" id="view-journey">
+      <div class="dash">
+        <div class="dash-title">Guest journey automation</div>
+        <div class="dash-sub">Every booking triggers the right message at the right time · all editable, all opt-out-able</div>
+
+        <table class="table">
+          <thead><tr><th>When</th><th>Trigger</th><th>Channel</th><th>What goes</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>T+5 min</td><td>Booking confirmed</td><td>Email</td><td>Welcome · what to expect · packing list</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>T-7 days</td><td>Pre-arrival</td><td>Email + SMS</td><td>Directions · off-grid prep · what to bring</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>T-1 day</td><td>Day before</td><td>SMS</td><td>Gate code · weather · arrival window</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>T+0 morning</td><td>Arrival day</td><td>Email</td><td>"Welcome · here's the firewood, fire-lighting tips, walks map"</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>T+1 day mid</td><td>Mid-stay</td><td>SMS</td><td>"All good?" · auto-alerts host if no reply in 6hrs</td><td><span class="dot warn"></span> Calibrating</td></tr>
+            <tr><td>T+checkout</td><td>Checkout day</td><td>SMS</td><td>"Thanks · please leave key in lockbox · safe travels"</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>T+1 day after</td><td>Post-stay</td><td>Email</td><td>Review request · WOOD10 direct-book discount for next time</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>T+30 days</td><td>Return nudge</td><td>Email</td><td>"Miss the woods?" · seasonal photo · open dates</td><td><span class="dot"></span> Active</td></tr>
+            <tr><td>T+annual</td><td>Anniversary</td><td>Email</td><td>"One year since your stay" · exclusive returning-guest rate</td><td><span class="dot"></span> Active</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- OFF-GRID OPS -->
+    <div class="view" id="view-ops">
+      <div class="dash">
+        <div class="dash-title">Off-grid ops</div>
+        <div class="dash-sub">What matters when you're not on mains · solar, water, propane, log stock, weather</div>
+
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-label">Solar battery (estate-wide)</div>
+            <div class="card-value leaf">82%</div>
+            <div class="gauge"><div class="gauge-fill" style="width:82%"></div></div>
+            <div class="card-sub" style="margin-top:8px">Charging · 1.2kW from array</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Water tank · main</div>
+            <div class="card-value">740 <span style="font-size:18px;color:var(--muted)">L</span></div>
+            <div class="gauge"><div class="gauge-fill" style="width:64%"></div></div>
+            <div class="card-sub" style="margin-top:8px">~6 days at current occupancy</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Propane · LPG</div>
+            <div class="card-value gold">3 <span style="font-size:18px;color:var(--muted)">/ 6 bottles</span></div>
+            <div class="card-sub">Reorder threshold reached · auto-flagged</div>
+            <span class="card-trend dn">Order due</span>
+          </div>
+          <div class="card">
+            <div class="card-label">Log stock · seasoned</div>
+            <div class="card-value">12 <span style="font-size:18px;color:var(--muted)">nets</span></div>
+            <div class="card-sub">3.2 nets/booking avg · ~4 weeks supply</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Weather · 7-day</div>
+            <div class="card-value" style="font-size:32px">☁ 18° · 🌧 Sat</div>
+            <div class="card-sub">Heads-up for guests · auto-included in T-1 SMS</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Cleaner schedule</div>
+            <div class="card-value ember">2 <span style="font-size:18px;color:var(--muted)">turnarounds today</span></div>
+            <div class="card-sub">Caravan 11am · Hobbit 12pm · Yurt clear</div>
+          </div>
+        </div>
+
+        <div class="opportunity">
+          <div class="opportunity-label">◊ Hooks to add when ready</div>
+          <div class="opportunity-text">
+            Real telemetry: Victron Cerbo (solar) · ultrasonic tank sensor · scale-under-LPG-bottle · simple log-count tap.
+            All wire to a Raspberry Pi at the office, post to this hub via the Cloudflare Worker. Until then, manual update from the Cabins screen.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="dash">
+        <div class="dash-title">Settings</div>
+        <div class="dash-sub">Everything sovereign · keys live in your browser · nothing leaves without your tap</div>
+
+        <div class="section-title"><span class="glyph">⚙</span> Channel connections</div>
+        <table class="table">
+          <thead><tr><th>Channel</th><th>iCal URL / API key</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>Airbnb iCal (import)</td><td><code style="font-size:11px;color:var(--muted)">demo · airbnb.com/calendar/ical/…</code></td><td><span class="dot"></span> Synced 47s ago</td><td><button class="btn ghost">Edit</button></td></tr>
+            <tr><td>Airbnb iCal (export)</td><td><code style="font-size:11px;color:var(--muted)">wishwood-worker.workers.dev/ical/…</code></td><td><span class="dot"></span> Live</td><td><button class="btn ghost">Copy</button></td></tr>
+            <tr><td>Booking.com Channel Manager</td><td><i style="color:var(--muted)">not configured</i></td><td><span class="dot bad"></span> Off</td><td><button class="btn secondary">Connect</button></td></tr>
+            <tr><td>FB Page webhook</td><td><code style="font-size:11px;color:var(--muted)">graph.facebook.com/v18.0/wishwood.org/messages</code></td><td><span class="dot"></span> Subscribed</td><td><button class="btn ghost">Edit</button></td></tr>
+            <tr><td>IG webhook</td><td><code style="font-size:11px;color:var(--muted)">graph.facebook.com/v18.0/wishwoodglamping</code></td><td><span class="dot"></span> Subscribed</td><td><button class="btn ghost">Edit</button></td></tr>
+            <tr><td>Stripe (direct payment)</td><td><i style="color:var(--muted)">not configured</i></td><td><span class="dot warn"></span> Awaiting key</td><td><button class="btn secondary">Connect</button></td></tr>
+            <tr><td>Gmail IMAP (Airbnb/Booking msg forward)</td><td><code style="font-size:11px;color:var(--muted)">chrissy@wishwood.org</code></td><td><span class="dot"></span> Polling 60s</td><td><button class="btn ghost">Edit</button></td></tr>
+            <tr><td>Claude API key (AI drafts)</td><td><code style="font-size:11px;color:var(--muted)">sk-ant-…XXXX</code></td><td><span class="dot"></span> Live</td><td><button class="btn ghost">Edit</button></td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">⟳</span> AI draft voice</div>
+        <div class="card">
+          <div class="card-label">Tone learned from</div>
+          <div style="color:var(--linen);font-size:14px;line-height:1.7;margin-top:8px">
+            <b>4,200 past messages</b> from your Airbnb + FB inbox · learned voice attributes: warm, brief,
+            uses "·" instead of comma-list, signs off with "Chrissy" or "Chrissy & Andy" by recipient context,
+            includes practical detail without over-explaining. Refresh weekly.
+          </div>
+          <div style="margin-top:14px"><button class="btn secondary">Re-train from last 30 days</button></div>
+        </div>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">⌬</span> Sovereignty</div>
+        <div class="card">
+          <ul style="list-style:none;padding:0;font-size:13px;line-height:2;color:var(--text)">
+            <li>✓ All data lives in your browser (IndexedDB) and your Cloudflare Worker (KV)</li>
+            <li>✓ No third-party SaaS · no analytics · no tracking pixels</li>
+            <li>✓ API keys never leave your devices · stored in worker secrets</li>
+            <li>✓ Works fully offline after first load · perfect for off-grid</li>
+            <li>✓ Export full estate state to JSON anytime · take it with you</li>
+          </ul>
+          <div style="margin-top:14px;display:flex;gap:10px"><button class="btn secondary">Export estate JSON</button><button class="btn ghost">Reset demo data</button></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ────────────── DATA (inlined for sovereign single-file ops) ────────────── */
+const CABINS = [
+  {id:"hobbit",name:"The Hobbit Hut",glyph:"⌬",type:"Hut · storybook",sleeps:3,beds:"1 double · 1 twin",base:95,weekend:120,peak:145,description:"Storybook hobbit hole with wood-burner. Tucked into the ancient woodland, looks like it grew there.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq"],dogs:true},
+  {id:"caravan",name:"The Vintage Caravan",glyph:"◬",type:"Camper · retro",sleeps:2,beds:"1 double",base:85,weekend:110,peak:130,description:"Restored vintage caravan with wood-burner. Couple's hideaway with private outdoor kitchen.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq"],dogs:true},
+  {id:"yurt",name:"The Family Yurt",glyph:"◊",type:"Yurt · family",sleeps:6,beds:"1 double · 2 twin · 1 air bed",base:135,weekend:165,peak:195,description:"Family-sized yurt. Wood-burner, full outdoor kitchen, big fire circle. Bluebells in spring.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq","walk-in-shower"],dogs:true}
+];
+
+const MESSAGES = [
+  {id:"m1",channel:"airbnb",from:"Sarah M.",cabin:"caravan",subject:"Question about the wood burner",preview:"Hi Chrissy! Looking at Aug 14-17 for our anniversary in the vintage caravan. Is the wood burner easy to get going? We're glamping novices!",received:"2026-06-24T08:14:00Z",status:"unread",urgency:"normal",sentiment:"positive",draft:"Hi Sarah · the burner's lovely and simple — kindling, firelighters, and birch logs all waiting by the door, plus a one-page how-to that's never failed a novice. Aug 14-17 in the caravan is currently free · want me to hold those dates 24hrs while you decide?\n\nChrissy"},
+  {id:"m2",channel:"airbnb",from:"Marcus T.",cabin:"hobbit",subject:"Dietary requirements",preview:"Wife is coeliac. Do you provide breakfast or is there a fridge/cooker? Want to make sure she's safe.",received:"2026-06-24T07:42:00Z",status:"unread",urgency:"normal",sentiment:"neutral",draft:"Hi Marcus · the Hobbit Hut has a private outdoor kitchen (gas hob, BBQ, fridge, sink) so you self-cater — no shared cooking surfaces means coeliac-safe by design. Nearest gluten-free shop is Canterbury (12 min). Happy to pop a list of GF cafés in your welcome folder if it helps.\n\nChrissy"},
+  {id:"m3",channel:"facebook",from:"Emma R.",cabin:null,subject:"Sept dates?",preview:"Love your page! The bluebell photos last spring sold us. Trying to find a quiet weekend for me and my partner mid-September. What's available?",received:"2026-06-23T22:01:00Z",status:"unread",urgency:"normal",sentiment:"positive",draft:"Hi Emma · thanks for following us, the bluebells will be back next April · September is still wide open. The Vintage Caravan (couples) has Sep 5-7, 12-14, 19-21 free. Mid-week (Mon-Thu) is £85/night vs £110 weekend. Book direct via wishwood.co.uk/book and the FB-follower code WOOD10 takes 10% off · let me know.\n\nChrissy"},
+  {id:"m4",channel:"airbnb",from:"James K.",cabin:"yurt",subject:"URGENT - locked out",preview:"Hi we've just arrived at the yurt but the gate code doesn't work. We're parked at the gate. Please help!",received:"2026-06-24T09:31:00Z",status:"unread",urgency:"high",sentiment:"stressed",draft:"James — so sorry, hold tight · gate code resets at midnight sometimes after a battery cycle. Try 4720# (with the hash). If that fails Andy will be down in 5 min — call/text 07XXX XXXXXX. The yurt key is in the little wooden owl by the door once you're through.\n\nChrissy"},
+  {id:"m5",channel:"direct",from:"David & Helen",cabin:"hobbit",subject:"Booking inquiry - Oct half term",preview:"Hi, we're a family of 4 with two dogs. Looking at Oct 25-30 (Mon-Sat). The hobbit hut looks magical for the kids. Are dogs welcome and is there a dog washing area?",received:"2026-06-23T19:18:00Z",status:"unread",urgency:"normal",sentiment:"positive",draft:"Hi David & Helen · yes, two well-behaved dogs welcome (£15/dog flat for the stay) · outdoor warm-water dog rinse by the boiler shed. Hobbit Hut sleeps 3 — for a family of 4 you'd want the Family Yurt (£135 base x 5 nights = £675 + £30 dogs = £705 · long-stay drops to £650 total). Want me to send a quote and provisionally hold the yurt for 48hrs?\n\nChrissy"},
+  {id:"m6",channel:"instagram",from:"@wanderlust_kate",cabin:null,subject:"Story collab?",preview:"Hi! I'm a travel writer (300k followers, mostly UK slow travel + off-grid). Would you ever do a comp'd 2-night stay in exchange for a feature? Happy to share my media kit.",received:"2026-06-23T16:44:00Z",status:"unread",urgency:"low",sentiment:"positive",draft:"Hi Kate · thanks for thinking of us · we host 3-4 creator stays a year and 300k UK off-grid sounds right up our line · could you share your media kit and a couple of mid-week date options Sep-Nov? We'd ask for 3 grid posts + story coverage in exchange for 2 nights in the Vintage Caravan or Hobbit Hut.\n\nChrissy"},
+  {id:"m7",channel:"airbnb",from:"Airbnb system",cabin:"yurt",subject:"New 5★ review · Linda C.",preview:"Linda C. left a 5★ review: 'The most peaceful weekend we've had in years. The bluebells, the fire pit at night, Chrissy and Andy — everything was perfect. We'll be back.'",received:"2026-06-23T14:20:00Z",status:"read",urgency:"low",sentiment:"positive",draft:"Linda · thank you so much · so glad the bluebells were out for you · come back any time, returning guests get our quiet mid-week rate · just drop us a message direct.\n\nChrissy & Andy"},
+  {id:"m8",channel:"airbnb",from:"Tom W.",cabin:"caravan",subject:"Cancellation request",preview:"Hi, really sorry but my partner is unwell and we need to cancel Jul 8-10. I know the policy is strict but is there anything you can do?",received:"2026-06-23T11:55:00Z",status:"read",urgency:"normal",sentiment:"apologetic",draft:"Tom · sorry to hear, hope she's better soon. Standard policy is no refund inside 14 days, but as a one-off: if you can give me 48hrs to try to re-let those dates, I'll refund 50% even if I don't fill them, 100% if I do. Sound fair?\n\nChrissy"},
+  {id:"m9",channel:"pitchup",from:"Pitchup booking system",cabin:"yurt",subject:"New booking · 5 Jul - 12 Jul",preview:"The Patel Family · 4 adults + 2 kids · Family Yurt · 7 nights · £1,365 (Pitchup fee £109.20)",received:"2026-06-22T18:30:00Z",status:"read",urgency:"normal",sentiment:"neutral",draft:"(Auto-confirm reply queued · welcome pack will send T-7d · gate code T-1d)"},
+  {id:"m10",channel:"facebook",from:"Rob H.",cabin:null,subject:"Hot tub?",preview:"Hi, are any of your units hot-tubbed? Birthday surprise for my wife and that'd seal it.",received:"2026-06-22T15:12:00Z",status:"read",urgency:"normal",sentiment:"positive",draft:"Hi Rob · we're hot-tub-free by design (off-grid, no mains water) · what we do have is a fire pit and outdoor kitchen at every unit, a chiminea, and 16 acres of woodland to wander · happy to suggest a couple of hot-tub-equipped neighbours in Kent if that's a deal-breaker, or talk through what makes our spot different.\n\nChrissy"}
+];
+
+const BOOKINGS = [
+  {id:"b1",cabin:"yurt",channel:"airbnb",guest:"Linda C.",checkin:"2026-06-20",checkout:"2026-06-23",nights:3,revenue:405,status:"completed"},
+  {id:"b2",cabin:"hobbit",channel:"airbnb",guest:"Marcus T.",checkin:"2026-06-28",checkout:"2026-07-02",nights:4,revenue:380,status:"confirmed"},
+  {id:"b3",cabin:"caravan",channel:"airbnb",guest:"Sarah M.",checkin:"2026-08-14",checkout:"2026-08-17",nights:3,revenue:330,status:"inquiry"},
+  {id:"b4",cabin:"caravan",channel:"direct",guest:"Anna & Mike",checkin:"2026-06-27",checkout:"2026-06-30",nights:3,revenue:295,status:"confirmed"},
+  {id:"b5",cabin:"yurt",channel:"airbnb",guest:"James K.",checkin:"2026-06-24",checkout:"2026-06-26",nights:2,revenue:270,status:"in-house"},
+  {id:"b6",cabin:"yurt",channel:"pitchup",guest:"The Patel Family",checkin:"2026-07-05",checkout:"2026-07-12",nights:7,revenue:1365,status:"confirmed"},
+  {id:"b7",cabin:"yurt",channel:"direct",guest:"David & Helen",checkin:"2026-10-25",checkout:"2026-10-30",nights:5,revenue:705,status:"inquiry"},
+  {id:"b8",cabin:"caravan",channel:"airbnb",guest:"Rachel & Tom",checkin:"2026-07-15",checkout:"2026-07-18",nights:3,revenue:330,status:"confirmed"},
+  {id:"b9",cabin:"hobbit",channel:"facebook",guest:"Will & Lou",checkin:"2026-09-04",checkout:"2026-09-07",nights:3,revenue:285,status:"confirmed"},
+  {id:"b10",cabin:"yurt",channel:"direct",guest:"The Mitchells",checkin:"2026-08-22",checkout:"2026-08-29",nights:7,revenue:1155,status:"confirmed"}
+];
+
+const CHANNELS = [
+  {id:"airbnb",name:"Airbnb",status:"live",meta:"3 listings · iCal + email · host #110090665",dot:"good"},
+  {id:"booking_com",name:"Booking.com",status:"opportunity",meta:"Not listed · est. +£8-12k/yr",dot:"bad"},
+  {id:"facebook",name:"Facebook · @wishwood.org",status:"live",meta:"2,146 likes · 266 check-ins · Page webhook live",dot:"good"},
+  {id:"instagram",name:"Instagram · @wishwoodglamping",status:"live",meta:"IG Graph subscribed",dot:"good"},
+  {id:"direct",name:"Direct site · wishwood.co.uk",status:"ready",meta:"Stub deployed · awaiting Stripe key",dot:"warn"},
+  {id:"pitchup",name:"Pitchup.com",status:"live",meta:"1 listing · 8% fee",dot:"good"},
+  {id:"tripadvisor",name:"Tripadvisor",status:"live",meta:"4.0★ · 7 reviews · review pull active",dot:"good"}
+];
+
+/* ────────────── STATE + RENDER ────────────── */
+let activeView = "inbox";
+let activeChannel = "all";
+let activeMsgId = null;
+let currentMonth = new Date(2026,5,1); // June 2026
+
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+
+function fmtTime(iso){
+  const d=new Date(iso),now=new Date();
+  const diff=(now-d)/3600000;
+  if(diff<1) return Math.round(diff*60)+"m ago";
+  if(diff<24) return Math.round(diff)+"h ago";
+  return d.toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+}
+
+function fmtCurrency(n){return "£"+n.toLocaleString("en-GB")}
+
+function renderMsgList(){
+  const list=$("#msg-list");
+  const filtered=MESSAGES.filter(m=>activeChannel==="all"||m.channel===activeChannel);
+  list.innerHTML=filtered.map(m=>{
+    const cabinName=m.cabin?CABINS.find(c=>c.id===m.cabin)?.name||"":"";
+    const urgentBadge=m.urgency==="high"?'<span class="badge urgent">URGENT</span>':"";
+    return `<div class="msg ${m.status==='unread'?'unread':''}" data-id="${m.id}" onclick="selectMsg('${m.id}')">
+      <div class="msg-row1">
+        <span class="msg-from">${m.from}</span>
+        <span class="msg-time">${fmtTime(m.received)}</span>
+      </div>
+      <div class="msg-row2">
+        <span class="badge ${m.channel}">${m.channel.replace('_com','').toUpperCase()}</span>
+        ${cabinName?`<span class="badge cabin">${cabinName}</span>`:""}
+        ${urgentBadge}
+      </div>
+      <div class="msg-subject">${m.subject}</div>
+      <div class="msg-preview">${m.preview}</div>
+    </div>`;
+  }).join("");
+  $("#unread-count").textContent=MESSAGES.filter(m=>m.status==="unread").length;
+  $("#all-count").textContent="("+filtered.length+")";
+}
+
+function selectMsg(id){
+  activeMsgId=id;
+  $$(".msg").forEach(el=>el.classList.toggle("active",el.dataset.id===id));
+  const m=MESSAGES.find(x=>x.id===id);
+  if(!m) return;
+  if(m.status==="unread"){m.status="read";renderMsgList()}
+  const cabin=m.cabin?CABINS.find(c=>c.id===m.cabin):null;
+  $("#msg-detail").innerHTML=`
+    <div class="detail-header">
+      <div class="detail-meta">
+        <span class="badge ${m.channel}">${m.channel.replace('_com','').toUpperCase()}</span>
+        ${cabin?`<span class="badge cabin">${cabin.glyph} ${cabin.name}</span>`:""}
+        ${m.urgency==="high"?'<span class="badge urgent">URGENT</span>':""}
+      </div>
+      <div class="detail-from">${m.from}</div>
+      <div class="detail-subject">${m.subject}</div>
+      <div class="detail-info">received ${new Date(m.received).toLocaleString("en-GB")} · sentiment: ${m.sentiment}</div>
+    </div>
+    <div class="detail-body">${m.preview}</div>
+
+    <div class="draft-label">
+      <span class="pulse-dot"></span>
+      AI draft · in your voice · approve to send via ${m.channel.replace('_com','')}
+    </div>
+    <div class="draft-box">
+      <textarea class="draft-textarea" id="draft-text">${m.draft}</textarea>
+      <div class="draft-meta">
+        <span>Tone match: 94% · Estimated read time: ${Math.ceil(m.draft.split(" ").length/200*60)}s</span>
+        <span>Drafted 0.8s ago · Claude Sonnet 4.6</span>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn primary" onclick="approveSend()">✓ Approve & send</button>
+      <button class="btn secondary" onclick="editFirst()">✎ Edit first</button>
+      <button class="btn secondary" onclick="regenDraft()">⟳ Regenerate</button>
+      <button class="btn ghost" onclick="skipMsg()">↳ Skip</button>
+    </div>
+  `;
+}
+
+function approveSend(){
+  const m=MESSAGES.find(x=>x.id===activeMsgId);
+  if(!m)return;
+  toast(`✓ Sent via ${m.channel.replace('_com','')} · ${m.from}`);
+  MESSAGES.splice(MESSAGES.indexOf(m),1);
+  activeMsgId=null;
+  renderMsgList();
+  $("#msg-detail").innerHTML=`<div class="detail-empty">Sent · pick the next message</div>`;
+}
+function editFirst(){$("#draft-text").focus();$("#draft-text").select()}
+function regenDraft(){toast("⟳ Regenerating draft…");setTimeout(()=>{toast("✓ New draft ready");selectMsg(activeMsgId)},900)}
+function skipMsg(){activeMsgId=null;$("#msg-detail").innerHTML=`<div class="detail-empty">Skipped · pick the next message</div>`}
+
+function toast(msg){
+  const t=document.createElement("div");
+  t.className="toast";t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2400);
+}
+
+/* Channel filter */
+function bindChips(){
+  $$("#channel-chips .chip").forEach(c=>{
+    c.onclick=()=>{
+      $$("#channel-chips .chip").forEach(x=>x.classList.remove("active"));
+      c.classList.add("active");
+      activeChannel=c.dataset.channel;
+      renderMsgList();
+    };
+  });
+}
+
+/* Search */
+$("#msg-search").addEventListener("input",e=>{
+  const q=e.target.value.toLowerCase();
+  $$(".msg").forEach(el=>{
+    const m=MESSAGES.find(x=>x.id===el.dataset.id);
+    const hit=!q||m.from.toLowerCase().includes(q)||m.subject.toLowerCase().includes(q)||m.preview.toLowerCase().includes(q);
+    el.style.display=hit?"":"none";
+  });
+});
+
+/* Nav */
+$$(".nav-item").forEach(el=>{
+  el.onclick=()=>{
+    activeView=el.dataset.view;
+    $$(".nav-item").forEach(x=>x.classList.remove("active"));
+    el.classList.add("active");
+    $$(".view").forEach(v=>v.classList.remove("active"));
+    $("#view-"+activeView).classList.add("active");
+    if(activeView==="calendar") renderCalendar();
+    if(activeView==="cabins") renderCabins();
+  };
+});
+
+/* Channels grid (dashboard) */
+function renderChannelsGrid(){
+  $("#channels-grid").innerHTML=CHANNELS.map(c=>{
+    const dotCls=c.dot==="good"?"":c.dot==="warn"?"warn":"bad";
+    const statusTxt=c.status==="live"?"Live":c.status==="opportunity"?"Opportunity":"Ready";
+    const statusCls=c.status==="live"?"status-live":c.status==="opportunity"?"status-warn":"status-warn";
+    return `<div class="channel-card ${c.status!=='live'?'disconnected':''}">
+      <div class="channel-info">
+        <span class="channel-name">${c.name}</span>
+        <span class="channel-meta">${c.meta}</span>
+      </div>
+      <div class="channel-status ${statusCls}"><span class="dot ${dotCls}"></span>${statusTxt}</div>
+    </div>`;
+  }).join("");
+}
+
+/* Calendar */
+function renderCalendar(){
+  const year=currentMonth.getFullYear(),month=currentMonth.getMonth();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const monthName=currentMonth.toLocaleDateString("en-GB",{month:"long",year:"numeric"});
+  $("#cal-month-label").textContent=monthName;
+  const today=new Date();
+  const isCurrentMonth=today.getFullYear()===year&&today.getMonth()===month;
+
+  let html=`<div class="cal-row header"><div class="cal-cabin">Cabin</div><div class="cal-days">`;
+  for(let d=1;d<=daysInMonth;d++){
+    const date=new Date(year,month,d);
+    const dow=date.getDay();
+    const isToday=isCurrentMonth&&today.getDate()===d;
+    const cls=isToday?"today":(dow===0||dow===6?"weekend":"");
+    html+=`<div class="cal-day-h ${cls}">${d}<br>${["S","M","T","W","T","F","S"][dow]}</div>`;
+  }
+  html+=`</div></div>`;
+
+  CABINS.forEach(cab=>{
+    html+=`<div class="cal-row"><div class="cal-cabin"><span class="cal-cabin-name"><span style="color:var(--ember)">${cab.glyph}</span> ${cab.name}</span><span class="cal-cabin-type">${cab.type} · sleeps ${cab.sleeps}</span></div><div class="cal-days">`;
+    for(let d=1;d<=daysInMonth;d++){
+      const date=new Date(year,month,d);
+      const dow=date.getDay();
+      const isToday=isCurrentMonth&&today.getDate()===d;
+      const cls=isToday?"today":(dow===0||dow===6?"weekend":"");
+      html+=`<div class="cal-cell ${cls}"></div>`;
+    }
+    // overlay bookings
+    BOOKINGS.filter(b=>b.cabin===cab.id).forEach(b=>{
+      const ci=new Date(b.checkin),co=new Date(b.checkout);
+      if(ci.getFullYear()!==year||ci.getMonth()!==month)return;
+      const startDay=ci.getDate();
+      const endDay=Math.min(co.getDate(),daysInMonth);
+      const span=endDay-startDay;
+      if(span<=0)return;
+      const left=((startDay-1)/daysInMonth*100).toFixed(2);
+      const width=(span/daysInMonth*100).toFixed(2);
+      html+=`<div class="cal-booking ${b.channel} ${b.status==='in-house'?'in-house':''}" style="left:${left}%;width:${width}%;" title="${b.guest} · ${b.nights}n · £${b.revenue} · ${b.channel}">${b.guest} · £${b.revenue}</div>`;
+    });
+    html+=`</div></div>`;
+  });
+
+  $("#cal-grid").innerHTML=html;
+}
+function prevMonth(){currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1);renderCalendar()}
+function nextMonth(){currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1);renderCalendar()}
+
+/* Cabin cards */
+function renderCabins(){
+  $("#cabin-cards").innerHTML=CABINS.map(c=>`
+    <div class="price-card">
+      <div class="price-card-name"><span style="color:var(--ember)">${c.glyph}</span> ${c.name}</div>
+      <div class="price-card-type">${c.type} · sleeps ${c.sleeps}</div>
+      <p style="color:var(--text);font-size:13px;line-height:1.7;margin-bottom:14px;">${c.description}</p>
+      <div class="price-row"><span class="label">Beds</span><span class="val" style="font-family:inherit;font-weight:400;color:var(--text)">${c.beds}</span></div>
+      <div class="price-row"><span class="label">Base · midweek</span><span class="val">£${c.base}</span></div>
+      <div class="price-row"><span class="label">Weekend</span><span class="val">£${c.weekend}</span></div>
+      <div class="price-row"><span class="label">Peak (Jul-Aug)</span><span class="val">£${c.peak}</span></div>
+      <div class="price-row"><span class="label">Dogs welcome</span><span class="val">${c.dogs?'✓ £15/dog':'—'}</span></div>
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:4px">
+        ${c.amenities.map(a=>`<span class="badge cabin" style="font-size:9px;padding:3px 6px">${a}</span>`).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+/* Connection info (4G/edge aware) */
+function netInfo(){
+  if(navigator.connection){
+    const c=navigator.connection;
+    $("#net-info").textContent=`${c.effectiveType||"?"} · ${c.downlink||"?"}Mb · ${c.rtt||"?"}ms`;
+  }else{
+    $("#net-info").textContent="online";
+  }
+}
+
+/* Boot */
+renderMsgList();
+bindChips();
+renderChannelsGrid();
+renderCabins();
+renderCalendar();
+netInfo();
+setInterval(netInfo,15000);
+setInterval(()=>{$("#last-sync").textContent=new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})},60000);
+
+window.WISHWOOD={CABINS,MESSAGES,BOOKINGS,CHANNELS,selectMsg,approveSend,renderCalendar};
+</script>
+</body>
+</html>

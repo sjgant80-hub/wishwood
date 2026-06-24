@@ -1,0 +1,23 @@
+name = "wishwood-engine"
+main = "worker.js"
+compatibility_date = "2026-06-01"
+
+# Set per-env via `wrangler secret put`:
+#   OPERATOR_TOKEN       — bearer token for operator endpoints
+#   FB_VERIFY_TOKEN      — Meta webhook verify token
+#   CLAUDE_API_KEY       — Anthropic API key for AI drafts
+#   STRIPE_WEBHOOK_SECRET — Stripe webhook signing secret
+#   STRIPE_SECRET_KEY    — Stripe API key
+#   AIRBNB_ICAL_HOBBIT   — Airbnb iCal export URL for Hobbit Hut
+#   AIRBNB_ICAL_CARAVAN  — Airbnb iCal export URL for Vintage Caravan
+#   AIRBNB_ICAL_YURT     — Airbnb iCal export URL for Family Yurt
+#   PITCHUP_ICAL_YURT    — Pitchup iCal export URL
+
+# KV namespace for bookings, messages, journey queue
+[[kv_namespaces]]
+binding = "WISHWOOD_KV"
+id = "TBD-replace-after-first-deploy"
+
+# Cron: iCal sync + journey queue flush every minute
+[triggers]
+crons = ["* * * * *"]
