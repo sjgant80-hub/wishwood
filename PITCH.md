@@ -1,10 +1,10 @@
-# Pitch · for Chrissy & Andy at Wishwood
+# Pitch · for Chrissy at Wishwood
 
 **Subject:** Built you something speculatively — 20 mins of your time?
 
 ---
 
-Hi Chrissy & Andy,
+Hi Chrissy,
 
 I stay at Wishwood (the [hobbit hut / caravan / yurt — pick]). Loved it. Off-grid woodland with proper craft behind it — rare.
 

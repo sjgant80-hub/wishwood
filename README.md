@@ -44,7 +44,7 @@ A complete sovereign replacement for the SaaS channel-manager stack (Hospitable 
 
 | File | Purpose |
 |---|---|
-| `index.html` | Owner pitch page (what Chrissy & Andy see first) |
+| `index.html` | Owner pitch page (what Chrissy see first) |
 | `hub.html` | Operator inbox · calendar · dashboard · channels · cabins · pricing · reviews · journey · ops · settings |
 | `book.html` | Public guest booking site |
 | `worker.js` | Cloudflare Worker (webhooks, iCal sync, AI drafts, KV) |
@@ -52,7 +52,7 @@ A complete sovereign replacement for the SaaS channel-manager stack (Hospitable 
 | `data/cabins.json` | Cabin definitions (real Wishwood data) |
 | `data/demo-inbox.json` | Sample messages for demo |
 | `data/demo-calendar.json` | Sample bookings for demo |
-| `PITCH.md` | Sales pitch to send Chrissy & Andy |
+| `PITCH.md` | Sales pitch to send Chrissy |
 
 ## Multi-tenant / white-label
 
