@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wishwood · founding host #001 of roost · the post-platform model</title>
+<meta name="description" content="Wishwood Glamping is founding host #001 of roost — a user-owned, AI-operated marketplace for sovereign accommodation hosts. Zero booking fees. Member-governed by 7-dim consensus, not majority vote.">
+<meta name="theme-color" content="#18171a">
+<style>
+:root{--woodsmoke:#18171a;--deep:#1f1e22;--surface:#27262b;--raised:#302f35;--moss:#2d4a3e;--moss-bright:#3d6a55;--leaf:#6b9d6f;--ember:#c97a3d;--ember-glow:rgba(201,122,61,0.12);--gold:#c9a84c;--linen:#ebe5d6;--text:#d4cfc8;--muted:#7a7681;--border:rgba(235,229,214,0.08);--border-strong:rgba(235,229,214,0.18);--bad:#c75a4a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--woodsmoke);color:var(--text);font-family:-apple-system,system-ui,sans-serif;font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--ember);text-decoration:none}
+.site-header{position:sticky;top:0;z-index:50;background:rgba(24,23,26,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)}
+.brand .glyph{color:var(--ember);font-size:26px}
+.nav{display:flex;gap:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;flex-wrap:wrap}
+.nav a{color:var(--muted)}.nav a:hover{color:var(--ember)}
+
+.hero{padding:70px 28px 60px;background:radial-gradient(ellipse at top right,var(--ember-glow) 0%,var(--woodsmoke) 70%);text-align:center;border-bottom:1px solid var(--border)}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ember);margin-bottom:14px}
+h1{font-family:'Cormorant Garamond',serif;font-size:56px;line-height:1.1;color:var(--linen);margin:0 auto 18px;font-weight:400;max-width:760px}
+h1 em{color:var(--ember);font-style:italic}
+.hero-sub{font-size:18px;color:var(--text);max-width:600px;margin:0 auto 28px;line-height:1.7}
+
+.badge-001{
+  display:inline-flex;align-items:center;gap:18px;
+  background:linear-gradient(135deg,var(--moss) 0%,var(--deep) 100%);
+  border:2px solid var(--ember);
+  border-radius:12px;padding:24px 32px;margin:20px 0 0;
+}
+.badge-001 .num{
+  font-family:'Cormorant Garamond',serif;font-size:88px;
+  color:var(--ember);line-height:1;font-weight:600;
+}
+.badge-001 .text{text-align:left}
+.badge-001 .label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--linen);letter-spacing:0.2em;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.badge-001 .sub{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen);font-style:italic}
+
+section{padding:60px 28px;max-width:860px;margin:0 auto}
+.h2{font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--linen);margin-bottom:16px;font-weight:400;line-height:1.2}
+.h2 em{color:var(--ember);font-style:italic}
+.lead{font-size:18px;color:var(--text);line-height:1.8;margin-bottom:18px}
+p{margin-bottom:14px}
+strong{color:var(--linen)}
+
+.section-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ember);margin-bottom:10px}
+
+.threecards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:30px 0}
+@media (max-width:780px){.threecards{grid-template-columns:1fr}}
+.tcard{background:var(--deep);border:1px solid var(--border);border-radius:8px;padding:24px 26px}
+.tcard .glyph{font-size:32px;color:var(--ember);margin-bottom:10px}
+.tcard h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:8px;font-weight:400}
+.tcard p{font-size:14px;color:var(--text);line-height:1.65;margin:0}
+
+.banner{
+  background:linear-gradient(135deg,var(--moss) 0%,var(--deep) 100%);
+  border:1px solid var(--moss-bright);
+  border-radius:8px;padding:28px 32px;margin:30px 0;
+}
+.banner-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--leaf);margin-bottom:12px}
+.banner-quote{font-family:'Cormorant Garamond',serif;font-size:24px;line-height:1.55;color:var(--linen);font-style:italic}
+.banner-quote em{color:var(--ember);font-style:italic}
+
+.timeline{margin:24px 0;border-left:2px solid var(--border-strong);padding-left:24px}
+.tl-step{margin-bottom:24px;position:relative}
+.tl-step:before{content:"";position:absolute;left:-30px;top:8px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--border-strong)}
+.tl-step.done:before{background:var(--leaf);border-color:var(--leaf)}
+.tl-step.now:before{background:var(--ember);border-color:var(--ember);box-shadow:0 0 0 4px var(--ember-glow)}
+.tl-step h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:4px;font-weight:400}
+.tl-step .when{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ember);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px}
+.tl-step.done .when{color:var(--leaf)}
+.tl-step.future .when{color:var(--muted)}
+.tl-step p{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:0}
+
+.callout{background:var(--moss);border-left:3px solid var(--leaf);padding:14px 18px;border-radius:0 4px 4px 0;margin:16px 0;font-size:14px;color:var(--linen);line-height:1.7}
+.callout em{color:var(--ember);font-style:italic}
+
+.cta-box{
+  background:linear-gradient(135deg,var(--ember-glow) 0%,var(--deep) 100%);
+  border:1px solid var(--ember);border-radius:8px;
+  padding:38px 42px;text-align:center;margin:40px 0;
+}
+.cta-box h2{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--linen);margin-bottom:14px;font-weight:400}
+.cta-box p{font-size:15px;color:var(--text);max-width:540px;margin:0 auto 22px}
+.btn{padding:14px 26px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--ember);color:var(--woodsmoke)}
+.btn.primary:hover{background:#d68850}
+.btn.secondary{background:transparent;color:var(--linen);border:1px solid var(--border-strong);margin-left:10px}
+
+footer{background:var(--deep);border-top:1px solid var(--border);padding:36px 28px;text-align:center}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:8px}
+.footer-text{color:var(--muted);font-size:13px;line-height:1.7;max-width:480px;margin:0 auto 12px}
+.footer-seal{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ember);letter-spacing:0.16em;text-transform:uppercase;margin-top:14px}
+
+@media (max-width:780px){
+  h1{font-size:34px}.h2{font-size:26px}section{padding:40px 22px}
+  .badge-001{flex-direction:column;text-align:center;padding:20px 24px}
+  .badge-001 .num{font-size:64px}.badge-001 .text{text-align:center}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand"><span class="glyph">◊</span><span>Wishwood · roost #001</span></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a>
+    <a href="howitworks.html">How it works</a>
+    <a href="hub.html">Hub</a>
+    <a href="book.html">Book direct</a>
+    <a href="https://sjgant80-hub.github.io/roost/" target="_blank">roost.land →</a>
+  </nav>
+</header>
+
+<section class="hero" style="max-width:none;margin:0">
+  <div class="eyebrow">a new model for accommodation booking · wishwood is the proof</div>
+  <h1>We're <em>founding host #001</em> of roost.</h1>
+  <p class="hero-sub">
+    Roost is a sovereign marketplace where the hosts own the platform, AI agents run the operations, and nobody takes a booking commission. Wishwood is the live reference implementation. This page explains what that means, why we joined, and where it's going.
+  </p>
+  <div class="badge-001">
+    <div class="num">001</div>
+    <div class="text">
+      <div class="label">FOUNDING HOST</div>
+      <div class="sub">first verified · stays-protocol live · joined 24 June 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- 1 · WHAT IS ROOST -->
+<section>
+  <div class="section-eyebrow">What is roost</div>
+  <h2 class="h2">A marketplace that's <em>owned by the hosts</em>, <em>operated by AI</em>, and takes <em>zero booking fees</em>.</h2>
+
+  <p class="lead">Most accommodation marketplaces are platforms — owned by VCs, optimised for the platform's profit, charging 15-17% per booking. Roost is the opposite shape:</p>
+
+  <div class="threecards">
+    <div class="tcard">
+      <div class="glyph">◊</div>
+      <h3>Hosts own it</h3>
+      <p>Members co-own roost · 1 host = 1 vote · no VCs, no founder shareholding, no exit · structurally unable to be acquired or sold.</p>
+    </div>
+    <div class="tcard">
+      <div class="glyph">⚡</div>
+      <h3>AI runs it</h3>
+      <p>AI agents handle new-host vetting, billing, fraud flagging, comms · members prompt + approve · ~2hrs/month oversight is the whole job.</p>
+    </div>
+    <div class="tcard">
+      <div class="glyph">◬</div>
+      <h3>£0 per booking</h3>
+      <p>Bookings go direct from guest to host's own Stripe. Roost takes nothing. £20/mo flat membership funds infrastructure only.</p>
+    </div>
+  </div>
+
+  <div class="banner">
+    <div class="banner-label">◊ THE BIG PICTURE</div>
+    <p class="banner-quote">
+      Platforms had <em>20 years</em> of extracting value from the people who built them.<br>
+      The next 20 years: the people <em>own</em> the platform · <em>AI runs it</em> · they oversee it a few hours a month and get on with their lives.
+    </p>
+  </div>
+</section>
+
+<!-- 2 · WHY WISHWOOD JOINED -->
+<section>
+  <div class="section-eyebrow">Why Wishwood joined</div>
+  <h2 class="h2">Four reasons.</h2>
+
+  <ol style="list-style:none;padding:0;margin:24px 0">
+    <li style="display:grid;grid-template-columns:50px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--border)">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--ember);line-height:1;font-weight:500">1</span>
+      <div>
+        <strong style="display:block;color:var(--linen);font-size:17px;margin-bottom:6px">The booking-fee math</strong>
+        <p style="margin:0">On a £1,000 booking · Airbnb keeps £150 · Booking.com £170 · roost £0. Stripe takes £14 to process. Wishwood keeps £986. That's £136 more per booking, in the host's pocket, in the local economy.</p>
+      </div>
+    </li>
+    <li style="display:grid;grid-template-columns:50px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--border)">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--ember);line-height:1;font-weight:500">2</span>
+      <div>
+        <strong style="display:block;color:var(--linen);font-size:17px;margin-bottom:6px">The AI-agent era is coming</strong>
+        <p style="margin:0">Personal AI agents (ChatGPT, Claude, future bots) are starting to book travel for people. They'll read structured data, not scraped HTML. Wishwood publishes a stays-protocol v1 manifest at <a href="stays.json" target="_blank">/stays.json</a> · any AI agent in the world can read it and book us direct. First mover.</p>
+      </div>
+    </li>
+    <li style="display:grid;grid-template-columns:50px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--border)">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--ember);line-height:1;font-weight:500">3</span>
+      <div>
+        <strong style="display:block;color:var(--linen);font-size:17px;margin-bottom:6px">The model is structurally honest</strong>
+        <p style="margin:0">Roost can't pivot to extract from hosts. The code is MIT, the protocol is CC0, the governance is consensus-based (not majority-vote), the financials are open-book, the only paid party (Simon Gant) gets fixed build fee + small interim stipend then £0 by default. No equity. No exit. <em>Built to stay honest.</em></p>
+      </div>
+    </li>
+    <li style="display:grid;grid-template-columns:50px 1fr;gap:18px;padding:18px 0">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--ember);line-height:1;font-weight:500">4</span>
+      <div>
+        <strong style="display:block;color:var(--linen);font-size:17px;margin-bottom:6px">Cross-promotion with sovereign hosts</strong>
+        <p style="margin:0">Guests who stay at Wishwood get post-stay suggestions for other roost hosts they might love (off-grid in Wales, treehouse in Snowdonia, bothy in the Cairngorms). Network effect without the platform tax. <em>The roost cohort succeeds together.</em></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- 3 · HOW DECISIONS GET MADE -->
+<section>
+  <div class="section-eyebrow">How roost actually decides</div>
+  <h2 class="h2"><em>Consensus, not majority vote</em>.</h2>
+
+  <p class="lead">Roost doesn't run a 51% rules vote. It uses <strong>FallConsensus</strong> — an open-source sovereign governance tool that measures whether the group is <em>genuinely aligned</em> across seven dimensions, not just "how many ticked yes."</p>
+
+  <p>The 7 dimensions of every decision: <em>alignment · fairness · urgency · resources · risk · transparency · sustainability</em>. Each member rates each dimension privately. The system measures cosine similarity between every pair of position vectors. <strong>Three conditions must all hold for 5 continuous seconds before consensus is declared:</strong></p>
+
+  <ul style="padding-left:22px;margin:14px 0">
+    <li style="margin-bottom:8px"><strong>Average similarity ≥ threshold</strong> — the group is broadly aligned</li>
+    <li style="margin-bottom:8px"><strong>Variance below maximum</strong> — there's no high-conflict minority</li>
+    <li style="margin-bottom:8px"><strong>Minimum pairwise similarity above floor</strong> — no two members are wildly opposed</li>
+  </ul>
+
+  <div class="callout">
+    <em>Why this matters:</em> a 51% vote is a bullying mechanism. Genuine consensus means even the dissenters can live with the outcome. FallConsensus reveals where the group is aligned and where it isn't — actionable information either way. <em>"Convergence, not votes. Mirrors, not rulers. The river decides when it's still."</em>
+  </div>
+
+  <p>More: <a href="https://sjgant80-hub.github.io/fallconsensus/" target="_blank">FallConsensus · sovereign mesh governance</a> · open source · runs in the browser · no central server</p>
+</section>
+
+<!-- 4 · WHO'S BEHIND IT -->
+<section>
+  <div class="section-eyebrow">Who built it · who runs it</div>
+  <h2 class="h2">Simon Gant is <em>interim steward</em> · until voted out.</h2>
+
+  <p class="lead">Roost was built by Simon Gant at AI Native Solutions in Kent. He's currently acting as <strong>interim steward + tech maintainer</strong> until the membership council is elected. Here's the transparent split of his role:</p>
+
+  <ul style="padding-left:22px;margin:14px 0">
+    <li style="margin-bottom:8px"><strong>Build fee:</strong> £2,400 one-time · paid over 6 months from the membership pool · ends Dec 2026</li>
+    <li style="margin-bottom:8px"><strong>Interim coordinator stipend:</strong> £100/month · ends when the 5-member council is elected (target: Oct 2026)</li>
+    <li style="margin-bottom:8px"><strong>Ongoing maintenance after Q2 2027:</strong> £0 by default · or whatever the council votes to retain him for · or replaced entirely by member vote</li>
+    <li style="margin-bottom:8px"><strong>No equity · no exit · no permanent founder role.</strong></li>
+  </ul>
+
+  <p>Simon's words on the deal:</p>
+
+  <div class="callout">
+    "I'll be steward of roost <em>until I'm voted out lol</em>. The platforms had 20 years of taking what hosts built. Roost is one experiment in whether the next 20 can look different. If members eventually decide they want a different steward — or no steward — they vote. I hand over keys. <em>That's the whole deal.</em>"
+  </div>
+
+  <p>Full financial transparency + role definition at <a href="https://sjgant80-hub.github.io/roost/governance.html" target="_blank">roost.land/governance</a>.</p>
+</section>
+
+<!-- 5 · WHERE IT'S GOING -->
+<section>
+  <div class="section-eyebrow">Where it's going</div>
+  <h2 class="h2">The roadmap.</h2>
+
+  <div class="timeline">
+
+    <div class="tl-step done">
+      <div class="when">JUN 2026 · DONE</div>
+      <h3>Phase 1 · Built + Wishwood lives as #001</h3>
+      <p>Codebase · stays-protocol v1 spec · Cloudflare worker · marketplace + governance UI · Wishwood publishing live manifest.</p>
+    </div>
+
+    <div class="tl-step now">
+      <div class="when">JUL-SEP 2026 · NOW</div>
+      <h3>Phase 2 · First 50 founding hosts join</h3>
+      <p>Hand-picked sovereign-aligned hosts from the Wishwood network + LinkedIn outreach. Each gets lifetime fee-locked at £20/month.</p>
+    </div>
+
+    <div class="tl-step future">
+      <div class="when">OCT 2026 · NEXT</div>
+      <h3>Phase 3 · Council elected at 50 members</h3>
+      <p>5-member governing council · 6-month terms · sets policy · approves AI prompts · monthly minutes published. Simon's coordinator role ends.</p>
+    </div>
+
+    <div class="tl-step future">
+      <div class="when">Q1 2027 · TARGET</div>
+      <h3>Phase 4 · AI fully operational</h3>
+      <p>8-agent ops system (intake · approval · finance · comms · moderation · billing · reporting · audit) reaches autonomy under council oversight.</p>
+    </div>
+
+    <div class="tl-step future">
+      <div class="when">Q2 2027 · DECIDED BY CONSENSUS</div>
+      <h3>Phase 5 · 100 members · steward vote</h3>
+      <p>Members can vote Simon out (or keep him at a renegotiated rate). He hands over all keys + admin on member request, no resistance.</p>
+    </div>
+
+    <div class="tl-step future">
+      <div class="when">ONGOING · FOREVER</div>
+      <h3>Phase 6 · No exit · no sale possible</h3>
+      <p>Roost is structurally unsellable. The only "exit" is dissolution by 3/4 member consensus, assets split equally among members on that date.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 6 · WISHWOOD'S ROLE -->
+<section>
+  <div class="section-eyebrow">Wishwood's role · what #001 means</div>
+  <h2 class="h2">The reference implementation.</h2>
+
+  <p class="lead">Being host #001 doesn't get Wishwood special treatment in the marketplace — same membership, same fee, same vote weight as everyone else. But it does mean:</p>
+
+  <ul style="padding-left:22px;margin:14px 0">
+    <li style="margin-bottom:10px"><strong>Wishwood is the live proof.</strong> Anyone who wants to see what "host on roost" actually looks like opens <a href="stays.json" target="_blank">our stays.json</a> · then <a href="book.html">our booking site</a> · then the <a href="hub.html">operator hub</a>. We're the working demo.</li>
+    <li style="margin-bottom:10px"><strong>Wishwood gets 10% referral on every host we introduce</strong> · in perpetuity. Standard for all members, but obviously gives the first host the biggest head start.</li>
+    <li style="margin-bottom:10px"><strong>Wishwood helps shape the early decisions.</strong> While the council isn't yet elected, founding hosts (especially #001) have informal influence on which features get built, which integrations get prioritised, what the AI agents are allowed to do.</li>
+    <li style="margin-bottom:10px"><strong>Wishwood is in the founding-100 lifetime lock</strong> · £20/month forever even if pricing eventually rises for new joiners.</li>
+  </ul>
+</section>
+
+<!-- CTA -->
+<section>
+  <div class="cta-box">
+    <div class="eyebrow">explore the full model</div>
+    <h2>See roost in detail.</h2>
+    <p>The marketplace · the governance constitution · how AI agents run it · where every pound goes · the timeline to fully member-run.</p>
+    <div>
+      <a href="https://sjgant80-hub.github.io/roost/" target="_blank" class="btn primary">Browse roost →</a>
+      <a href="https://sjgant80-hub.github.io/roost/howitworks.html" target="_blank" class="btn secondary">How roost works</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">◊ Wishwood · founding host #001 of roost</div>
+  <p class="footer-text">A sovereign off-grid glamping operation in 16 acres of ancient Kent woodland. Proof of concept for the post-platform model.</p>
+  <div><a href="index.html">Wishwood overview</a> · <a href="howitworks.html">How Wishwood works</a> · <a href="hub.html">Operator hub</a> · <a href="https://sjgant80-hub.github.io/roost/" target="_blank">roost.land</a></div>
+  <div class="footer-seal">◊ · κ = 1 · sovereign · MIT · powered by Konomi · post-platform · the future is co-operative</div>
+</footer>
+
+</body>
+</html>
