@@ -39,21 +39,21 @@ You're on 7 channels but missing the two highest-leverage ones:
 
 The engine closes both gaps. Estimated year-1 uplift: **+£18,200** vs your current setup.
 
-## What it costs you
+## What I'm asking
 
-**£0 from me.** Not now, not later. The system is yours.
-
-Running cost: about **£5/month** in Claude API fees (for the AI draft replies, at your message volume). Everything else runs on free tiers — Cloudflare, GitHub Pages, Stripe takes 1.4% + 20p only on actual direct bookings.
+**Be the live proof.** Wishwood running this for real makes everything else I'm building credible. That's the whole ask.
 
 Setup time: **one afternoon** with you on a call. I connect your real Airbnb iCals, set up the Booking.com listings, wire Stripe to your bank, hand you the keys.
 
-## Why free
+The only ongoing cost on your end is a few pounds a month for the AI service that drafts the replies. Everything else runs on free tiers — Cloudflare, GitHub Pages, Stripe takes 1.4% + 20p only on actual direct bookings.
+
+## Why I'm doing this
 
 Three reasons:
 
 1. **Wishwood is the proof.** I'm building this engine as a template for other small off-grid hosts. Wishwood running it live for real makes everything else I'm doing credible.
 2. **No subscription, no lock-in.** The code is yours, MIT-licensed. If I get hit by a bus, the engine keeps running.
-3. **Future referrals.** If other hosts come asking, you get 10% referral on any who join through you. That's the only money that ever flows.
+3. **Future referrals.** If other hosts come asking, you'd get a referral cut on any who join through you. That's something we can sort later.
 
 ## What I'd love back
 

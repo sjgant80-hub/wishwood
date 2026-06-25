@@ -417,7 +417,17 @@ a{color:var(--ember);text-decoration:none}
 
     <div class="nav-section">Growth</div>
     <div class="nav-item" data-view="journey"><span><span class="glyph">⟶</span> Guest journey</span></div>
+    <div class="nav-item" data-view="posts"><span><span class="glyph">✎</span> Posts &amp; media</span><span class="count">3</span></div>
     <div class="nav-item" data-view="ops"><span><span class="glyph">⚙</span> Off-grid ops</span></div>
+
+    <div class="nav-section">Books</div>
+    <div class="nav-item" data-view="accounts"><span><span class="glyph">£</span> Accounts</span></div>
+    <div class="nav-item" data-view="compliance"><span><span class="glyph">✓</span> Compliance</span><span class="count">8</span></div>
+    <div class="nav-item" data-view="staff"><span><span class="glyph">☉</span> Staff</span><span class="count">2</span></div>
+
+    <div class="nav-section">Brain</div>
+    <div class="nav-item" data-view="agents"><span><span class="glyph">◊</span> Agents · Lia</span></div>
+    <div class="nav-item" data-view="monitor"><span><span class="glyph">●</span> Monitor</span></div>
 
     <div class="nav-section">System</div>
     <div class="nav-item" data-view="settings"><span><span class="glyph">⚙</span> Settings</span></div>
@@ -715,6 +725,282 @@ a{color:var(--ember);text-decoration:none}
             Real telemetry: Victron Cerbo (solar) · ultrasonic tank sensor · scale-under-LPG-bottle · simple log-count tap.
             All wire to a Raspberry Pi at the office, post to this hub via the Cloudflare Worker. Until then, manual update from the Cabins screen.
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POSTS & MEDIA (creator-os) -->
+    <div class="view" id="view-posts">
+      <div class="dash">
+        <div class="dash-title">Posts &amp; media</div>
+        <div class="dash-sub">Drop a video → extract stills → AI writes the caption → one tap publishes to FB, IG, roost · powered by fallseed-creator-os</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+          <div class="card">
+            <div class="card-label">▸ Drop video / image</div>
+            <div style="border:2px dashed var(--border-strong);border-radius:8px;padding:32px;text-align:center;margin-top:10px;background:var(--surface)">
+              <div style="font-size:42px;color:var(--ember);margin-bottom:8px">⬆</div>
+              <div style="color:var(--text);font-size:14px">Drag a phone video here<br><span style="color:var(--muted);font-size:12px">or tap to pick from gallery</span></div>
+              <button class="btn ghost" style="margin-top:14px" onclick="alert('Demo: would open file picker · in live mode extracts 6 stills automatically using browser canvas API')">Pick file</button>
+            </div>
+            <div style="margin-top:14px;color:var(--muted);font-size:12px">Stills extract locally · 6 best frames at scene-change detection · no upload until you publish</div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">✎ AI-drafted post</div>
+            <div style="background:var(--surface);padding:14px;border-radius:5px;margin-top:10px;font-size:14px;line-height:1.6;color:var(--linen)">
+              Bluebells out a week early this year · the woods are thick with them. Booking the yurt for May? You'll catch the carpet at its peak. <br><br>The Hobbit Hut + Caravan have Sep dates wide open · midweek £85, weekend £110, anniversary energy on tap. <br><br>FB-follower code WOOD10 = 10% off direct.<br><br>#offgridglamping #kentwoodland #wishwood #bluebellwood
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+              <button class="btn">▸ Publish to FB</button>
+              <button class="btn ghost">+ IG story</button>
+              <button class="btn ghost">+ Roost feed</button>
+              <button class="btn ghost">Edit caption</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">⌬</span> 3D media · agent-readable</div>
+        <table class="table">
+          <thead><tr><th>Asset</th><th>Type</th><th>Where</th><th>Agents can use it</th></tr></thead>
+          <tbody>
+            <tr><td>Hobbit Hut · drone flyover</td><td>MP4</td><td><code style="font-size:11px;color:var(--gold)">media/hobbit-drone.mp4</code></td><td>✓ via media.json</td></tr>
+            <tr><td>Yurt · 360° interior</td><td>Equirectangular</td><td><code style="font-size:11px;color:var(--gold)">media/yurt-360.jpg</code></td><td>✓ AI can describe to guest</td></tr>
+            <tr><td>Caravan · walk-through</td><td>Three.js scene</td><td><code style="font-size:11px;color:var(--gold)">media/caravan-3d.html</code></td><td>✓ interactive</td></tr>
+            <tr><td>Site map · ancient woodland</td><td>SVG</td><td><code style="font-size:11px;color:var(--gold)">media/site-map.svg</code></td><td>✓ navigable</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px"><a href="media.html" target="_blank" style="color:var(--ember)">→ Open media tools</a></p>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS (fallaccount) -->
+    <div class="view" id="view-accounts">
+      <div class="dash">
+        <div class="dash-title">Accounts <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· powered by fallaccount</span></div>
+        <div class="dash-sub">Every booking auto-logs as revenue · OTA fees deducted automatically · expenses captured by photo · P&amp;L live · VAT-ready · zero third-party SaaS</div>
+
+        <div class="kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px">
+          <div class="kpi"><div class="kpi-label">Revenue YTD</div><div class="kpi-val">£32,840</div></div>
+          <div class="kpi"><div class="kpi-label">OTA fees paid</div><div class="kpi-val" style="color:var(--bad)">−£4,248</div></div>
+          <div class="kpi"><div class="kpi-label">Direct take</div><div class="kpi-val" style="color:var(--leaf)">£28,592</div></div>
+          <div class="kpi"><div class="kpi-label">VAT collected Q3</div><div class="kpi-val">£3,219</div></div>
+        </div>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">▦</span> Recent ledger entries</div>
+        <table class="table">
+          <thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Cabin</th><th>Gross</th><th>Fee</th><th>Net</th></tr></thead>
+          <tbody>
+            <tr><td>24 Jun</td><td>Revenue · booking</td><td>Airbnb</td><td>Yurt</td><td>£270</td><td style="color:var(--bad)">−£41.85</td><td style="color:var(--leaf)">£228.15</td></tr>
+            <tr><td>23 Jun</td><td>Revenue · booking</td><td>Direct (Stripe)</td><td>Caravan</td><td>£295</td><td style="color:var(--bad)">−£4.33</td><td style="color:var(--leaf)">£290.67</td></tr>
+            <tr><td>22 Jun</td><td>Revenue · booking</td><td>Pitchup</td><td>Yurt</td><td>£1,365</td><td style="color:var(--bad)">−£109.20</td><td style="color:var(--leaf)">£1,255.80</td></tr>
+            <tr><td>21 Jun</td><td>Expense · receipt scanned</td><td>Wood supplier</td><td>—</td><td>−£86.00</td><td>—</td><td style="color:var(--bad)">−£86.00</td></tr>
+            <tr><td>20 Jun</td><td>Revenue · review +tip</td><td>Direct</td><td>Hobbit</td><td>£20</td><td>—</td><td style="color:var(--leaf)">£20.00</td></tr>
+            <tr><td>19 Jun</td><td>Expense · receipt scanned</td><td>Compost loo service</td><td>All</td><td>−£140.00</td><td>—</td><td style="color:var(--bad)">−£140.00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px">
+          <div class="card">
+            <div class="card-label">▸ Quick capture</div>
+            <div style="color:var(--text);font-size:14px;margin-top:8px;line-height:1.65">Snap a receipt with your phone · AI extracts amount, supplier, category, VAT · adds to ledger · originals filed in your Drive.</div>
+            <div style="margin-top:14px;display:flex;gap:8px"><button class="btn">📷 Snap receipt</button><button class="btn ghost">Bulk import</button></div>
+          </div>
+          <div class="card">
+            <div class="card-label">⌬ VAT &amp; year-end</div>
+            <div style="color:var(--text);font-size:14px;margin-top:8px;line-height:1.65">Quarterly VAT return ready as CSV · year-end accounts as PDF · all data is yours · export anytime · no accountant lock-in.</div>
+            <div style="margin-top:14px;display:flex;gap:8px"><button class="btn">Export Q3 VAT</button><button class="btn ghost">Year-end pack</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLIANCE (fallseed-compliance) -->
+    <div class="view" id="view-compliance">
+      <div class="dash">
+        <div class="dash-title">Compliance <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· powered by fallseed-compliance</span></div>
+        <div class="dash-sub">Every certificate · every renewal · every legal box-tick · auto-reminders 60 days out · paper trail in your Drive</div>
+
+        <div class="kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px">
+          <div class="kpi"><div class="kpi-label">Active certs</div><div class="kpi-val">8</div></div>
+          <div class="kpi"><div class="kpi-label">Renew within 60d</div><div class="kpi-val" style="color:var(--ember)">2</div></div>
+          <div class="kpi"><div class="kpi-label">Overdue</div><div class="kpi-val" style="color:var(--leaf)">0</div></div>
+          <div class="kpi"><div class="kpi-label">GDPR status</div><div class="kpi-val" style="color:var(--leaf)">✓ Compliant</div></div>
+        </div>
+
+        <table class="table" style="margin-top:24px">
+          <thead><tr><th>Certificate</th><th>Status</th><th>Issued</th><th>Renews</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>Public liability insurance (£5m)</td><td><span class="dot"></span> Live</td><td>Mar 2026</td><td>Mar 2027</td><td><button class="btn ghost">View</button></td></tr>
+            <tr><td>Gas Safe (BBQ + hob)</td><td><span class="dot"></span> Live</td><td>Apr 2026</td><td>Apr 2027</td><td><button class="btn ghost">View</button></td></tr>
+            <tr><td>PAT testing (all electricals)</td><td><span class="dot warn"></span> Renew soon</td><td>Jul 2025</td><td><b style="color:var(--ember)">Jul 2026 (4 wks)</b></td><td><button class="btn">Book engineer</button></td></tr>
+            <tr><td>Fire risk assessment</td><td><span class="dot"></span> Live</td><td>Jan 2026</td><td>Jan 2027</td><td><button class="btn ghost">View</button></td></tr>
+            <tr><td>Drinking water testing (spring)</td><td><span class="dot warn"></span> Renew soon</td><td>Aug 2025</td><td><b style="color:var(--ember)">Aug 2026 (6 wks)</b></td><td><button class="btn">Book test</button></td></tr>
+            <tr><td>Composting loo · environment permit</td><td><span class="dot"></span> Live</td><td>2024</td><td>2029</td><td><button class="btn ghost">View</button></td></tr>
+            <tr><td>Council tourism registration</td><td><span class="dot"></span> Live</td><td>2025</td><td>Annual auto-renew</td><td><button class="btn ghost">View</button></td></tr>
+            <tr><td>GDPR / Privacy notice on book.html</td><td><span class="dot"></span> Live · v3</td><td>Jun 2026</td><td>Review yearly</td><td><button class="btn ghost">View</button></td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">⟳</span> AI auto-reminders</div>
+        <div class="card">
+          <div style="color:var(--text);font-size:14px;line-height:1.7">AI scans cert renewal dates daily · 60 days before expiry sends a draft renewal email + booking link for the relevant tradesperson · you tap approve. <em>You'll never get a "your certificate has expired" surprise letter again.</em></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAFF (fallhr) -->
+    <div class="view" id="view-staff">
+      <div class="dash">
+        <div class="dash-title">Staff &amp; contractors <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· powered by fallhr</span></div>
+        <div class="dash-sub">Cleaner · maintenance · handover schedule · payslips · NI · holiday · sick · all sovereign · no Sage subscription</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)">Sue · cleaner</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;margin-top:2px">SELF-EMPLOYED · INVOICED MONTHLY</div>
+              </div>
+              <span style="background:var(--moss);color:var(--leaf);font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;letter-spacing:0.1em">ACTIVE</span>
+            </div>
+            <div style="margin-top:14px;font-size:13px;color:var(--text);line-height:1.85">
+              <div><b style="color:var(--linen)">Rate:</b> £18/hr · £45 flat per cabin turnaround</div>
+              <div><b style="color:var(--linen)">This month:</b> 18 turnarounds · 4 deep cleans · <b style="color:var(--ember)">£948</b></div>
+              <div><b style="color:var(--linen)">Next slot:</b> Today 11:30 · Caravan (Anna &amp; Mike out)</div>
+              <div><b style="color:var(--linen)">Auto-notified:</b> ✓ Schedule pushed daily via SMS</div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px"><button class="btn">Generate invoice</button><button class="btn ghost">View schedule</button></div>
+          </div>
+
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)">Pete · maintenance</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;margin-top:2px">ON-CALL · BILLED PER JOB</div>
+              </div>
+              <span style="background:var(--moss);color:var(--leaf);font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;letter-spacing:0.1em">ACTIVE</span>
+            </div>
+            <div style="margin-top:14px;font-size:13px;color:var(--text);line-height:1.85">
+              <div><b style="color:var(--linen)">Rate:</b> £30/hr + parts at cost</div>
+              <div><b style="color:var(--linen)">This month:</b> 3 jobs · 7.5 hrs · <b style="color:var(--ember)">£256</b></div>
+              <div><b style="color:var(--linen)">Open jobs:</b> 1 (yurt door catch · raised yesterday)</div>
+              <div><b style="color:var(--linen)">Response time avg:</b> 4hrs</div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px"><button class="btn">Log new job</button><button class="btn ghost">Job history</button></div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">▦</span> Monthly summary · auto-generated</div>
+        <table class="table">
+          <thead><tr><th>Month</th><th>Sue (hrs · £)</th><th>Pete (jobs · £)</th><th>Total labour</th><th>% of revenue</th></tr></thead>
+          <tbody>
+            <tr><td>Jun 2026 (MTD)</td><td>62 · £948</td><td>3 · £256</td><td><b style="color:var(--ember)">£1,204</b></td><td>14.2%</td></tr>
+            <tr><td>May 2026</td><td>78 · £1,196</td><td>5 · £390</td><td>£1,586</td><td>15.8%</td></tr>
+            <tr><td>Apr 2026</td><td>54 · £820</td><td>2 · £180</td><td>£1,000</td><td>13.1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AGENTS · LIA + MACCubeFACE -->
+    <div class="view" id="view-agents">
+      <div class="dash">
+        <div class="dash-title">Brain · Lia + MACCubeFACE(127)</div>
+        <div class="dash-sub">Lia is the conversational face · MACCubeFACE is the 127-agent brain organised by 8 specialist groups · you prompt, they execute, you approve</div>
+
+        <div class="card" style="margin-top:18px;border-left:4px solid var(--ember)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen)">◊ Lia · always-on assistant</div>
+            <span style="background:var(--moss);color:var(--leaf);font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;letter-spacing:0.1em">ONLINE</span>
+          </div>
+          <div style="background:var(--surface);padding:12px 14px;border-left:3px solid var(--ember);border-radius:0 4px 4px 0;margin:10px 0;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--linen)">
+            ▸ what's my occupancy next 30 days?
+          </div>
+          <div style="background:var(--moss);padding:10px 14px;border-radius:4px;font-size:13px;color:var(--linen);line-height:1.65">
+            <b>Hobbit:</b> 18/30 (60%) · 4 inquiries pending<br>
+            <b>Caravan:</b> 24/30 (80%) · 1 inquiry pending<br>
+            <b>Yurt:</b> 26/30 (87%) · fully booked Bank Holiday<br>
+            <b>Overall:</b> 75.5% · best month in 18mo · expected revenue £4,720
+          </div>
+          <div style="margin-top:14px"><input type="text" placeholder="Ask Lia anything · or tap a quick prompt below" style="width:100%;background:var(--surface);border:1px solid var(--border);padding:10px 12px;border-radius:4px;color:var(--text);font-family:inherit;font-size:13px"></div>
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn ghost" style="font-size:11px">draft Sept newsletter</button>
+            <button class="btn ghost" style="font-size:11px">log Sue's hours this week</button>
+            <button class="btn ghost" style="font-size:11px">show me overdue invoices</button>
+            <button class="btn ghost" style="font-size:11px">what's the weather Sat?</button>
+            <button class="btn ghost" style="font-size:11px">find a cleaner for Aug 14</button>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">⌬</span> MACCubeFACE(127) · the brain · 8 specialist groups</div>
+        <div class="dash-sub" style="margin-bottom:12px">1 Ω orchestrator + 8 specialist groups × 16 agents + 1 contrarian (#127) = 127 agents · each group has a lane · the contrarian challenges every consensus</div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+          <div class="card" style="padding:14px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen)">✉ Inbox · 16 agents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Triage · sentiment · draft · routing</div><div style="font-size:11px;color:var(--leaf);margin-top:6px">▸ 142 handled this week</div></div>
+          <div class="card" style="padding:14px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen)">▦ Calendar · 16 agents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">iCal sync · double-booking guard · holds</div><div style="font-size:11px;color:var(--leaf);margin-top:6px">▸ 0 conflicts in 90d</div></div>
+          <div class="card" style="padding:14px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen)">£ Accounts · 16 agents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Revenue log · expenses · VAT · P&amp;L</div><div style="font-size:11px;color:var(--leaf);margin-top:6px">▸ 100% auto-logged</div></div>
+          <div class="card" style="padding:14px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen)">✓ Compliance · 16 agents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Cert tracking · renewal alerts · GDPR</div><div style="font-size:11px;color:var(--leaf);margin-top:6px">▸ 2 renewals queued</div></div>
+          <div class="card" style="padding:14px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen)">☉ Staff · 16 agents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Schedules · payroll · gigs · invoices</div><div style="font-size:11px;color:var(--leaf);margin-top:6px">▸ Sue + Pete tracked</div></div>
+          <div class="card" style="padding:14px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen)">✎ Marketing · 16 agents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Posts · SEO · GEO · social</div><div style="font-size:11px;color:var(--leaf);margin-top:6px">▸ 3 posts in queue</div></div>
+          <div class="card" style="padding:14px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen)">⚙ Ops · 16 agents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Solar · water · weather · alerts</div><div style="font-size:11px;color:var(--leaf);margin-top:6px">▸ Battery 86%</div></div>
+          <div class="card" style="padding:14px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen)">⟶ Guests · 16 agents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Journey · profiles · personalisation</div><div style="font-size:11px;color:var(--leaf);margin-top:6px">▸ 73 active profiles</div></div>
+        </div>
+
+        <div class="card" style="margin-top:18px;border-left:4px solid var(--gold)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold)">⊘ Contrarian · agent #127</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px">Challenges every consensus the other 126 reach · prevents groupthink · the brake pedal</div>
+            </div>
+            <span style="background:var(--surface);color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;letter-spacing:0.1em">SOLO</span>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">⟳</span> Engine · BYOK or Groq</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div class="card" style="padding:16px;border:2px solid var(--ember)"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen)">Groq</div><div style="font-size:11px;color:var(--leaf);margin-top:4px;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em">● ACTIVE · FREE TIER</div><div style="font-size:12px;color:var(--muted);margin-top:6px">Llama 3.3 70B · fastest · free</div></div>
+          <div class="card" style="padding:16px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen)">Anthropic</div><div style="font-size:11px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em">○ BYOK · STANDBY</div><div style="font-size:12px;color:var(--muted);margin-top:6px">Claude · highest quality · BYO key</div></div>
+          <div class="card" style="padding:16px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen)">Gemini</div><div style="font-size:11px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em">○ BYOK · 1500/DAY FREE</div><div style="font-size:12px;color:var(--muted);margin-top:6px">Google · solid middle ground</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONITOR (fallseed-meta) -->
+    <div class="view" id="view-monitor">
+      <div class="dash">
+        <div class="dash-title">System monitor <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· powered by fallseed-meta</span></div>
+        <div class="dash-sub">Is everything actually working · one green/amber/red glance · you check once a day for 30 seconds</div>
+
+        <div class="kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px">
+          <div class="kpi"><div class="kpi-label">Uptime 30d</div><div class="kpi-val" style="color:var(--leaf)">99.97%</div></div>
+          <div class="kpi"><div class="kpi-label">Channels syncing</div><div class="kpi-val" style="color:var(--leaf)">7/7</div></div>
+          <div class="kpi"><div class="kpi-label">Last error</div><div class="kpi-val" style="font-size:18px">14d ago</div></div>
+          <div class="kpi"><div class="kpi-label">Alerts open</div><div class="kpi-val" style="color:var(--leaf)">0</div></div>
+        </div>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">≋</span> Live health</div>
+        <table class="table">
+          <thead><tr><th>Component</th><th>Status</th><th>Last check</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Cloudflare Worker · main</td><td><span class="dot"></span> Green</td><td>30s ago</td><td>p50 latency 47ms · 0 errors</td></tr>
+            <tr><td>iCal sync · Airbnb (3 listings)</td><td><span class="dot"></span> Green</td><td>52s ago</td><td>3/3 fetched · 0 changes</td></tr>
+            <tr><td>iCal sync · Booking.com</td><td><span class="dot warn"></span> Off</td><td>—</td><td>Awaiting connection in step 8</td></tr>
+            <tr><td>iCal sync · Pitchup</td><td><span class="dot"></span> Green</td><td>41s ago</td><td>1 listing · synced</td></tr>
+            <tr><td>Stripe webhook</td><td><span class="dot warn"></span> Awaiting key</td><td>—</td><td>Pending wire-in</td></tr>
+            <tr><td>Gmail IMAP · Airbnb msgs</td><td><span class="dot"></span> Green</td><td>1m ago</td><td>0 new in last poll</td></tr>
+            <tr><td>FB Page webhook</td><td><span class="dot"></span> Green</td><td>2m ago</td><td>Subscribed · 1 msg today</td></tr>
+            <tr><td>IG DM webhook</td><td><span class="dot"></span> Green</td><td>2m ago</td><td>Subscribed</td></tr>
+            <tr><td>WhatsApp Cloud API</td><td><span class="dot"></span> Green</td><td>1m ago</td><td>Verified · 5 msgs today</td></tr>
+            <tr><td>AI engine (Groq)</td><td><span class="dot"></span> Green</td><td>15s ago</td><td>p50 1.2s · 142 drafts/24hr</td></tr>
+            <tr><td>Booking site (Pages)</td><td><span class="dot"></span> Green</td><td>10s ago</td><td>200 · 1.4s 4G load</td></tr>
+            <tr><td>Stays.json (agent dossier)</td><td><span class="dot"></span> Green</td><td>10s ago</td><td>200 · last fetched by Perplexity 3h ago</td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-title" style="margin-top:30px"><span class="glyph">⚠</span> Recent alerts</div>
+        <div class="card">
+          <div style="color:var(--muted);font-size:14px;font-style:italic">Nothing in the last 14 days. Last alert: "Solar battery below 30%" auto-cleared after 4 hours of sun.</div>
         </div>
       </div>
     </div>
