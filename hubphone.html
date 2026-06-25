@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no">
+<title>Wishwood · duty phone</title>
+<meta name="theme-color" content="#18171a">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Wishwood Duty","short_name":"Wishwood","start_url":".","display":"standalone","background_color":"%2318171a","theme_color":"%23c97a3d","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect width=%22192%22 height=%22192%22 fill=%22%2318171a%22/%3E%3Ctext x=%2296%22 y=%22132%22 font-family=%22serif%22 font-size=%22128%22 text-anchor=%22middle%22 fill=%22%23c97a3d%22%3E◊%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+<style>
+:root{
+  --void:#18171a;--deep:#1f1e22;--surface:#27262b;--raised:#302f35;
+  --moss:#2d4a3e;--leaf:#6b9d6f;--ember:#c97a3d;--gold:#c9a84c;
+  --linen:#ebe5d6;--text:#d4cfc8;--muted:#7a7681;
+  --border:rgba(235,229,214,0.12);--border-strong:rgba(235,229,214,0.22);
+  --urgent:#c75a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--void);color:var(--text);
+  font-family:-apple-system,system-ui,sans-serif;font-size:17px;line-height:1.55;
+  min-height:100vh;display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;overscroll-behavior:none;
+}
+.app-header{
+  background:var(--deep);border-bottom:1px solid var(--border);
+  padding:18px 22px;display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:50;
+}
+.app-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);display:flex;align-items:center;gap:8px}
+.app-title .glyph{color:var(--ember);font-size:24px}
+.app-today{font-family:-apple-system,system-ui,sans-serif;font-size:12px;color:var(--muted);letter-spacing:0.04em;text-transform:uppercase}
+
+.tabs{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  background:var(--deep);border-bottom:1px solid var(--border);
+  position:sticky;top:62px;z-index:40;
+}
+.tab{
+  text-align:center;padding:16px 0;
+  font-family:-apple-system,system-ui,sans-serif;font-size:13px;font-weight:600;
+  color:var(--muted);background:transparent;border:0;cursor:pointer;
+  border-bottom:3px solid transparent;
+}
+.tab.active{color:var(--ember);border-bottom-color:var(--ember)}
+.tab .badge{
+  display:inline-block;background:var(--ember);color:var(--void);
+  font-size:11px;padding:2px 7px;border-radius:10px;margin-left:6px;font-weight:700;
+}
+.tab.active .badge{background:var(--ember)}
+.tab .urgent-badge{background:var(--urgent);color:white}
+
+main{flex:1;padding:14px}
+
+.section-header{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin:14px 4px 10px;
+}
+.section-title{
+  font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);
+}
+.section-count{font-size:12px;color:var(--muted);font-family:-apple-system,system-ui,sans-serif}
+
+.card{
+  background:var(--deep);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;margin-bottom:12px;
+}
+.card.urgent{border-left:5px solid var(--urgent);background:linear-gradient(90deg,rgba(199,90,74,0.08),var(--deep))}
+.card.arriving{border-left:5px solid var(--ember)}
+.card.leaving{border-left:5px solid var(--moss)}
+
+/* Arrival card */
+.arr-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.arr-time{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--ember);font-weight:500}
+.arr-cabin{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase}
+.arr-guest{font-size:17px;color:var(--linen);font-weight:600;margin-bottom:6px}
+.arr-detail{font-size:13px;color:var(--text);line-height:1.6}
+.arr-detail .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;width:64px}
+.arr-gate{
+  background:var(--moss);color:var(--linen);
+  padding:10px 14px;border-radius:6px;margin-top:10px;
+  font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.2em;
+  text-align:center;font-weight:700;
+}
+.arr-notes{
+  background:var(--surface);border:1px dashed var(--border-strong);
+  padding:10px 12px;border-radius:5px;margin-top:8px;
+  font-size:13px;color:var(--text);font-style:italic;
+}
+.arr-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.btn{
+  padding:11px 12px;border:0;border-radius:6px;
+  font-family:-apple-system,system-ui,sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;text-decoration:none;text-align:center;display:block;
+}
+.btn-primary{background:var(--ember);color:var(--void)}
+.btn-primary:active{background:#d68850}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:active{background:var(--raised)}
+.btn-checkin{background:var(--leaf);color:var(--void)}
+.btn-checkin:active{background:#7daa81}
+
+/* Message card */
+.msg-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.msg-channel{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  padding:3px 7px;border-radius:3px;background:var(--surface);color:var(--muted);
+}
+.msg-channel.urgent{background:var(--urgent);color:white}
+.msg-channel.airbnb{color:#ff5a5f}
+.msg-channel.whatsapp{color:#25d366}
+.msg-channel.booking{color:#003580;background:rgba(255,255,255,0.08)}
+.msg-channel.facebook{color:#1877f2}
+.msg-channel.instagram{color:#e4405f}
+.msg-channel.direct{color:var(--ember)}
+.msg-time{font-size:11px;color:var(--muted)}
+.msg-from{font-size:15px;color:var(--linen);font-weight:600}
+.msg-preview{font-size:14px;color:var(--text);line-height:1.6;margin-top:6px}
+.msg-draft{
+  background:var(--ember-glow);background:rgba(201,122,61,0.08);
+  border-left:3px solid var(--ember);
+  padding:10px 12px;border-radius:0 5px 5px 0;margin-top:10px;
+  font-size:13px;color:var(--text);line-height:1.65;font-style:italic;
+}
+.msg-draft-label{
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ember);
+  letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;font-style:normal;
+}
+.msg-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
+.msg-actions .btn{padding:9px 6px;font-size:12px}
+
+/* Emergency tab */
+.emerg-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:8px}
+.emerg-card{
+  background:var(--deep);border:2px solid var(--border-strong);border-radius:12px;
+  padding:20px 22px;
+}
+.emerg-card.alert{border-color:var(--urgent);background:linear-gradient(135deg,rgba(199,90,74,0.12),var(--deep))}
+.emerg-card h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:6px;font-weight:400}
+.emerg-card p{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:12px}
+.emerg-card .btn{padding:14px;font-size:15px}
+.emerg-call{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Bottom CTA */
+.bottom-info{
+  margin:20px 4px;padding:14px 16px;
+  background:var(--deep);border:1px dashed var(--border);border-radius:6px;
+  font-size:12px;color:var(--muted);text-align:center;line-height:1.7;
+}
+
+/* Empty */
+.empty{
+  text-align:center;padding:40px 20px;color:var(--muted);
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;
+}
+
+@media (max-width:380px){
+  .app-header{padding:14px 16px}.app-title{font-size:18px}
+  main{padding:10px}.card{padding:14px}
+  .arr-time{font-size:20px}.arr-guest{font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-title"><span class="glyph">◊</span>Wishwood · duty</div>
+  <div class="app-today" id="today"></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="today" onclick="showTab('today')">Today<span class="badge" id="badge-today">5</span></button>
+  <button class="tab" data-tab="messages" onclick="showTab('messages')">Messages<span class="badge urgent-badge" id="badge-msgs">1</span></button>
+  <button class="tab" data-tab="emergency" onclick="showTab('emergency')">Help</button>
+</div>
+
+<main>
+
+  <!-- TAB: TODAY -->
+  <div id="tab-today">
+    <div class="section-header">
+      <div class="section-title">Arriving today</div>
+      <div class="section-count">2 check-ins</div>
+    </div>
+
+    <div class="card arriving">
+      <div class="arr-top">
+        <div class="arr-time">15:00 · check-in</div>
+        <div class="arr-cabin">⌬ HOBBIT HUT</div>
+      </div>
+      <div class="arr-guest">Marcus & family (Marcus T.)</div>
+      <div class="arr-detail"><span class="label">Booking</span> Airbnb · 4 nights · £380 paid</div>
+      <div class="arr-detail"><span class="label">Guests</span> 2 adults + 1 child (Holly, age 4)</div>
+      <div class="arr-detail"><span class="label">Dogs</span> 1 collie · "Pip" · friendly</div>
+      <div class="arr-detail"><span class="label">Notes</span> Wife coeliac · self-catering · GF café list in welcome folder</div>
+      <div class="arr-detail"><span class="label">Car</span> Silver Toyota · KE71 ABC</div>
+      <div class="arr-gate">GATE  4 7 2 0 #</div>
+      <div class="arr-notes">🪵 Extra log net pre-stocked · wife mentioned cold sensitivity in pre-arrival message</div>
+      <div class="arr-actions">
+        <a href="tel:07XXXXXXXXX" class="btn btn-primary">Call Marcus</a>
+        <button class="btn btn-checkin" onclick="confirmCheckin('Marcus')">✓ Checked in</button>
+      </div>
+    </div>
+
+    <div class="card arriving">
+      <div class="arr-top">
+        <div class="arr-time">16:30 · check-in</div>
+        <div class="arr-cabin">◊ FAMILY YURT</div>
+      </div>
+      <div class="arr-guest">The Patel Family</div>
+      <div class="arr-detail"><span class="label">Booking</span> Pitchup · 7 nights · £1,365 paid</div>
+      <div class="arr-detail"><span class="label">Guests</span> 4 adults + 2 children (boys, 8 & 11)</div>
+      <div class="arr-detail"><span class="label">Dogs</span> No</div>
+      <div class="arr-detail"><span class="label">Notes</span> Kids want fire-pit · marshmallows pre-stocked · vegetarian</div>
+      <div class="arr-detail"><span class="label">Car</span> Black Land Rover · BD22 XYZ</div>
+      <div class="arr-gate">GATE  4 7 2 0 #</div>
+      <div class="arr-actions">
+        <a href="tel:07XXXXXXXXX" class="btn btn-primary">Call Mr Patel</a>
+        <button class="btn btn-checkin" onclick="confirmCheckin('Patel')">✓ Checked in</button>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:24px">
+      <div class="section-title">Leaving today</div>
+      <div class="section-count">1 check-out</div>
+    </div>
+
+    <div class="card leaving">
+      <div class="arr-top">
+        <div class="arr-time">11:00 · check-out</div>
+        <div class="arr-cabin">◬ CARAVAN</div>
+      </div>
+      <div class="arr-guest">Anna & Mike</div>
+      <div class="arr-detail"><span class="label">Stayed</span> 3 nights · direct booking · £295</div>
+      <div class="arr-detail"><span class="label">Cleaner</span> Sue · 11:30 slot booked · turn-around tight before next guest</div>
+      <div class="arr-actions">
+        <button class="btn btn-checkin" onclick="confirmCheckout('Anna')">✓ Cabin clear</button>
+        <button class="btn btn-secondary" onclick="alert('Cleaner Sue notified · ETA 11:30')">Notify cleaner</button>
+      </div>
+    </div>
+
+    <div class="bottom-info">
+      ◊ Tomorrow · 0 arrivals · 2 in-house · weather: light rain AM, sun PM
+    </div>
+  </div>
+
+  <!-- TAB: MESSAGES -->
+  <div id="tab-messages" style="display:none">
+    <div class="section-header">
+      <div class="section-title">Needs your eyes</div>
+      <div class="section-count">5 unread · 1 urgent</div>
+    </div>
+
+    <div class="card urgent">
+      <div class="msg-top">
+        <span class="msg-channel urgent">▸ URGENT</span>
+        <span class="msg-time">3 min ago</span>
+      </div>
+      <div class="msg-from">James K. · yurt guest</div>
+      <div class="msg-preview">Gate code doesn't work · we're parked at the gate</div>
+      <div class="msg-draft">
+        <div class="msg-draft-label">◊ AI draft · in Chrissy's voice</div>
+        James — so sorry, hold tight · gate code resets at midnight sometimes after a battery cycle. Try <strong>4720#</strong> (with the hash). If that fails I'll be down in 5 min — call/text me on 07XXX XXXXXX. The yurt key is in the little wooden owl by the door once you're through.<br><br>Chrissy
+      </div>
+      <div class="msg-actions">
+        <button class="btn btn-primary" onclick="approveSend('James K.')">Approve · send</button>
+        <button class="btn btn-secondary">Edit</button>
+        <a href="tel:07XXXXXXXXX" class="btn btn-checkin" style="background:var(--urgent);color:white">Call</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="msg-top">
+        <span class="msg-channel whatsapp">whatsapp</span>
+        <span class="msg-time">14 min</span>
+      </div>
+      <div class="msg-from">Sarah M.</div>
+      <div class="msg-preview">Looking at Aug 14-17 for our anniversary in the caravan. Is the wood burner easy to get going?</div>
+      <div class="msg-draft">
+        <div class="msg-draft-label">◊ AI draft</div>
+        Hi Sarah · the burner's lovely and simple — kindling, firelighters, and birch logs all waiting by the door, plus a one-page how-to that's never failed a novice. Aug 14-17 in the caravan is currently free · want me to hold those dates 24hrs while you decide?<br><br>Chrissy
+      </div>
+      <div class="msg-actions">
+        <button class="btn btn-primary" onclick="approveSend('Sarah M.')">Approve · send</button>
+        <button class="btn btn-secondary">Edit</button>
+        <button class="btn btn-secondary">Skip</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="msg-top">
+        <span class="msg-channel facebook">facebook</span>
+        <span class="msg-time">42 min</span>
+      </div>
+      <div class="msg-from">Emma R.</div>
+      <div class="msg-preview">Love your page! Trying to find a quiet weekend for me and my partner mid-September. What's available?</div>
+      <div class="msg-draft">
+        <div class="msg-draft-label">◊ AI draft</div>
+        Hi Emma · thanks for following us · September is wide open. The Vintage Caravan (couples) has Sep 5-7, 12-14, 19-21 free. Mid-week (Mon-Thu) is £85/night vs £110 weekend. Book direct via wishwood.co.uk/book and the FB-follower code WOOD10 takes 10% off · let me know.<br><br>Chrissy
+      </div>
+      <div class="msg-actions">
+        <button class="btn btn-primary" onclick="approveSend('Emma R.')">Approve · send</button>
+        <button class="btn btn-secondary">Edit</button>
+        <button class="btn btn-secondary">Skip</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="msg-top">
+        <span class="msg-channel airbnb">airbnb</span>
+        <span class="msg-time">1 hr</span>
+      </div>
+      <div class="msg-from">Linda C. · 5★ review just posted</div>
+      <div class="msg-preview">"The most peaceful weekend we've had in years · the bluebells, the fire pit at night, Chrissy — everything was perfect. We'll be back."</div>
+      <div class="msg-draft">
+        <div class="msg-draft-label">◊ AI draft · review reply</div>
+        Linda · thank you so much · so glad the bluebells were out for you · come back any time, returning guests get the quiet mid-week rate · just drop me a message direct.<br><br>Chrissy
+      </div>
+      <div class="msg-actions">
+        <button class="btn btn-primary" onclick="approveSend('Linda C.')">Approve · post</button>
+        <button class="btn btn-secondary">Edit</button>
+        <button class="btn btn-secondary">Skip</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="msg-top">
+        <span class="msg-channel direct">direct</span>
+        <span class="msg-time">3 hrs</span>
+      </div>
+      <div class="msg-from">David & Helen · booking inquiry</div>
+      <div class="msg-preview">Family of 4 + 2 dogs · Oct 25-30 (5 nights) · hobbit hut for kids? are dogs ok?</div>
+      <div class="msg-draft">
+        <div class="msg-draft-label">◊ AI draft</div>
+        Hi David & Helen · yes, two well-behaved dogs welcome (£15/dog flat) · outdoor warm-water dog rinse by the boiler shed. Hobbit Hut sleeps 3 — for a family of 4 you'd want the Family Yurt (£135 base × 5 = £675 + £30 dogs = £705 · long-stay drops to £650 total). Want me to hold the yurt 48hrs?<br><br>Chrissy
+      </div>
+      <div class="msg-actions">
+        <button class="btn btn-primary" onclick="approveSend('David & Helen')">Approve · send</button>
+        <button class="btn btn-secondary">Edit</button>
+        <button class="btn btn-secondary">Skip</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAB: EMERGENCY -->
+  <div id="tab-emergency" style="display:none">
+
+    <div class="section-header">
+      <div class="section-title">If something's wrong</div>
+      <div class="section-count">help</div>
+    </div>
+
+    <div class="emerg-grid">
+
+      <div class="emerg-card alert">
+        <h3>🚨 Guest emergency</h3>
+        <p>Injury, fire, electricity out, guest threatening, anything serious.</p>
+        <div class="emerg-call">
+          <a href="tel:999" class="btn btn-primary" style="background:var(--urgent)">Call 999</a>
+          <a href="tel:07XXXXXXXXX" class="btn btn-primary">Call Chrissy</a>
+        </div>
+      </div>
+
+      <div class="emerg-card">
+        <h3>🔧 Something broken</h3>
+        <p>Tap on, no hot water, gas bottle empty, gate stuck, propane low.</p>
+        <a href="tel:07XXXXXXXXX" class="btn btn-secondary">Call maintenance · Pete</a>
+      </div>
+
+      <div class="emerg-card">
+        <h3>💧 Off-grid issue</h3>
+        <p>Solar low, water pump down, compost loo full, battery flat.</p>
+        <a href="hub.html#ops" class="btn btn-secondary">Open ops dashboard →</a>
+      </div>
+
+      <div class="emerg-card">
+        <h3>💬 Guest complaint · serious</h3>
+        <p>Anything you don't want to handle alone. Chrissy on call until 9pm.</p>
+        <div class="emerg-call">
+          <a href="tel:07XXXXXXXXX" class="btn btn-primary">Call Chrissy</a>
+          <a href="sms:07XXXXXXXXX" class="btn btn-secondary">Text Chrissy</a>
+        </div>
+      </div>
+
+      <div class="emerg-card">
+        <h3>📞 Cleaner needed early</h3>
+        <p>Guest left early, mess to deal with, urgent turn-around.</p>
+        <a href="tel:07XXXXXXXXX" class="btn btn-secondary">Call Sue</a>
+      </div>
+
+      <div class="emerg-card">
+        <h3>❓ I don't know what to do</h3>
+        <p>Always call. Always. No question is silly.</p>
+        <a href="tel:07XXXXXXXXX" class="btn btn-primary">Call Chrissy now</a>
+      </div>
+
+    </div>
+
+    <div class="bottom-info" style="margin-top:30px">
+      ◊ Wishwood duty phone · simplified hub view · full operator hub at <a href="hub.html" style="color:var(--ember)">hub.html</a>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+function showTab(t){
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.tab === t));
+  document.querySelectorAll('#tab-today, #tab-messages, #tab-emergency').forEach(x => x.style.display = 'none');
+  document.getElementById('tab-'+t).style.display = 'block';
+  window.scrollTo({top:0});
+}
+function approveSend(name){
+  if (confirm(`Send the reply to ${name}?`)) {
+    alert(`✓ Sent.\n\n(In live mode this sends via the channel they messaged on.)`);
+  }
+}
+function confirmCheckin(name){
+  alert(`✓ ${name} checked in.\n\n(Triggers welcome message + ops notification + journey email T+1.)`);
+}
+function confirmCheckout(name){
+  alert(`✓ ${name} checked out.\n\n(Cleaner Sue auto-notified · review request queued for T+1.)`);
+}
+// Today's date
+const d = new Date();
+document.getElementById('today').textContent = d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+</script>
+
+</body>
+</html>

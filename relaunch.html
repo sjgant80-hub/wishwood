@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wishwood relaunch wizard · everything new · in order</title>
+<meta name="description" content="A step-by-step guide to relaunching Wishwood from scratch: new email, calendar, phone, Facebook, laptop setup, hub phone. Written for people who hate tech.">
+<meta name="theme-color" content="#18171a">
+<style>
+:root{
+  --woodsmoke:#18171a;--deep:#1f1e22;--surface:#27262b;--raised:#302f35;
+  --moss:#2d4a3e;--moss-bright:#3d6a55;--leaf:#6b9d6f;
+  --ember:#c97a3d;--ember-glow:rgba(201,122,61,0.12);
+  --gold:#c9a84c;--linen:#ebe5d6;--text:#d4cfc8;--muted:#7a7681;
+  --border:rgba(235,229,214,0.08);--border-strong:rgba(235,229,214,0.18);
+  --good:#6b9d6f;--bad:#c75a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--woodsmoke);color:var(--text);font-family:-apple-system,system-ui,sans-serif;font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--ember);text-decoration:none}
+.site-header{position:sticky;top:0;z-index:50;background:rgba(24,23,26,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);letter-spacing:0.02em}
+.brand .glyph{color:var(--ember);font-size:26px}
+.nav{display:flex;gap:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;flex-wrap:wrap}
+.nav a{color:var(--muted)}.nav a:hover{color:var(--ember)}
+
+.progress-bar{
+  background:var(--deep);border-bottom:1px solid var(--border);
+  padding:14px 28px;display:flex;align-items:center;gap:14px;
+  position:sticky;top:62px;z-index:40;
+}
+.progress-track{flex:1;height:6px;background:var(--surface);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--moss-bright),var(--ember));border-radius:3px;width:0%;transition:width 0.4s}
+.progress-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap}
+
+.hero{
+  padding:60px 28px 40px;background:radial-gradient(ellipse at top,var(--moss) 0%,var(--woodsmoke) 70%);
+  text-align:center;border-bottom:1px solid var(--border);
+}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ember);margin-bottom:14px}
+h1{font-family:'Cormorant Garamond',serif;font-size:52px;line-height:1.1;color:var(--linen);margin:0 auto 16px;font-weight:400;max-width:760px}
+h1 em{color:var(--ember);font-style:italic}
+.hero-sub{font-size:18px;color:var(--text);max-width:560px;margin:0 auto;line-height:1.7}
+
+section{padding:50px 28px;max-width:880px;margin:0 auto}
+.intro-box{background:var(--deep);border:1px solid var(--border-strong);border-left:4px solid var(--ember);border-radius:6px;padding:24px 28px;margin-bottom:30px}
+.intro-box h2{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--linen);margin-bottom:10px;font-weight:400}
+.intro-box p{color:var(--text);font-size:15px;line-height:1.7}
+.intro-box em{color:var(--ember);font-style:italic}
+
+.steps-stack{margin:30px 0}
+
+.step{
+  background:var(--deep);border:1px solid var(--border);border-radius:8px;
+  margin-bottom:18px;overflow:hidden;
+}
+.step.done{border-color:var(--leaf)}
+.step.active{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember-glow)}
+
+.step-header{
+  display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:18px;
+  padding:22px 26px;cursor:pointer;user-select:none;
+}
+.step-header:hover{background:var(--raised)}
+.step-num{
+  width:46px;height:46px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--muted);font-weight:500;
+}
+.step.done .step-num{background:var(--moss);color:var(--linen);border-color:var(--leaf)}
+.step.done .step-num:before{content:"✓"}
+.step.done .step-num span{display:none}
+.step.active .step-num{background:var(--ember);color:var(--woodsmoke);border-color:var(--ember)}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);font-weight:400;line-height:1.3}
+.step.done .step-title{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--moss-bright)}
+.step-meta{display:flex;gap:14px;margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
+.step-meta span.cost{color:var(--gold)}
+.step-meta span.time{color:var(--leaf)}
+.step-toggle{font-size:24px;color:var(--muted);font-family:monospace;width:28px;text-align:center;transition:transform 0.2s}
+.step.active .step-toggle{transform:rotate(45deg);color:var(--ember)}
+
+.step-body{display:none;padding:0 26px 26px;border-top:1px solid var(--border);padding-top:24px}
+.step.active .step-body{display:block}
+.step-body p{margin-bottom:14px;color:var(--text);font-size:15px;line-height:1.75}
+.step-body strong{color:var(--linen)}
+.step-body ol{padding-left:24px;margin:14px 0}
+.step-body ol li{margin-bottom:10px;color:var(--text);font-size:15px;line-height:1.7}
+.step-body ol li strong{color:var(--linen)}
+.step-body code{background:var(--surface);padding:2px 7px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold)}
+
+.callout{
+  background:var(--moss);border-left:3px solid var(--leaf);
+  padding:14px 18px;margin:14px 0;border-radius:4px;font-size:14px;color:var(--linen);
+}
+.callout.warn{background:rgba(199,90,74,0.1);border-left-color:var(--bad);color:var(--text)}
+.callout.tip{background:var(--ember-glow);border-left-color:var(--ember)}
+.callout-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px}
+.callout-label.tip{color:var(--ember)}
+.callout-label.warn{color:var(--bad)}
+.callout-label.good{color:var(--leaf)}
+
+.step-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{padding:10px 18px;border:0;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--ember);color:var(--woodsmoke)}
+.btn.primary:hover{background:#d68850}
+.btn.secondary{background:transparent;color:var(--linen);border:1px solid var(--border-strong)}
+.btn.secondary:hover{border-color:var(--ember);color:var(--ember)}
+.btn.done{background:var(--leaf);color:var(--woodsmoke)}
+
+.stuck-help{
+  background:var(--surface);border:1px dashed var(--border-strong);border-radius:5px;
+  padding:14px 18px;margin-top:14px;font-size:13px;color:var(--muted);font-style:italic;
+}
+.stuck-help strong{color:var(--linen);font-style:normal}
+
+.summary-card{
+  background:linear-gradient(135deg,var(--ember-glow) 0%,var(--deep) 100%);
+  border:1px solid var(--ember);border-radius:8px;
+  padding:36px 40px;margin:40px 0;text-align:center;
+}
+.summary-card h2{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--linen);margin-bottom:16px;font-weight:400}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+@media (max-width:680px){.summary-grid{grid-template-columns:1fr;gap:10px}}
+.summary-stat{background:var(--deep);border:1px solid var(--border);border-radius:6px;padding:18px 14px}
+.summary-stat .v{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--ember);line-height:1;font-weight:500}
+.summary-stat .l{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:6px}
+
+footer{background:var(--deep);border-top:1px solid var(--border);padding:36px 28px;text-align:center}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:8px}
+.footer-text{color:var(--muted);font-size:13px;line-height:1.7;max-width:480px;margin:0 auto 12px}
+
+@media (max-width:780px){
+  h1{font-size:34px}.hero{padding:40px 22px 30px}section{padding:36px 22px}
+  .step-header{grid-template-columns:50px 1fr 28px;padding:18px 20px;gap:12px}
+  .step-title{font-size:18px}.step-num{width:38px;height:38px;font-size:18px}
+  .step-body{padding:0 20px 20px;padding-top:18px}
+  .summary-card{padding:24px 22px}.summary-card h2{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand"><span class="glyph">◊</span><span>Wishwood relaunch wizard</span></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a>
+    <a href="howitworks.html">How it works</a>
+    <a href="hub.html">Hub</a>
+  </nav>
+</header>
+
+<div class="progress-bar">
+  <span class="progress-label" id="progress-label">0 / 8 complete</span>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  <span class="progress-label" id="progress-pct">0%</span>
+</div>
+
+<section class="hero" style="max-width:none;margin:0">
+  <div class="eyebrow">step by step · written for people who hate tech</div>
+  <h1>Relaunching <em>everything</em> · in the right order.</h1>
+  <p class="hero-sub">
+    New email · new calendar · new phone · new Facebook · new laptop · hub phone for the duty manager. We do these in the right order so each step makes the next one easier. Tap each card to open it.
+  </p>
+</section>
+
+<section>
+
+  <div class="intro-box">
+    <h2>Read this first</h2>
+    <p>
+      You don't have to do all 8 steps in one go. Each step takes 10-30 minutes. Most can be done on the phone while a kettle boils. Tick each one off when it's done — your progress saves to this browser, so you can close it and come back.
+    </p>
+    <p>
+      <strong>If you get stuck on any step</strong> · the bottom of each card has a "stuck? text me" button that opens a pre-filled message to Simon. <em>No question is silly · we've all been there.</em>
+    </p>
+  </div>
+
+  <div class="steps-stack" id="steps">
+
+    <!-- STEP 1: PASSWORD MANAGER -->
+    <div class="step" data-step="1">
+      <div class="step-header" onclick="toggleStep(1)">
+        <div class="step-num"><span>1</span></div>
+        <div>
+          <div class="step-title">Install Bitwarden · the only password you ever memorise</div>
+          <div class="step-meta"><span class="cost">£0</span><span class="time">10 min</span><span>· one master password</span></div>
+        </div>
+        <div class="step-toggle">＋</div>
+      </div>
+      <div class="step-body">
+        <p>Bitwarden is a free app that remembers every password for you. You only ever remember <strong>one master password</strong> · everything else fills in automatically. Hate-tech-proof.</p>
+        <ol>
+          <li>On your phone, search "Bitwarden" in the App Store / Play Store. Install it (orange shield icon).</li>
+          <li>Open it · tap <strong>Create account</strong>.</li>
+          <li>Enter your email. Pick a <strong>master password</strong> you'll never forget — could be three random words like <code>oakBluebellFire</code>. Write it down on paper somewhere safe (in a notebook, not a sticky note on the laptop).</li>
+          <li>That's it. From now on, every new password Bitwarden makes one up for you (long random gibberish) and remembers it.</li>
+        </ol>
+        <div class="callout tip">
+          <div class="callout-label tip">◊ Why this first?</div>
+          Every step after this one creates a new password. With Bitwarden running, you'll never have to remember any of them.
+        </div>
+        <div class="stuck-help">
+          <strong>Stuck?</strong> If the app asks anything confusing (it might offer "Vaultwarden self-hosted" — say <strong>no, use the standard one</strong>), text Simon · screenshot helps.
+        </div>
+        <div class="step-actions">
+          <a href="https://bitwarden.com/download/" target="_blank" class="btn primary">Download Bitwarden →</a>
+          <button class="btn done" onclick="markDone(1)">Done · next step →</button>
+          <a href="sms:?body=Stuck%20on%20relaunch%20step%201%20(Bitwarden)" class="btn secondary">Stuck · text Simon</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: DOMAIN + GOOGLE WORKSPACE -->
+    <div class="step" data-step="2">
+      <div class="step-header" onclick="toggleStep(2)">
+        <div class="step-num"><span>2</span></div>
+        <div>
+          <div class="step-title">Get the domain + Google Workspace email · proper business email</div>
+          <div class="step-meta"><span class="cost">£11 + £6/user/mo</span><span class="time">25 min</span><span>· chrissy@wishwood.co.uk</span></div>
+        </div>
+        <div class="step-toggle">＋</div>
+      </div>
+      <div class="step-body">
+        <p>Right now your email is on <code>wishwood.org</code>, which is fine — but if you want the matching <code>chrissy@wishwood.co.uk</code> too, we grab the .co.uk domain and add Google Workspace. This gives you proper Gmail + Google Calendar + Drive + Docs under your own name.</p>
+        <ol>
+          <li>Go to <a href="https://workspace.google.com" target="_blank">workspace.google.com</a> · click <strong>Get started</strong>.</li>
+          <li>Plan: <strong>Business Starter</strong> (£5.20/user/month · perfect for now). You can add more users later when you need a duty-manager mailbox.</li>
+          <li>When it asks "do you have a domain?": click <strong>No, I need one</strong>. Type <code>wishwood</code> · pick <code>.co.uk</code>. Google buys it for you (~£11/yr).</li>
+          <li>Pick your username: <code>chrissy</code> → gives you <code>chrissy@wishwood.co.uk</code>.</li>
+          <li>Pick a password — let Bitwarden generate it (long random string). Bitwarden will offer to save it.</li>
+          <li>Add payment card · confirm.</li>
+        </ol>
+        <p>You now have: a new .co.uk domain · a brand-new Gmail address on your domain · Google Calendar · Google Drive · everything synced.</p>
+        <div class="callout">
+          <div class="callout-label good">◊ Why Google Workspace?</div>
+          It's the standard. Calendar syncs with everything (iCal, Apple, Outlook). The email is "real" not "@gmail.com". Drive is for guest welcome packs, invoices, photos.
+        </div>
+        <div class="callout warn">
+          <div class="callout-label warn">⚠ Don't lose access</div>
+          The recovery phone + email are critical. Use your personal mobile + personal Gmail for recovery. Bitwarden will save the new password automatically — write the master password down once.
+        </div>
+        <div class="step-actions">
+          <a href="https://workspace.google.com" target="_blank" class="btn primary">Open Google Workspace →</a>
+          <button class="btn done" onclick="markDone(2)">Done · next step →</button>
+          <a href="sms:?body=Stuck%20on%20relaunch%20step%202%20(Google%20Workspace)" class="btn secondary">Stuck · text Simon</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: PHONE NUMBER -->
+    <div class="step" data-step="3">
+      <div class="step-header" onclick="toggleStep(3)">
+        <div class="step-num"><span>3</span></div>
+        <div>
+          <div class="step-title">New business phone number · separate from personal</div>
+          <div class="step-meta"><span class="cost">£0-12/mo</span><span class="time">15 min</span><span>· keeps personal mobile private</span></div>
+        </div>
+        <div class="step-toggle">＋</div>
+      </div>
+      <div class="step-body">
+        <p>You don't need a second physical phone — just a second number on your existing one. Two clean options:</p>
+        <ol>
+          <li><strong>Sideline</strong> (recommended for UK) · £8.99/mo · proper UK landline-style number · rings your existing phone but shows the new number when you answer · texts come into its own app. <a href="https://www.sideline.com" target="_blank">sideline.com</a></li>
+          <li><strong>OR Google Voice via Workspace</strong> · ~£8/user/mo add-on · integrates with Gmail. Better if you're already in Google Workspace. <a href="https://workspace.google.com/lp/voice/" target="_blank">workspace.google.com/voice</a></li>
+        </ol>
+        <p>Either way: your personal mobile stays personal. The Wishwood number rings the duty phone. When you upgrade to a hub phone (step 7), the number rings <em>both</em> phones until someone answers.</p>
+        <div class="callout tip">
+          <div class="callout-label tip">◊ Pro tip</div>
+          Pick a number that's easy to read out on a busy field over a wind — short, no repeats, no 7s-and-1s confusion. Sideline lets you pick from a list.
+        </div>
+        <div class="step-actions">
+          <a href="https://www.sideline.com" target="_blank" class="btn primary">Sideline →</a>
+          <a href="https://workspace.google.com/lp/voice/" target="_blank" class="btn secondary">Google Voice →</a>
+          <button class="btn done" onclick="markDone(3)">Done · next step →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: NEW FACEBOOK PAGE -->
+    <div class="step" data-step="4">
+      <div class="step-header" onclick="toggleStep(4)">
+        <div class="step-num"><span>4</span></div>
+        <div>
+          <div class="step-title">Fresh Facebook page · clean, properly verified</div>
+          <div class="step-meta"><span class="cost">£0</span><span class="time">20 min</span><span>· keep old as backup</span></div>
+        </div>
+        <div class="step-toggle">＋</div>
+      </div>
+      <div class="step-body">
+        <p>If your current FB page is clean (no admin issues, no flags), <strong>don't make a new one</strong> — just give it a tune-up and add the new email as an admin.</p>
+        <p>If you do need a fresh start (locked out, multiple admins gone, weird flags): make a brand new Page (not a profile) under the new <code>chrissy@wishwood.co.uk</code> account.</p>
+        <ol>
+          <li>From your personal FB account, go to <a href="https://facebook.com/pages/create" target="_blank">facebook.com/pages/create</a></li>
+          <li>Category: <strong>Vacation home rental</strong> or <strong>Glamping accommodation</strong></li>
+          <li>Name: <code>Wishwood Glamping & Forestry</code></li>
+          <li>Cover photo + profile photo: use the same bluebell / hobbit hut hero shot from your current page.</li>
+          <li>About section: paste the description from your current Airbnb listing.</li>
+          <li>Add an admin: invite <code>chrissy@wishwood.co.uk</code> as admin, then accept from there.</li>
+          <li>Then: gradually post old content to fill the timeline · 1-2 posts a week is enough at the start.</li>
+        </ol>
+        <div class="callout warn">
+          <div class="callout-label warn">⚠ Don't delete the old page yet</div>
+          Keep the old page live for a few months. It has 2,146 likes and 9 years of reviews · valuable. Once the new page has built up momentum, redirect followers via a single post.
+        </div>
+        <div class="step-actions">
+          <a href="https://facebook.com/pages/create" target="_blank" class="btn primary">Create FB Page →</a>
+          <button class="btn done" onclick="markDone(4)">Done · next step →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5: WHATSAPP BUSINESS -->
+    <div class="step" data-step="5">
+      <div class="step-header" onclick="toggleStep(5)">
+        <div class="step-num"><span>5</span></div>
+        <div>
+          <div class="step-title">WhatsApp Business · the modern guest channel</div>
+          <div class="step-meta"><span class="cost">£0</span><span class="time">10 min</span><span>· runs on the new number</span></div>
+        </div>
+        <div class="step-toggle">＋</div>
+      </div>
+      <div class="step-body">
+        <p>WhatsApp Business is the same as normal WhatsApp but with auto-replies, business hours, a "catalogue" of your cabins, and read receipts the guest sees as a tick. Most modern guests message via WhatsApp · so this is essential.</p>
+        <ol>
+          <li>App Store / Play Store → search "WhatsApp Business" → install (green icon, briefcase).</li>
+          <li>Sign in with the <strong>new Sideline / Google Voice number from step 3</strong>.</li>
+          <li>Set up business profile: name <code>Wishwood Glamping</code> · category Travel · address + opening hours.</li>
+          <li>Add a "greeting message" that fires when someone DMs first: <em>"Hi! Thanks for getting in touch · Chrissy here · I'll reply within an hour during 9am-9pm UK time"</em>.</li>
+          <li>Add an "away message" for 9pm-9am: <em>"We're tucked up by the fire · I'll reply first thing in the morning · in an emergency for guests already on-site, call [your emergency mobile]"</em>.</li>
+        </ol>
+        <div class="callout">
+          <div class="callout-label good">◊ Connect to the hub</div>
+          Once Simon switches the engine on, WhatsApp messages route into the same unified inbox as Airbnb, Booking, FB · all in one swipe-flow.
+        </div>
+        <div class="step-actions">
+          <a href="https://www.whatsapp.com/business" target="_blank" class="btn primary">WhatsApp Business →</a>
+          <button class="btn done" onclick="markDone(5)">Done · next step →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6: LAPTOP SETUP -->
+    <div class="step" data-step="6">
+      <div class="step-header" onclick="toggleStep(6)">
+        <div class="step-num"><span>6</span></div>
+        <div>
+          <div class="step-title">Set up the new laptop · open the box, do these 6 things</div>
+          <div class="step-meta"><span class="cost">£0</span><span class="time">30 min</span><span>· then never reinstall</span></div>
+        </div>
+        <div class="step-toggle">＋</div>
+      </div>
+      <div class="step-body">
+        <p>The laptop's been sitting unopened. Here's the minimum-pain first-boot:</p>
+        <ol>
+          <li><strong>Plug in. Power on.</strong> Skip every "personalisation" question · click "Set up later".</li>
+          <li><strong>Sign in with the NEW <code>chrissy@wishwood.co.uk</code> Google account.</strong> Not your personal one. (Or for Mac: use a fresh iCloud ID with same logic.)</li>
+          <li><strong>Connect WiFi · install all the updates Windows / Mac throws at you.</strong> Have a cup of tea. ~20 min.</li>
+          <li>Install <strong>Chrome</strong> (or Edge) · install <strong>Bitwarden browser extension</strong>. Sign in to Bitwarden with your master password. Now every site auto-fills.</li>
+          <li>Bookmark these 4 things in this exact order:
+            <ul style="padding-left:20px;margin-top:6px">
+              <li><a href="https://sjgant80-hub.github.io/wishwood/hub.html">hub.html</a> — your operator hub</li>
+              <li><a href="https://mail.google.com">mail.google.com</a> — Gmail</li>
+              <li><a href="https://calendar.google.com">calendar.google.com</a> — Calendar</li>
+              <li><a href="https://airbnb.co.uk/hosting">airbnb.co.uk/hosting</a> — Airbnb host dashboard</li>
+            </ul>
+          </li>
+          <li><strong>Skip everything else.</strong> Don't install Office, OneDrive, Skype, Norton, any "free trial" the laptop offers. Less is more.</li>
+        </ol>
+        <div class="callout tip">
+          <div class="callout-label tip">◊ The "less is more" philosophy</div>
+          The laptop is a window into your hub + Gmail + Calendar. That's it. Every app you don't install is one fewer thing to break.
+        </div>
+        <div class="step-actions">
+          <button class="btn done" onclick="markDone(6)">Done · next step →</button>
+          <a href="sms:?body=Stuck%20on%20relaunch%20step%206%20(Laptop)" class="btn secondary">Stuck · text Simon</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 7: HUB PHONE -->
+    <div class="step" data-step="7">
+      <div class="step-header" onclick="toggleStep(7)">
+        <div class="step-num"><span>7</span></div>
+        <div>
+          <div class="step-title">Set up the hub phone · the shared duty mobile</div>
+          <div class="step-meta"><span class="cost">£60 one-time</span><span class="time">20 min</span><span>· locked to one app</span></div>
+        </div>
+        <div class="step-toggle">＋</div>
+      </div>
+      <div class="step-body">
+        <p>The hub phone is a cheap Android (Moto G Play, Nokia, anything ~£60) that lives in the welcome cabin or at reception. Whoever's on duty for check-ins picks it up. It's locked to ONE app: a stripped-down version of the hub designed for phones · just today's check-ins, today's messages, one emergency button.</p>
+        <ol>
+          <li>Buy any cheap Android — <a href="https://www.amazon.co.uk/s?k=moto+g+play+2024" target="_blank">Moto G Play £60-90 on Amazon</a>.</li>
+          <li>First boot: sign in with a <strong>new Google account</strong> (use <code>hub@wishwood.co.uk</code> — create as an alias in step 2's Workspace).</li>
+          <li>Install Chrome. Bookmark <a href="https://sjgant80-hub.github.io/wishwood/hubphone.html">hubphone.html</a>. Add to home screen as an app (Chrome menu → "Install app"). Drag it to the centre of the home screen, full size.</li>
+          <li>Optional: enable "kiosk mode" in Android settings (or use a free app like "Kioskboard") so the phone only ever opens the hub.</li>
+          <li>Install WhatsApp Business + sign in with the Sideline number (so messages ping the duty phone too).</li>
+        </ol>
+        <div class="callout">
+          <div class="callout-label good">◊ The hubphone view is built</div>
+          See <a href="hubphone.html">hubphone.html</a> · designed for one-handed use, big buttons, no menus. Whoever's on duty just sees: today's arrivals, today's messages, an emergency-call-Chrissy button. That's it.
+        </div>
+        <div class="step-actions">
+          <a href="hubphone.html" class="btn primary">Preview the hub phone view →</a>
+          <button class="btn done" onclick="markDone(7)">Done · next step →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 8: SWITCH ON THE ENGINE -->
+    <div class="step" data-step="8">
+      <div class="step-header" onclick="toggleStep(8)">
+        <div class="step-num"><span>8</span></div>
+        <div>
+          <div class="step-title">Switch on the Wishwood Engine · one afternoon with Simon</div>
+          <div class="step-meta"><span class="cost">£0</span><span class="time">3 hrs · with Simon on a call</span><span>· then it runs forever</span></div>
+        </div>
+        <div class="step-toggle">＋</div>
+      </div>
+      <div class="step-body">
+        <p>Once steps 1-7 are done, the engine itself takes about 3 hours to connect end-to-end. We do this together on a call · screenshare so you see every click. Here's what we'll be doing:</p>
+        <ol>
+          <li><strong>Connect Airbnb iCals</strong> (copy URLs from each listing's "Sync calendars" page → paste into the hub).</li>
+          <li><strong>Set up Booking.com listings</strong> (your 3 cabins go live on Booking.com · est. +£8-12k/year just from this).</li>
+          <li><strong>Wire Stripe to your bank</strong> (so direct bookings pay straight in · Stripe takes 1.4%, no other middleman).</li>
+          <li><strong>Connect Gmail forwarding</strong> (Airbnb + Booking messages auto-route into the unified inbox).</li>
+          <li><strong>Connect WhatsApp + FB Messenger + IG DM</strong> (Meta API · I do the dev side, you just approve the apps).</li>
+          <li><strong>Connect the AI engine</strong> (your choice: Groq free, Claude paid ~£5/mo, or Google Gemini free 1500/day · drafts your replies in your voice).</li>
+          <li><strong>Publish your <code>stays.json</code> + AI agent dossier</strong> · already live · means ChatGPT / Claude / Perplexity all know about Wishwood.</li>
+          <li><strong>Go live · take your first direct booking.</strong></li>
+        </ol>
+        <div class="callout tip">
+          <div class="callout-label tip">◊ When you're ready</div>
+          We don't need to do this in one go. Pick a quiet afternoon · book it in · tea + biscuits + 3 hours later, Wishwood is fully automated.
+        </div>
+        <div class="step-actions">
+          <a href="mailto:ainativesolutions@gmail.com?subject=Wishwood%20-%20ready%20to%20switch%20on" class="btn primary">Email Simon · book the call →</a>
+          <button class="btn done" onclick="markDone(8)">Done · we did it 🎉</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="summary-card">
+    <div class="eyebrow">When you've ticked all 8</div>
+    <h2>Wishwood is fully sovereign · zero SaaS · live across every channel.</h2>
+    <div class="summary-grid">
+      <div class="summary-stat"><div class="v">8</div><div class="l">channels routed to one inbox</div></div>
+      <div class="summary-stat"><div class="v">~£5/mo</div><div class="l">total running cost</div></div>
+      <div class="summary-stat"><div class="v">~£18k</div><div class="l">est. year-1 uplift</div></div>
+    </div>
+    <p style="margin-top:24px;color:var(--text);font-size:15px">
+      Then you become the blueprint. Other off-grid hosts ask you how you did it.
+      You earn 10% on every roost host you refer · in perpetuity.
+    </p>
+  </div>
+
+</section>
+
+<footer>
+  <div class="footer-brand">◊ Wishwood Engine · relaunch wizard</div>
+  <p class="footer-text">Step-by-step rebuild of your tech stack · written for people who hate tech · progress saves to your browser.</p>
+  <div><a href="index.html">Overview</a> · <a href="howitworks.html">How it works</a> · <a href="hub.html">Hub</a> · <a href="mailto:ainativesolutions@gmail.com">Email Simon</a></div>
+</footer>
+
+<script>
+const TOTAL = 8;
+function load(){
+  const done = JSON.parse(localStorage.getItem('ww_relaunch_done')||'[]');
+  done.forEach(n => document.querySelector(`.step[data-step="${n}"]`)?.classList.add('done'));
+  updateProgress();
+  // Open first not-done step
+  const first = Array.from(document.querySelectorAll('.step')).find(s => !s.classList.contains('done'));
+  if (first) first.classList.add('active');
+}
+function toggleStep(n){
+  const all = document.querySelectorAll('.step');
+  all.forEach(s => { if (s.dataset.step != n) s.classList.remove('active') });
+  document.querySelector(`.step[data-step="${n}"]`)?.classList.toggle('active');
+}
+function markDone(n){
+  const done = JSON.parse(localStorage.getItem('ww_relaunch_done')||'[]');
+  if (!done.includes(n)) done.push(n);
+  localStorage.setItem('ww_relaunch_done', JSON.stringify(done));
+  document.querySelector(`.step[data-step="${n}"]`)?.classList.add('done');
+  document.querySelector(`.step[data-step="${n}"]`)?.classList.remove('active');
+  // Open next
+  if (n < TOTAL) {
+    document.querySelector(`.step[data-step="${n+1}"]`)?.classList.add('active');
+    document.querySelector(`.step[data-step="${n+1}"]`)?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  updateProgress();
+}
+function updateProgress(){
+  const done = (JSON.parse(localStorage.getItem('ww_relaunch_done')||'[]')).length;
+  document.getElementById('progress-fill').style.width = (done/TOTAL*100)+'%';
+  document.getElementById('progress-label').textContent = `${done} / ${TOTAL} complete`;
+  document.getElementById('progress-pct').textContent = Math.round(done/TOTAL*100)+'%';
+}
+load();
+</script>
+
+</body>
+</html>
