@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wishwood · admin · all connections</title>
+<meta name="theme-color" content="#18171a">
+<style>
+:root{--void:#18171a;--deep:#1f1e22;--surface:#27262b;--raised:#302f35;--moss:#2d4a3e;--moss-bright:#3d6a55;--leaf:#6b9d6f;--ember:#c97a3d;--ember-glow:rgba(201,122,61,0.12);--gold:#c9a84c;--linen:#ebe5d6;--text:#d4cfc8;--muted:#7a7681;--border:rgba(235,229,214,0.08);--border-strong:rgba(235,229,214,0.18);--bad:#c75a4a;--warn:#d4af37}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--void);color:var(--text);font-family:-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--ember);text-decoration:none}
+.site-header{position:sticky;top:0;z-index:50;background:rgba(24,23,26,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)}
+.brand .glyph{color:var(--ember);font-size:26px}
+.nav{display:flex;gap:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;flex-wrap:wrap}
+.nav a{color:var(--muted)}.nav a:hover{color:var(--ember)}
+.nav a.active{color:var(--ember)}
+
+.hero{padding:40px 28px 24px;border-bottom:1px solid var(--border)}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ember);margin-bottom:10px}
+h1{font-family:'Cormorant Garamond',serif;font-size:38px;line-height:1.1;color:var(--linen);margin-bottom:10px;font-weight:400}
+h1 em{color:var(--ember);font-style:italic}
+.hero-sub{font-size:15px;color:var(--muted);max-width:640px;line-height:1.6}
+
+.status-bar{
+  background:var(--deep);border-bottom:1px solid var(--border);
+  padding:14px 28px;display:flex;gap:24px;flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;
+}
+.status-stat{color:var(--muted)}
+.status-stat b{color:var(--linen);margin-right:4px}
+.status-stat.green b{color:var(--leaf)}
+.status-stat.warn b{color:var(--warn)}
+.status-stat.todo b{color:var(--ember)}
+
+.layout{display:grid;grid-template-columns:240px 1fr;max-width:1280px;margin:0 auto;min-height:calc(100vh - 200px)}
+@media (max-width:880px){.layout{grid-template-columns:1fr}}
+.side{
+  background:var(--deep);border-right:1px solid var(--border);
+  padding:18px 0;
+}
+@media (max-width:880px){.side{border-right:0;border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:10px}}
+.side-section{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);padding:14px 22px 6px}
+@media (max-width:880px){.side-section{display:none}}
+.side-item{
+  display:block;padding:10px 22px;color:var(--text);font-size:14px;
+  cursor:pointer;border-left:3px solid transparent;text-decoration:none;
+  white-space:nowrap;
+}
+.side-item:hover{background:var(--surface);color:var(--linen)}
+.side-item.active{background:var(--surface);border-left-color:var(--ember);color:var(--ember)}
+.side-item .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--muted);margin-right:8px;vertical-align:middle}
+.side-item.live .dot{background:var(--leaf);box-shadow:0 0 6px var(--leaf)}
+.side-item.todo .dot{background:var(--ember)}
+.side-item.warn .dot{background:var(--warn)}
+
+.main{padding:30px 36px;max-width:840px}
+@media (max-width:880px){.main{padding:24px 22px}}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.panel-head{margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.panel-head h2{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--linen);margin-bottom:8px;font-weight:400;display:flex;align-items:center;gap:14px}
+.panel-head .badge-status{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;font-weight:700;
+}
+.badge-status.live{background:var(--moss);color:var(--leaf)}
+.badge-status.todo{background:var(--ember-glow);color:var(--ember)}
+.badge-status.warn{background:rgba(212,175,55,0.15);color:var(--warn)}
+.panel-head .sub{color:var(--muted);font-size:14px;line-height:1.65}
+
+.section-h{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);margin:24px 0 12px;font-weight:400;display:flex;align-items:center;gap:10px}
+.section-h .num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ember);background:var(--ember-glow);width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;border:1px solid var(--ember)}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field label .req{color:var(--ember);margin-left:4px}
+.field input,.field textarea,.field select{width:100%;background:var(--surface);border:1px solid var(--border);padding:10px 12px;border-radius:4px;color:var(--text);font-family:inherit;font-size:14px}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--ember)}
+.field input[readonly]{background:var(--deep);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:12px}
+.field .hint{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+.field .hint a{color:var(--ember)}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:680px){.row{grid-template-columns:1fr}}
+
+.btn{padding:10px 18px;border:0;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--ember);color:var(--void)}
+.btn.primary:hover{background:#d68850}
+.btn.ghost{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.btn.ghost:hover{border-color:var(--border-strong);color:var(--linen)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+
+.step-list{counter-reset:s;list-style:none;padding:0;margin:14px 0}
+.step-list li{counter-increment:s;padding:10px 0 10px 38px;position:relative;color:var(--text);font-size:14px;line-height:1.7}
+.step-list li:before{content:counter(s);position:absolute;left:0;top:10px;width:26px;height:26px;border-radius:50%;background:var(--surface);color:var(--ember);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
+.step-list li code{background:var(--deep);padding:2px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold)}
+
+.callout{
+  background:var(--surface);border-left:3px solid var(--ember);
+  padding:14px 18px;border-radius:0 5px 5px 0;margin:14px 0;
+  font-size:13px;color:var(--text);line-height:1.65;
+}
+.callout.warn{border-left-color:var(--warn);background:rgba(212,175,55,0.05)}
+.callout.tip{border-left-color:var(--leaf)}
+.callout .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ember);margin-bottom:4px}
+.callout.warn .lbl{color:var(--warn)}
+.callout.tip .lbl{color:var(--leaf)}
+
+.live-status{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--deep);border:1px solid var(--border);border-radius:5px;margin-bottom:16px}
+.live-status .icon{width:32px;height:32px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px}
+.live-status.live .icon{background:var(--moss);color:var(--leaf)}
+.live-status.todo .icon{background:var(--ember-glow);color:var(--ember)}
+.live-status .info{flex:1}
+.live-status .info-t{color:var(--linen);font-weight:600;font-size:14px}
+.live-status .info-s{color:var(--muted);font-size:12px;margin-top:2px}
+
+.kv-table{width:100%;border-collapse:collapse;background:var(--deep);border:1px solid var(--border);border-radius:5px;overflow:hidden;margin:12px 0}
+.kv-table tr{border-bottom:1px solid var(--border)}
+.kv-table tr:last-child{border-bottom:0}
+.kv-table td{padding:10px 14px;font-size:13px}
+.kv-table td:first-child{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;width:38%}
+.kv-table td:last-child{color:var(--linen)}
+.kv-table td code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);background:var(--surface);padding:2px 6px;border-radius:3px}
+
+@media (max-width:680px){h1{font-size:28px}.hero{padding:28px 22px 18px}.status-bar{padding:12px 22px;gap:14px;font-size:10px}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand"><span class="glyph">◊</span><span>Wishwood · admin</span></div>
+  <nav class="nav">
+    <a href="hub.html">Hub</a>
+    <a href="book.html">Book</a>
+    <a href="howitworks.html">How it works</a>
+    <a href="admin.html" class="active">Admin</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">connections · keys · accounts · all in one place</div>
+  <h1>Wire <em>everything</em> in.</h1>
+  <p class="hero-sub">Each panel walks you through connecting one service. Status dot tells you what's done. Click any item in the left rail.</p>
+</div>
+
+<div class="status-bar">
+  <div class="status-stat green"><b>0</b> live</div>
+  <div class="status-stat todo"><b>13</b> to set up</div>
+  <div class="status-stat warn"><b>0</b> need attention</div>
+  <div class="status-stat"><b>·</b> status saves to your browser as you tick things off</div>
+</div>
+
+<div class="layout">
+  <aside class="side">
+    <div class="side-section">Identity</div>
+    <a class="side-item todo active" data-panel="domain" onclick="pick('domain')"><span class="dot"></span>Domain &amp; site</a>
+    <a class="side-item todo" data-panel="email" onclick="pick('email')"><span class="dot"></span>Email (Gmail / Workspace)</a>
+    <a class="side-item todo" data-panel="phone" onclick="pick('phone')"><span class="dot"></span>Phone number</a>
+
+    <div class="side-section">Channels in</div>
+    <a class="side-item todo" data-panel="airbnb" onclick="pick('airbnb')"><span class="dot"></span>Airbnb</a>
+    <a class="side-item todo" data-panel="booking" onclick="pick('booking')"><span class="dot"></span>Booking.com</a>
+    <a class="side-item todo" data-panel="pitchup" onclick="pick('pitchup')"><span class="dot"></span>Pitchup</a>
+    <a class="side-item todo" data-panel="facebook" onclick="pick('facebook')"><span class="dot"></span>Facebook Page</a>
+    <a class="side-item todo" data-panel="instagram" onclick="pick('instagram')"><span class="dot"></span>Instagram</a>
+    <a class="side-item todo" data-panel="whatsapp" onclick="pick('whatsapp')"><span class="dot"></span>WhatsApp Business</a>
+
+    <div class="side-section">Money</div>
+    <a class="side-item todo" data-panel="stripe" onclick="pick('stripe')"><span class="dot"></span>Stripe (direct bookings)</a>
+
+    <div class="side-section">Brain</div>
+    <a class="side-item todo" data-panel="ai" onclick="pick('ai')"><span class="dot"></span>AI engine (Groq / Claude / Gemini)</a>
+
+    <div class="side-section">People</div>
+    <a class="side-item todo" data-panel="staff" onclick="pick('staff')"><span class="dot"></span>Cleaner / maintenance</a>
+
+    <div class="side-section">Backup</div>
+    <a class="side-item todo" data-panel="export" onclick="pick('export')"><span class="dot"></span>Export / take with you</a>
+  </aside>
+
+  <main class="main">
+
+    <!-- DOMAIN -->
+    <section class="panel active" id="panel-domain">
+      <div class="panel-head">
+        <h2>① Domain &amp; site <span class="badge-status todo">TO SET UP</span></h2>
+        <p class="sub">Where the public-facing site lives. Right now it's on GitHub Pages under sjgant80-hub.github.io/wishwood/. To use wishwood.co.uk instead, point the domain at it.</p>
+      </div>
+
+      <div class="live-status todo">
+        <div class="icon">◌</div>
+        <div class="info">
+          <div class="info-t">Current URL: sjgant80-hub.github.io/wishwood/</div>
+          <div class="info-s">Working · but not branded · move to wishwood.co.uk when ready</div>
+        </div>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Buy the domain</div>
+      <ol class="step-list">
+        <li>Open <a href="https://workspace.google.com" target="_blank">workspace.google.com</a> · if you're doing the Google Workspace step (email) too, this comes bundled and is the easiest path.</li>
+        <li>Or buy standalone from <a href="https://www.namecheap.com" target="_blank">Namecheap</a> · ~£10/yr · just the domain, no extras.</li>
+        <li>Domain to grab: <code>wishwood.co.uk</code></li>
+      </ol>
+
+      <div class="section-h"><span class="num">2</span> Point it at GitHub Pages</div>
+      <ol class="step-list">
+        <li>In your domain registrar (Google or Namecheap), open the DNS / nameserver settings for wishwood.co.uk</li>
+        <li>Add these 4 A records (one at a time): <code>185.199.108.153</code> · <code>185.199.109.153</code> · <code>185.199.110.153</code> · <code>185.199.111.153</code> · all pointing to <code>@</code> (the root)</li>
+        <li>Add a CNAME record for <code>www</code> pointing to <code>sjgant80-hub.github.io</code></li>
+        <li>Wait 5-30 min for DNS to propagate · check with <a href="https://www.whatsmydns.net/" target="_blank">whatsmydns.net</a></li>
+      </ol>
+
+      <div class="section-h"><span class="num">3</span> Tell GitHub Pages the new domain</div>
+      <div class="field"><label>Custom domain</label>
+        <input type="text" placeholder="wishwood.co.uk" id="dom-custom">
+        <div class="hint">Once DNS is live, paste here. Saves a <code>CNAME</code> file to the repo on next push.</div>
+      </div>
+
+      <div class="callout tip"><div class="lbl">◊ tip</div>Use HTTPS-enforce in repo settings → Pages once domain is verified. GitHub provisions free SSL automatically.</div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('domain')">✓ Mark connected</button>
+        <button class="btn ghost" onclick="showHelp('domain')">Need help?</button>
+      </div>
+    </section>
+
+    <!-- EMAIL -->
+    <section class="panel" id="panel-email">
+      <div class="panel-head">
+        <h2>② Email · Google Workspace <span class="badge-status todo">TO SET UP</span></h2>
+        <p class="sub">Real business email at <code>chrissy@wishwood.co.uk</code>. Includes Gmail, Calendar, Drive. Pulls Airbnb/Booking messages into the hub via IMAP.</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Sign up for Workspace</div>
+      <ol class="step-list">
+        <li>Go to <a href="https://workspace.google.com" target="_blank">workspace.google.com</a> · click <strong>Get started</strong></li>
+        <li>Plan: <strong>Business Starter</strong> (~£5.20/user/month)</li>
+        <li>Use the wishwood.co.uk domain (from step ①)</li>
+        <li>Set up the first user: <code>chrissy@wishwood.co.uk</code></li>
+        <li>Recovery: your personal mobile + personal Gmail</li>
+      </ol>
+
+      <div class="section-h"><span class="num">2</span> Connect to the hub</div>
+      <p style="font-size:14px;color:var(--text);line-height:1.65;margin-bottom:12px">The hub fetches Airbnb / Booking messages from Gmail using IMAP. To enable:</p>
+      <ol class="step-list">
+        <li>In Gmail · gear icon → Settings → <strong>Forwarding and POP/IMAP</strong> → enable IMAP</li>
+        <li>Create an app password: <a href="https://myaccount.google.com/apppasswords" target="_blank">myaccount.google.com/apppasswords</a> (needs 2FA enabled first)</li>
+        <li>Paste the app password below</li>
+      </ol>
+
+      <div class="row">
+        <div class="field"><label>Gmail address <span class="req">*</span></label><input type="email" placeholder="chrissy@wishwood.co.uk" id="gmail-addr"></div>
+        <div class="field"><label>App password <span class="req">*</span></label><input type="password" placeholder="xxxx xxxx xxxx xxxx" id="gmail-pwd">
+          <div class="hint">16 chars, stored encrypted as a Cloudflare Worker secret · never visible after save</div>
+        </div>
+      </div>
+
+      <div class="section-h"><span class="num">3</span> Auto-forward Airbnb &amp; Booking emails</div>
+      <ol class="step-list">
+        <li>In Airbnb host settings → Account → Notifications → ensure all messages forward to <code>chrissy@wishwood.co.uk</code></li>
+        <li>In Booking.com extranet → Account → Email → set primary inbox to the same Gmail</li>
+        <li>The hub IMAPs every 60s · auto-parses sender + message · routes to unified inbox</li>
+      </ol>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('email')">✓ Mark connected</button>
+        <button class="btn ghost" onclick="alert('Will test IMAP in 30s · check the inbox tab')">Test fetch</button>
+      </div>
+    </section>
+
+    <!-- PHONE -->
+    <section class="panel" id="panel-phone">
+      <div class="panel-head">
+        <h2>③ Phone number <span class="badge-status todo">TO SET UP</span></h2>
+        <p class="sub">A separate business number so personal mobile stays personal. Rings on any device. Texts route into the hub. WhatsApp Business uses this same number.</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Pick a provider</div>
+      <div class="row">
+        <div style="background:var(--deep);border:1px solid var(--border);border-radius:5px;padding:18px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen);margin-bottom:6px">Sideline · UK-friendly</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">~£8.99/mo · UK landline-style number · own app · texts + voicemail</div>
+          <a href="https://www.sideline.com" target="_blank" class="btn ghost">Open Sideline →</a>
+        </div>
+        <div style="background:var(--deep);border:1px solid var(--border);border-radius:5px;padding:18px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen);margin-bottom:6px">Google Voice via Workspace</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">~£8/user/mo add-on · integrates with Gmail</div>
+          <a href="https://workspace.google.com/lp/voice/" target="_blank" class="btn ghost">Open Google Voice →</a>
+        </div>
+      </div>
+
+      <div class="section-h"><span class="num">2</span> Save the number</div>
+      <div class="row">
+        <div class="field"><label>Business number</label><input type="tel" placeholder="07XXX XXXXXX" id="phone-num"></div>
+        <div class="field"><label>Provider</label>
+          <select><option>Sideline</option><option>Google Voice</option><option>Other</option></select>
+        </div>
+      </div>
+
+      <div class="callout tip"><div class="lbl">◊ pick a memorable number</div>Short · no repeated 7s &amp; 1s · easy to shout over wind. Most providers let you pick from a list.</div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('phone')">✓ Mark connected</button>
+      </div>
+    </section>
+
+    <!-- AIRBNB -->
+    <section class="panel" id="panel-airbnb">
+      <div class="panel-head">
+        <h2>④ Airbnb <span class="badge-status todo">TO SET UP</span></h2>
+        <p class="sub">3 listings · iCal sync for availability · message forwarding for inbox</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Grab the iCal URL for each listing</div>
+      <ol class="step-list">
+        <li>Open <a href="https://www.airbnb.co.uk/hosting" target="_blank">airbnb.co.uk/hosting</a> → pick a listing</li>
+        <li>Calendar tab → <strong>Sync calendars</strong> → copy the <strong>Export calendar</strong> URL (ends in <code>.ics</code>)</li>
+        <li>Paste below · repeat for all 3 listings</li>
+      </ol>
+
+      <div class="field"><label>Hobbit Hut iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-hobbit"></div>
+      <div class="field"><label>Vintage Caravan iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-caravan"></div>
+      <div class="field"><label>Family Yurt iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-yurt"></div>
+
+      <div class="section-h"><span class="num">2</span> Import the hub's calendar back into Airbnb</div>
+      <p style="font-size:14px;color:var(--text);line-height:1.65">So direct bookings auto-block Airbnb:</p>
+      <ol class="step-list">
+        <li>Same "Sync calendars" page → <strong>Import calendar</strong></li>
+        <li>Paste this URL (one per cabin · auto-generated):</li>
+      </ol>
+      <table class="kv-table">
+        <tr><td>Hobbit Hut export</td><td><code>wishwood-engine.workers.dev/ical/hobbit</code></td></tr>
+        <tr><td>Vintage Caravan export</td><td><code>wishwood-engine.workers.dev/ical/caravan</code></td></tr>
+        <tr><td>Family Yurt export</td><td><code>wishwood-engine.workers.dev/ical/yurt</code></td></tr>
+      </table>
+
+      <div class="callout tip"><div class="lbl">◊ sync runs every 60s</div>Both ways · zero risk of double-booking once both directions are wired.</div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('airbnb')">✓ Mark connected</button>
+        <button class="btn ghost" onclick="alert('Pulling iCal · check the calendar tab in 90s')">Test sync</button>
+      </div>
+    </section>
+
+    <!-- BOOKING.COM -->
+    <section class="panel" id="panel-booking">
+      <div class="panel-head">
+        <h2>⑤ Booking.com <span class="badge-status todo">TO SET UP</span></h2>
+        <p class="sub">Not currently listed · big channel for European/weekend guests · estimated +£8-12k/yr if added at parity pricing</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Create the listings (one-time, ~3 hours)</div>
+      <ol class="step-list">
+        <li>Apply at <a href="https://join.booking.com" target="_blank">join.booking.com</a> → "List my property"</li>
+        <li>Create 3 listings · one per cabin · same photos + pricing as Airbnb</li>
+        <li>Set commission acceptance (15%) · sign T&amp;Cs</li>
+        <li>Booking.com verifies the property (1-3 days) · listings go live</li>
+      </ol>
+
+      <div class="section-h"><span class="num">2</span> Grab iCal URLs</div>
+      <ol class="step-list">
+        <li>In Extranet → Rates &amp; availability → Calendars → Sync calendars</li>
+        <li>Copy each listing's iCal export URL · paste below</li>
+      </ol>
+      <div class="field"><label>Hobbit Hut iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-hobbit"></div>
+      <div class="field"><label>Vintage Caravan iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-caravan"></div>
+      <div class="field"><label>Family Yurt iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-yurt"></div>
+
+      <div class="section-h"><span class="num">3</span> Import hub calendar back to Booking.com</div>
+      <p style="font-size:14px;color:var(--text);line-height:1.65;margin-bottom:8px">Same "Sync calendars" panel · Import calendar · paste:</p>
+      <table class="kv-table">
+        <tr><td>Hobbit</td><td><code>wishwood-engine.workers.dev/ical/hobbit</code></td></tr>
+        <tr><td>Caravan</td><td><code>wishwood-engine.workers.dev/ical/caravan</code></td></tr>
+        <tr><td>Yurt</td><td><code>wishwood-engine.workers.dev/ical/yurt</code></td></tr>
+      </table>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('booking')">✓ Mark connected</button>
+      </div>
+    </section>
+
+    <!-- PITCHUP -->
+    <section class="panel" id="panel-pitchup">
+      <div class="panel-head">
+        <h2>⑥ Pitchup <span class="badge-status warn">CURRENTLY LISTED</span></h2>
+        <p class="sub">Already on Pitchup · just wire up the calendar sync</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Grab the iCal export</div>
+      <ol class="step-list">
+        <li>Log into <a href="https://www.pitchup.com/owners/" target="_blank">pitchup.com/owners</a></li>
+        <li>Calendar settings → Export calendar URL · copy</li>
+      </ol>
+
+      <div class="field"><label>Pitchup listing iCal</label><input type="url" placeholder="https://www.pitchup.com/calendar/..." id="pu-ical"></div>
+
+      <div class="section-h"><span class="num">2</span> Import hub calendar back</div>
+      <p style="font-size:14px;color:var(--text);line-height:1.65;margin-bottom:8px">Use the URLs from the Airbnb section above · Pitchup supports iCal imports too.</p>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('pitchup')">✓ Mark connected</button>
+      </div>
+    </section>
+
+    <!-- FACEBOOK -->
+    <section class="panel" id="panel-facebook">
+      <div class="panel-head">
+        <h2>⑦ Facebook Page <span class="badge-status warn">PAGE EXISTS</span></h2>
+        <p class="sub">facebook.com/wishwood.org · 2,146 likes · 266 check-ins · needs API webhook so DMs come into the hub</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Create a Meta app</div>
+      <ol class="step-list">
+        <li>Go to <a href="https://developers.facebook.com/apps/" target="_blank">developers.facebook.com/apps</a> · create app · type: <strong>Business</strong></li>
+        <li>Add "Messenger" product · then "Webhooks"</li>
+        <li>Subscribe Page to your app (FB walks you through it)</li>
+        <li>Webhook callback URL: <code>wishwood-engine.workers.dev/webhook/facebook</code></li>
+        <li>Verify token: paste from below</li>
+      </ol>
+
+      <div class="row">
+        <div class="field"><label>Page Access Token <span class="req">*</span></label><input type="password" placeholder="EAAxxxx..." id="fb-token"></div>
+        <div class="field"><label>Page ID</label><input type="text" placeholder="123456789" id="fb-pageid"></div>
+      </div>
+
+      <div class="callout tip"><div class="lbl">◊ once wired</div>FB Page DMs auto-appear in the hub inbox · AI drafts replies · you approve · replies post via the same API.</div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('facebook')">✓ Mark connected</button>
+      </div>
+    </section>
+
+    <!-- INSTAGRAM -->
+    <section class="panel" id="panel-instagram">
+      <div class="panel-head">
+        <h2>⑧ Instagram <span class="badge-status warn">@wishwoodglamping EXISTS</span></h2>
+        <p class="sub">Same Meta Graph API as FB · IG must be a "Business" or "Creator" account linked to your FB Page</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Convert IG to a Business account</div>
+      <ol class="step-list">
+        <li>On the IG app → Settings → Account → <strong>Switch to professional account</strong> → pick Business</li>
+        <li>Link to your Facebook Page (wishwood.org)</li>
+      </ol>
+
+      <div class="section-h"><span class="num">2</span> Permissions on your existing FB Meta app</div>
+      <ol class="step-list">
+        <li>In your FB app (from step ⑦) → add <code>instagram_basic</code> + <code>instagram_manage_messages</code> permissions</li>
+        <li>Re-generate the page access token · paste below</li>
+      </ol>
+
+      <div class="field"><label>IG Business Account ID</label><input type="text" placeholder="17841405..." id="ig-id"></div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('instagram')">✓ Mark connected</button>
+      </div>
+    </section>
+
+    <!-- WHATSAPP -->
+    <section class="panel" id="panel-whatsapp">
+      <div class="panel-head">
+        <h2>⑨ WhatsApp Business <span class="badge-status todo">TO SET UP</span></h2>
+        <p class="sub">Cloud API (Meta) · free tier 1,000 conversations/month · runs on the business phone number</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Apply for WhatsApp Cloud API</div>
+      <ol class="step-list">
+        <li>In your Meta app (from step ⑦) → add product <strong>WhatsApp</strong></li>
+        <li>Add the business phone number (from step ③)</li>
+        <li>Meta sends verification code to that number</li>
+        <li>Approve · WhatsApp Business is provisioned</li>
+      </ol>
+
+      <div class="section-h"><span class="num">2</span> Set up webhook</div>
+      <div class="row">
+        <div class="field"><label>WhatsApp Business Account ID</label><input type="text" placeholder="123456..." id="wa-id"></div>
+        <div class="field"><label>Permanent Access Token <span class="req">*</span></label><input type="password" placeholder="EAAxxxx..." id="wa-token"></div>
+      </div>
+      <div class="field"><label>Webhook callback URL (paste this into Meta app)</label><input type="text" value="https://wishwood-engine.workers.dev/webhook/whatsapp" readonly></div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('whatsapp')">✓ Mark connected</button>
+      </div>
+    </section>
+
+    <!-- STRIPE -->
+    <section class="panel" id="panel-stripe">
+      <div class="panel-head">
+        <h2>⑩ Stripe · direct booking payments <span class="badge-status todo">TO SET UP</span></h2>
+        <p class="sub">Powers the wishwood.co.uk/book payment flow · Stripe takes 1.4% + 20p UK domestic · money lands in your bank in 7 days</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Create the Stripe account</div>
+      <ol class="step-list">
+        <li>Go to <a href="https://dashboard.stripe.com/register" target="_blank">stripe.com/register</a></li>
+        <li>Use the new <code>chrissy@wishwood.co.uk</code> email</li>
+        <li>Add business details (sole trader / Ltd) · upload ID · add bank account for payouts</li>
+        <li>Stripe verifies within 1-2 days</li>
+      </ol>
+
+      <div class="section-h"><span class="num">2</span> Get the API keys</div>
+      <ol class="step-list">
+        <li>Dashboard → Developers → API keys</li>
+        <li>Copy the <strong>Publishable key</strong> and <strong>Secret key</strong> (live, not test)</li>
+      </ol>
+
+      <div class="row">
+        <div class="field"><label>Publishable key</label><input type="text" placeholder="pk_live_..." id="stripe-pub"></div>
+        <div class="field"><label>Secret key <span class="req">*</span></label><input type="password" placeholder="sk_live_..." id="stripe-sec">
+          <div class="hint">Stored as encrypted Cloudflare Worker secret · never visible client-side</div>
+        </div>
+      </div>
+
+      <div class="section-h"><span class="num">3</span> Webhook</div>
+      <div class="field"><label>Webhook endpoint (paste into Stripe Dashboard → Developers → Webhooks)</label><input type="text" value="https://wishwood-engine.workers.dev/webhook/stripe" readonly></div>
+      <div class="field"><label>Events to listen for</label><input type="text" value="checkout.session.completed, charge.refunded" readonly></div>
+
+      <div class="callout tip"><div class="lbl">◊ what gets logged</div>Every direct booking auto-posts to the accounts tab · revenue + Stripe fee + net · ready for VAT.</div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('stripe')">✓ Mark connected</button>
+      </div>
+    </section>
+
+    <!-- AI ENGINE -->
+    <section class="panel" id="panel-ai">
+      <div class="panel-head">
+        <h2>⑪ AI engine · the brain <span class="badge-status todo">PICK ONE</span></h2>
+        <p class="sub">Drafts replies in your voice · runs the inbox/calendar/accounts automations · pick the engine that fits</p>
+      </div>
+
+      <div class="section-h"><span class="num">Recommended for now</span></div>
+      <div class="live-status live">
+        <div class="icon">⚡</div>
+        <div class="info">
+          <div class="info-t">Groq · Llama 3.3 70B · free tier · fastest</div>
+          <div class="info-s">No card · plenty of capacity for Wishwood volume · default</div>
+        </div>
+      </div>
+      <div class="field"><label>Groq API key (paste from console.groq.com/keys)</label><input type="password" placeholder="gsk_..." id="ai-groq"></div>
+
+      <div class="section-h"><span class="num">Or</span> use Anthropic Claude (sharper · paid)</div>
+      <div class="field"><label>Claude API key (from console.anthropic.com)</label><input type="password" placeholder="sk-ant-..." id="ai-claude"></div>
+
+      <div class="section-h"><span class="num">Or</span> Google Gemini (1,500 req/day free)</div>
+      <div class="field"><label>Gemini API key (from aistudio.google.com/apikey)</label><input type="password" placeholder="AIzaSy..." id="ai-gemini"></div>
+
+      <div class="section-h"><span class="num">↓</span> Tune the voice</div>
+      <div class="field"><label>AI draft voice (system prompt)</label><textarea rows="6" id="ai-voice">You are Chrissy, owner of Wishwood Glamping in Kent. 9 years hosting. Off-grid. 3 cabins. Dogs welcome. Tone: warm, brief, uses · instead of comma-lists. Signs off "Chrissy". Mentions specifics (cabin name, dates) rather than generic phrases. Never sounds like a chatbot.</textarea></div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('ai')">✓ Mark connected</button>
+        <button class="btn ghost" onclick="alert('Generating 3 test replies · check the inbox tab')">Test a draft</button>
+      </div>
+    </section>
+
+    <!-- STAFF -->
+    <section class="panel" id="panel-staff">
+      <div class="panel-head">
+        <h2>⑫ Cleaner &amp; maintenance <span class="badge-status todo">TO ADD</span></h2>
+        <p class="sub">Add the people who turn cabins around &amp; fix what breaks · so the hub schedules them automatically &amp; tracks payroll</p>
+      </div>
+
+      <div class="section-h"><span class="num">1</span> Cleaner</div>
+      <div class="row">
+        <div class="field"><label>Name</label><input type="text" placeholder="Sue" id="cl-name"></div>
+        <div class="field"><label>Phone</label><input type="tel" placeholder="07XXX XXXXXX" id="cl-phone"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Hourly rate</label><input type="number" placeholder="18" id="cl-rate"></div>
+        <div class="field"><label>Per-turnaround flat fee</label><input type="number" placeholder="45" id="cl-flat"></div>
+      </div>
+      <div class="field"><label>Notes (allergies, availability, gate code knowledge etc)</label><textarea rows="2" placeholder="Has gate code · weekdays only · key in lockbox" id="cl-notes"></textarea></div>
+
+      <div class="section-h"><span class="num">2</span> Maintenance / handyperson</div>
+      <div class="row">
+        <div class="field"><label>Name</label><input type="text" placeholder="Pete" id="mt-name"></div>
+        <div class="field"><label>Phone</label><input type="tel" placeholder="07XXX XXXXXX" id="mt-phone"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Hourly rate</label><input type="number" placeholder="30" id="mt-rate"></div>
+        <div class="field"><label>Response window</label><input type="text" placeholder="Same day · 4hrs avg" id="mt-window"></div>
+      </div>
+
+      <div class="callout tip"><div class="lbl">◊ auto-schedule</div>Once added, the cleaner gets a daily SMS with that day's turnarounds. Maintenance gets job-by-job alerts via WhatsApp.</div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="markLive('staff')">✓ Save people</button>
+      </div>
+    </section>
+
+    <!-- EXPORT -->
+    <section class="panel" id="panel-export">
+      <div class="panel-head">
+        <h2>⑬ Export · take everything with you <span class="badge-status live">ALWAYS AVAILABLE</span></h2>
+        <p class="sub">Every piece of data is yours. Download everything any time. No lock-in possible.</p>
+      </div>
+
+      <table class="kv-table">
+        <tr><td>Bookings + guest details</td><td>JSON · last 24 months</td></tr>
+        <tr><td>Messages + AI training history</td><td>JSON · last 24 months</td></tr>
+        <tr><td>Calendar (all cabins · all sources)</td><td>iCal + JSON</td></tr>
+        <tr><td>Accounts ledger</td><td>CSV (Xero-compatible) + JSON</td></tr>
+        <tr><td>Compliance certs</td><td>ZIP of PDFs</td></tr>
+        <tr><td>Photos + content</td><td>ZIP</td></tr>
+        <tr><td>Staff records</td><td>JSON</td></tr>
+        <tr><td>API keys + settings</td><td>encrypted JSON</td></tr>
+      </table>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="alert('Generating full estate export · download will start in 10s')">⬇ Export everything</button>
+        <button class="btn ghost" onclick="alert('Schedule set · weekly backup to your Google Drive')">Schedule weekly backup</button>
+      </div>
+
+      <div class="callout"><div class="lbl">◊ stop using the hub</div>Click export · save the zip · turn off the Cloudflare Worker. Nothing more needed. Airbnb / Booking / FB / Stripe all keep working unchanged.</div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+function pick(panel){
+  document.querySelectorAll('.side-item').forEach(s=>s.classList.toggle('active', s.dataset.panel===panel));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+panel).classList.add('active');
+  if (window.innerWidth < 880) document.querySelector('.main').scrollIntoView({behavior:'smooth'});
+}
+function markLive(key){
+  const live = JSON.parse(localStorage.getItem('ww_admin_live')||'[]');
+  if (!live.includes(key)) live.push(key);
+  localStorage.setItem('ww_admin_live', JSON.stringify(live));
+  refresh();
+  alert('✓ '+key+' marked connected · status saved');
+}
+function refresh(){
+  const live = JSON.parse(localStorage.getItem('ww_admin_live')||'[]');
+  document.querySelectorAll('.side-item').forEach(s=>{
+    if (live.includes(s.dataset.panel)) {
+      s.classList.remove('todo');
+      s.classList.add('live');
+    }
+  });
+  const liveCount = live.length;
+  const todoCount = 13 - liveCount;
+  document.querySelector('.status-stat.green b').textContent = liveCount;
+  document.querySelector('.status-stat.todo b').textContent = todoCount;
+}
+function showHelp(panel){
+  alert('Help for '+panel+' · contact via the Help tab in the hub · or video walk-throughs in the hub Help section.');
+}
+refresh();
+</script>
+
+</body>
+</html>

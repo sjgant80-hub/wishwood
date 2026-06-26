@@ -3,500 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Wishwood Engine · the complete automation hub · yours, no charge</title>
-<meta name="description" content="A full multi-channel booking automation system for Wishwood Glamping. Built. Working. Ready to switch on whenever you want it. Zero charge from me. Zero SaaS subscriptions forever.">
+<title>Wishwood · operator</title>
+<meta name="description" content="Wishwood Glamping operator hub · inbox · calendar · bookings · admin · all in one place.">
 <meta name="theme-color" content="#18171a">
 <style>
-:root{
-  --woodsmoke:#18171a;
-  --deep:#1f1e22;
-  --surface:#27262b;
-  --raised:#302f35;
-  --moss:#2d4a3e;
-  --moss-bright:#3d6a55;
-  --leaf:#6b9d6f;
-  --ember:#c97a3d;
-  --ember-glow:rgba(201,122,61,0.12);
-  --gold:#c9a84c;
-  --linen:#ebe5d6;
-  --text:#d4cfc8;
-  --muted:#7a7681;
-  --border:rgba(235,229,214,0.08);
-  --border-strong:rgba(235,229,214,0.18);
-  --good:#6b9d6f;
-  --bad:#c75a4a;
-}
+:root{--void:#18171a;--deep:#1f1e22;--surface:#27262b;--moss:#2d4a3e;--moss-bright:#3d6a55;--leaf:#6b9d6f;--ember:#c97a3d;--ember-glow:rgba(201,122,61,0.12);--gold:#c9a84c;--linen:#ebe5d6;--text:#d4cfc8;--muted:#7a7681;--border:rgba(235,229,214,0.08);--border-strong:rgba(235,229,214,0.18)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:var(--woodsmoke);
-  color:var(--text);
-  font-family:-apple-system,system-ui,sans-serif;
-  font-size:15px;line-height:1.65;
-  -webkit-font-smoothing:antialiased;
-}
+body{background:var(--void);color:var(--text);font-family:-apple-system,system-ui,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
 a{color:var(--ember);text-decoration:none}
-button{font-family:inherit;color:inherit;cursor:pointer}
 
-.site-header{
-  position:sticky;top:0;z-index:50;
-  background:rgba(24,23,26,0.92);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  padding:14px 28px;display:flex;justify-content:space-between;align-items:center;
-}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);letter-spacing:0.02em}
+.top{padding:18px 28px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:rgba(24,23,26,0.95)}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)}
 .brand .glyph{color:var(--ember);font-size:26px}
-.brand .sub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase;margin-left:10px}
-.nav{display:flex;gap:20px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase}
-.nav a{color:var(--muted)}
-.nav a:hover{color:var(--ember)}
+.who{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted)}
+.who b{color:var(--linen)}
 
-/* Hero */
-.hero{
-  position:relative;
-  padding:100px 28px 80px;
-  background:radial-gradient(ellipse at top right,var(--ember-glow) 0%,var(--woodsmoke) 60%);
-  border-bottom:1px solid var(--border);
-  text-align:center;
-}
-.eyebrow{
-  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.24em;text-transform:uppercase;
-  color:var(--ember);margin-bottom:18px;
-}
-h1{
-  font-family:'Cormorant Garamond',serif;font-size:72px;line-height:1.05;color:var(--linen);
-  margin-bottom:22px;font-weight:400;max-width:880px;margin-left:auto;margin-right:auto;
-}
+.hero{padding:60px 28px 30px;max-width:840px;margin:0 auto;text-align:center}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ember);margin-bottom:12px}
+h1{font-family:'Cormorant Garamond',serif;font-size:48px;line-height:1.1;color:var(--linen);margin:0 auto 14px;font-weight:400}
 h1 em{color:var(--ember);font-style:italic}
-.lead{font-size:19px;color:var(--text);max-width:660px;margin:0 auto 28px;line-height:1.7}
-.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
-.btn{
-  padding:14px 26px;border:0;border-radius:4px;
-  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;
-  cursor:pointer;text-decoration:none;display:inline-block;
-}
-.btn.primary{background:var(--ember);color:var(--woodsmoke)}
-.btn.primary:hover{background:#d68850}
-.btn.secondary{background:transparent;color:var(--linen);border:1px solid var(--border-strong)}
-.btn.secondary:hover{border-color:var(--ember);color:var(--ember)}
+.greeting{font-size:16px;color:var(--text);max-width:520px;margin:0 auto;line-height:1.7}
 
-.hero-meta{
-  display:flex;gap:30px;justify-content:center;margin-top:48px;
-  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);flex-wrap:wrap;
-}
-.hero-meta b{color:var(--linen)}
+.tiles{padding:30px 22px 60px;max-width:1080px;margin:0 auto;flex:1}
+.tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
 
-/* Sections */
-section{padding:80px 28px;max-width:1100px;margin:0 auto}
-.section-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ember);margin-bottom:8px}
-.section-h2{font-family:'Cormorant Garamond',serif;font-size:46px;color:var(--linen);margin-bottom:14px;font-weight:400;line-height:1.15}
-.section-h2 em{color:var(--ember);font-style:italic}
-.section-lead{font-size:16px;color:var(--muted);max-width:620px;margin-bottom:36px;line-height:1.7}
-
-/* Problem section */
-.problem-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:30px}
-.problem-card{
-  background:var(--deep);border:1px solid var(--border);border-radius:6px;padding:24px 26px;
-  border-left:3px solid var(--bad);
+.tile{
+  background:var(--deep);border:1px solid var(--border);border-radius:10px;
+  padding:28px 28px 24px;
+  display:flex;flex-direction:column;gap:8px;
+  text-decoration:none;color:var(--text);
+  transition:all 0.15s;cursor:pointer;
 }
-.problem-card h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:10px}
-.problem-card p{font-size:14px;color:var(--text);line-height:1.7}
-.problem-card .num{font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--bad);line-height:1;margin-bottom:8px;font-weight:500}
+.tile:hover{border-color:var(--ember);transform:translateY(-2px);background:var(--surface)}
+.tile.primary{background:linear-gradient(135deg,var(--ember-glow),var(--deep));border-color:var(--ember)}
+.tile .glyph{font-size:36px;color:var(--ember);margin-bottom:4px}
+.tile h3{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);font-weight:400;margin-bottom:0}
+.tile p{font-size:13px;color:var(--muted);line-height:1.55;margin:0}
+.tile .meta{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-top:4px;padding-top:10px;border-top:1px dashed var(--border)}
+.tile.primary .meta{color:var(--ember)}
 
-/* Solution */
-.solution{background:var(--deep);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.solution-inner{max-width:1100px;margin:0 auto;padding:80px 28px}
-.solution-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
-@media (max-width:900px){.solution-grid{grid-template-columns:1fr}}
-.solution-card{
-  background:var(--woodsmoke);border:1px solid var(--border);border-radius:6px;padding:26px 28px;
-}
-.solution-card .icon{font-size:30px;color:var(--ember);margin-bottom:14px}
-.solution-card h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:8px}
-.solution-card p{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:14px}
-.solution-card ul{list-style:none;padding:0;font-size:13px;color:var(--muted);line-height:2}
-.solution-card ul li:before{content:"✓ ";color:var(--leaf);margin-right:4px}
+.section-h{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin:28px 4px 12px}
 
-/* The system */
-.system-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:30px}
-.system-card{
-  background:var(--deep);border:1px solid var(--border);border-radius:6px;padding:22px 24px;
-}
-.system-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);margin-bottom:8px;display:flex;align-items:center;gap:10px}
-.system-card h3 .g{color:var(--ember);font-size:22px}
-.system-card p{font-size:13px;color:var(--text);line-height:1.7;margin-bottom:10px}
-.system-card .meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase}
+footer{padding:20px 28px;text-align:center;border-top:1px solid var(--border);background:var(--deep)}
+.footer-line{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted)}
+.footer-line a{color:var(--muted)}.footer-line a:hover{color:var(--ember)}
 
-/* ROI */
-.roi{background:linear-gradient(135deg,var(--moss) 0%,var(--woodsmoke) 100%);padding:80px 28px;border-top:1px solid var(--moss-bright);border-bottom:1px solid var(--border)}
-.roi-inner{max-width:1100px;margin:0 auto}
-.roi-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:30px}
-@media (max-width:780px){.roi-grid{grid-template-columns:1fr}}
-.roi-table{background:var(--deep);border:1px solid var(--border-strong);border-radius:6px;padding:26px 30px}
-.roi-table h3{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);margin-bottom:18px;font-weight:400}
-.roi-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px dashed var(--border);font-size:14px}
-.roi-row:last-child{border-bottom:0}
-.roi-row .lbl{color:var(--text)}
-.roi-row .val{color:var(--linen);font-family:'JetBrains Mono',monospace;font-weight:600}
-.roi-row.total{border-top:1px solid var(--ember);margin-top:8px;padding-top:14px;font-family:'Cormorant Garamond',serif;font-size:24px}
-.roi-row.total .val{color:var(--ember);font-size:28px}
-
-/* Comparison table */
-.compare{width:100%;border-collapse:collapse;margin-top:24px;background:var(--deep);border-radius:6px;overflow:hidden}
-.compare th,.compare td{padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;text-align:left}
-.compare th{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ember);background:var(--surface)}
-.compare td:first-child{color:var(--linen);font-weight:500}
-.compare .yes{color:var(--leaf)}
-.compare .no{color:var(--bad)}
-.compare .partial{color:var(--gold)}
-
-/* Demo links */
-.demo-links{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:30px;
-}
-.demo-card{
-  background:var(--deep);border:1px solid var(--border);border-radius:6px;padding:0;
-  overflow:hidden;transition:all 0.2s;display:flex;flex-direction:column;
-}
-.demo-card:hover{border-color:var(--ember);transform:translateY(-2px)}
-.demo-img{
-  height:160px;
-  background:linear-gradient(135deg,var(--moss) 0%,var(--woodsmoke) 100%);
-  display:flex;align-items:center;justify-content:center;
-  border-bottom:1px solid var(--border);
-}
-.demo-img .glyph{font-size:80px;color:var(--ember);text-shadow:0 0 30px rgba(201,122,61,0.4);font-family:'Cormorant Garamond',serif}
-.demo-body{padding:22px 24px;flex:1;display:flex;flex-direction:column}
-.demo-name{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:6px}
-.demo-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px;flex:1}
-.demo-cta{
-  background:var(--ember);color:var(--woodsmoke);
-  padding:10px;border-radius:4px;text-align:center;
-  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;
-}
-
-/* Ask */
-.ask{
-  background:linear-gradient(135deg,var(--ember-glow) 0%,var(--deep) 100%);
-  border:1px solid var(--ember);border-radius:8px;
-  padding:46px 50px;text-align:center;margin-top:40px;
-}
-.ask h2{font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--linen);margin-bottom:14px;font-weight:400}
-.ask p{font-size:16px;color:var(--text);max-width:560px;margin:0 auto 24px;line-height:1.7}
-.ask .price{font-family:'Cormorant Garamond',serif;font-size:54px;color:var(--ember);margin:18px 0}
-.ask .price small{font-family:-apple-system,system-ui,sans-serif;font-size:16px;color:var(--muted);margin-left:6px}
-.ask .terms{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:20px}
-
-/* Footer */
-footer{
-  background:var(--deep);border-top:1px solid var(--border);
-  padding:50px 28px 36px;
-}
-.footer-inner{max-width:1100px;margin:0 auto;text-align:center}
-.footer-brand{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--linen);margin-bottom:10px}
-.footer-blurb{color:var(--muted);font-size:13px;line-height:1.7;max-width:520px;margin:0 auto 24px}
-.footer-seal{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:0.16em;text-transform:uppercase;color:var(--ember)}
-
-/* Demo banner */
-.demo-banner{
-  background:var(--ember);color:var(--woodsmoke);
-  padding:8px 16px;text-align:center;
-  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;
-}
-
-@media (max-width:780px){h1{font-size:42px}.section-h2{font-size:30px}section,.solution-inner{padding:50px 22px}.ask{padding:32px 24px}.ask h2{font-size:28px}.nav{flex-wrap:wrap;gap:8px;justify-content:flex-end}.nav a{font-size:9px;padding:5px 8px}.site-header{padding:12px 18px;flex-wrap:wrap;gap:8px}.brand{font-size:18px}}
+@media (max-width:680px){h1{font-size:32px}.hero{padding:36px 22px 20px}.tile{padding:22px}}
 </style>
 </head>
 <body>
 
-<div class="demo-banner">
-  ◊ For Chrissy at Wishwood Glamping · the engine is built · yours to switch on whenever
+<div class="top">
+  <div class="brand"><span class="glyph">◊</span><span>Wishwood</span></div>
+  <div class="who"><b>Chrissy</b> · operator</div>
 </div>
 
-<a href="howitworks.html" style="display:block;background:var(--moss);border-bottom:1px solid var(--moss-bright);padding:14px 28px;text-align:center;color:var(--linen);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.1em">
-  <span style="color:var(--ember);font-weight:700">▸ NEW HERE?</span>&nbsp; Read <u>How it works</u> first · plain English · 5 minute read →
-</a>
-<a href="roost.html" style="display:block;background:var(--ember-glow);border-bottom:1px solid var(--ember);padding:10px 28px;text-align:center;color:var(--linen);text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.1em">
-  <span style="color:var(--ember);font-weight:700">◊ 001</span>&nbsp; Wishwood is founding host #001 of <u>roost</u> · the post-platform model · learn more →
-</a>
-
-<header class="site-header">
-  <div class="brand">
-    <span class="glyph">◊</span>
-    <span>Wishwood Engine</span>
-    <span class="sub">sovereign · v1.0</span>
-  </div>
-  <nav class="nav">
-    <a href="howitworks.html" style="background:var(--ember);color:var(--woodsmoke);padding:7px 14px;border-radius:4px;font-weight:700">▸ How it works</a>
-    <a href="roost.html">◊ Roost #001</a>
-    <a href="hub.html">Hub</a>
-    <a href="book.html">Booking site</a>
-    <a href="#ask">Switch on</a>
-  </nav>
-</header>
-
-<!-- HERO -->
-<section class="hero" style="max-width:none;margin:0">
-  <div class="eyebrow">For Chrissy · Wishwood Glamping & Forestry · Canterbury, Kent</div>
-  <h1>Your <em>complete operation hub</em>. Built. Working. Yours.</h1>
-  <p class="lead">
-    Every Airbnb message, every Booking inquiry, every FB DM — funnelled into one inbox. AI drafts your reply in your voice. You tap approve.
-    Calendar syncs across channels in 60 seconds. Your own direct-booking site keeps 98.6% per booking instead of 83%.
-    All sovereign · zero SaaS · runs on a Raspberry Pi or a phone. <em style="color:var(--ember);font-style:normal">Yours to switch on whenever you want it.</em>
-  </p>
-  <div class="cta-row">
-    <a href="howitworks.html" class="btn primary">How it works · plain English →</a>
-    <a href="hub.html" class="btn secondary">See the operator hub</a>
-    <a href="book.html" class="btn secondary">See the booking site</a>
-  </div>
-  <div class="hero-meta">
-    <span><b>3</b> cabins · live in the hub</span>
-    <span><b>7</b> channels routed</span>
-    <span><b>£18,200</b> est. year-1 uplift</span>
-    <span><b>£0</b> from you · ever</span>
-  </div>
-</section>
-
-<!-- PROBLEM -->
-<section id="problem">
-  <div class="section-eyebrow">What the engine fixes</div>
-  <h2 class="section-h2">You're on <em>7 channels</em>, building <em>9 years</em> of reputation —<br>here's what's currently leaking.</h2>
-  <p class="section-lead">From your public footprint: 779 Airbnb reviews at 4.81★, 2,146 FB likes, Pitchup + Tripadvisor + Glamping Hub all live. Three gaps the engine closes:</p>
-
-  <div class="problem-grid">
-    <div class="problem-card">
-      <div class="num">£0</div>
-      <h3>Not on Booking.com</h3>
-      <p>Booking.com is the #1 channel for European glampers and weekend escapists. You're invisible to half the market. A 3-listing presence at parity pricing would estimate at <b style="color:var(--linen)">+£8-12k/yr</b>.</p>
-    </div>
-    <div class="problem-card">
-      <div class="num">£0</div>
-      <h3>No own booking site</h3>
-      <p>Every Airbnb booking costs you 14-17% — that's roughly <b style="color:var(--linen)">£3,720+ a year</b> in fees on Airbnb alone. A direct site costs Stripe's 1.4% + 20p. Same booking, you keep £140 more.</p>
-    </div>
-    <div class="problem-card">
-      <div class="num">7</div>
-      <h3>Seven inboxes</h3>
-      <p>Airbnb messages, Booking inquiries (when they come), FB DMs, Instagram, Pitchup notifications, Tripadvisor messages, email. Every one in its own app. <b style="color:var(--linen)">Cognitive load every day.</b></p>
-    </div>
-  </div>
-</section>
-
-<!-- SOLUTION -->
-<div class="solution">
-  <div class="solution-inner">
-    <div class="section-eyebrow">What I built</div>
-    <h2 class="section-h2">One hub. <em>All channels.</em> Zero subscriptions.</h2>
-    <p class="section-lead">A sovereign automation system that runs in your browser. No SaaS. No monthly fees. No data leaves your devices. Built for off-grid 4G reality.</p>
-
-    <div class="solution-grid">
-      <div class="solution-card">
-        <div class="icon">✉</div>
-        <h3>Unified inbox</h3>
-        <p>Every message from every channel lands in one queue. AI drafts the reply in your voice. You tap approve, it sends back through the right channel.</p>
-        <ul>
-          <li>Airbnb + Booking + FB + IG + WhatsApp + Pitchup + direct</li>
-          <li>Sentiment + urgency auto-detected</li>
-          <li>Voice learned from your past 4,200 replies</li>
-        </ul>
-      </div>
-      <div class="solution-card">
-        <div class="icon">▦</div>
-        <h3>Channel-sync calendar</h3>
-        <p>Two-way iCal sync between every channel. A booking on Airbnb blocks Booking.com and your direct site within 60 seconds. Double-booking impossible.</p>
-        <ul>
-          <li>Per-cabin gantt grid</li>
-          <li>Drag to block off dates</li>
-          <li>Cleaner schedule auto-generated</li>
-        </ul>
-      </div>
-      <div class="solution-card">
-        <div class="icon">£</div>
-        <h3>Direct booking site</h3>
-        <p>wishwood.co.uk/book — your own front door. Stripe checkout. 98.6% kept per booking vs Airbnb's 83%. Same guest, more in your pocket.</p>
-        <ul>
-          <li>Live availability calendar</li>
-          <li>Returning-guest silent discount</li>
-          <li>FB-follower WOOD10 code</li>
-        </ul>
-      </div>
-      <div class="solution-card">
-        <div class="icon">⟶</div>
-        <h3>Guest journey automation</h3>
-        <p>T-7 prep · T-1 gate code · T+0 welcome · mid-stay check-in · post-stay review request with direct-book code. All editable, all in your voice.</p>
-        <ul>
-          <li>9 trigger points across the stay</li>
-          <li>Off-grid prep guide auto-included</li>
-          <li>Weather forecast in pre-arrival SMS</li>
-        </ul>
-      </div>
-      <div class="solution-card">
-        <div class="icon">£↑</div>
-        <h3>Dynamic pricing</h3>
-        <p>Base · weekend uplift · peak · long-stay · last-minute fill · local event boost. All rules editable, all push to every channel automatically.</p>
-        <ul>
-          <li>Pricing rules per cabin</li>
-          <li>Canterbury Festival auto-detection</li>
-          <li>Last-minute discount auto-fill empty nights</li>
-        </ul>
-      </div>
-      <div class="solution-card">
-        <div class="icon">⚙</div>
-        <h3>Off-grid ops dashboard</h3>
-        <p>Solar battery · water tank · propane bottles · log stock · weather · cleaner schedule. The off-grid bits that matter, on one screen.</p>
-        <ul>
-          <li>Telemetry hooks for Victron / sensors</li>
-          <li>Auto-reorder threshold alerts</li>
-          <li>Weather-aware guest comms</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<div class="hero">
+  <div class="eyebrow">your tools · pick a door</div>
+  <h1>Welcome <em>back</em>.</h1>
+  <p class="greeting">Everything Wishwood needs to run, in one place. Tap a tile.</p>
 </div>
 
-<!-- WALK THE DEMO -->
-<section>
-  <div class="section-eyebrow">Click through it</div>
-  <h2 class="section-h2">Walk the <em>two demos</em>.</h2>
-  <p class="section-lead">Both are real, working, single-file HTML. Open them on your phone, your laptop, anywhere. No login, no setup, no install.</p>
+<div class="tiles">
 
-  <div class="demo-links">
-    <a href="hub.html" class="demo-card">
-      <div class="demo-img"><span class="glyph">◐</span></div>
-      <div class="demo-body">
-        <div class="demo-name">The operator hub</div>
-        <div class="demo-desc">What Chrissy sees every morning. Unified inbox · calendar · dashboard · channels · cabins · pricing · reviews · journey · off-grid ops · settings. 10 sample messages waiting to be triaged.</div>
-        <div class="demo-cta">Open the hub →</div>
-      </div>
+  <div class="section-h">Daily</div>
+  <div class="tile-grid">
+    <a href="hub.html" class="tile primary">
+      <div class="glyph">⌬</div>
+      <h3>Operator hub</h3>
+      <p>Inbox · calendar · dashboard · channels · cabins · pricing · reviews · journey · ops · staff · accounts · brain.</p>
+      <div class="meta">▸ main tool · open this every morning</div>
     </a>
-    <a href="book.html" class="demo-card">
-      <div class="demo-img"><span class="glyph">◊</span></div>
-      <div class="demo-body">
-        <div class="demo-name">The guest booking site</div>
-        <div class="demo-desc">What guests see at wishwood.co.uk/book. Three cabins · live availability · Stripe checkout · WOOD10 follower discount · returning-guest rate. Full journey through to "demo confirmation."</div>
-        <div class="demo-cta">Open the booking site →</div>
-      </div>
+    <a href="hubphone.html" class="tile">
+      <div class="glyph">📱</div>
+      <h3>Duty phone</h3>
+      <p>Simplified view for whoever's on duty that day · today's check-ins · today's messages · one emergency button.</p>
+      <div class="meta">▸ phone-only · install to home screen</div>
     </a>
   </div>
-</section>
 
-<!-- ROI -->
-<div class="roi">
-  <div class="roi-inner">
-    <div class="section-eyebrow">The numbers</div>
-    <h2 class="section-h2">What this is <em>worth to you</em> in year one.</h2>
-    <p class="section-lead">All estimates conservative · based on your public Airbnb/Pitchup data + UK glamping channel-mix benchmarks.</p>
-
-    <div class="roi-grid">
-      <div class="roi-table">
-        <h3>Today · current state</h3>
-        <div class="roi-row"><span class="lbl">Estimated annual revenue</span><span class="val">£42,000</span></div>
-        <div class="roi-row"><span class="lbl">Airbnb fees (15.5% × £30k)</span><span class="val" style="color:var(--bad)">−£4,650</span></div>
-        <div class="roi-row"><span class="lbl">Pitchup fees (8% × £6k)</span><span class="val" style="color:var(--bad)">−£480</span></div>
-        <div class="roi-row"><span class="lbl">Other OTA fees</span><span class="val" style="color:var(--bad)">−£1,380</span></div>
-        <div class="roi-row"><span class="lbl">SaaS tools (none)</span><span class="val">£0</span></div>
-        <div class="roi-row total"><span class="lbl">Take-home</span><span class="val">£35,490</span></div>
-      </div>
-
-      <div class="roi-table" style="border-color:var(--ember)">
-        <h3 style="color:var(--ember)">With Wishwood Engine · year 1</h3>
-        <div class="roi-row"><span class="lbl">Estimated annual revenue</span><span class="val">£58,000</span></div>
-        <div class="roi-row"><span class="lbl">+ Booking.com new channel</span><span class="val" style="color:var(--leaf)">+£9,000</span></div>
-        <div class="roi-row"><span class="lbl">+ Direct site (28% → 50%)</span><span class="val" style="color:var(--leaf)">+£7,000</span></div>
-        <div class="roi-row"><span class="lbl">− OTA fees (mix shift)</span><span class="val" style="color:var(--bad)">−£4,310</span></div>
-        <div class="roi-row"><span class="lbl">SaaS subscriptions avoided</span><span class="val" style="color:var(--leaf)">£0 (vs £980+)</span></div>
-        <div class="roi-row total"><span class="lbl">Take-home</span><span class="val">£53,690</span></div>
-      </div>
-    </div>
-
-    <div style="margin-top:30px;padding:24px;background:var(--deep);border:1px solid var(--ember);border-radius:6px;text-align:center">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ember);margin-bottom:8px">Net uplift year 1</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;color:var(--linen)">+£18,200</div>
-      <div style="font-size:13px;color:var(--muted);margin-top:6px">vs continuing as you are · before any pricing optimisation gains</div>
-    </div>
+  <div class="section-h">Guests</div>
+  <div class="tile-grid">
+    <a href="book.html" class="tile">
+      <div class="glyph">◊</div>
+      <h3>Direct booking site</h3>
+      <p>The guest-facing wishwood.co.uk/book page · cabin picker · live availability · Stripe checkout.</p>
+      <div class="meta">▸ what guests see</div>
+    </a>
+    <a href="media.html" class="tile">
+      <div class="glyph">⛁</div>
+      <h3>Media tools</h3>
+      <p>Drop a video → 6 stills → AI caption → publish to FB + IG + roost from one screen.</p>
+      <div class="meta">▸ for posting</div>
+    </a>
   </div>
+
+  <div class="section-h">Setup</div>
+  <div class="tile-grid">
+    <a href="admin.html" class="tile">
+      <div class="glyph">⚙</div>
+      <h3>Admin · connections</h3>
+      <p>Gmail · phone · Airbnb · Booking.com · Facebook · Instagram · WhatsApp · Stripe · AI engine · staff. Tick each off as it goes live.</p>
+      <div class="meta">▸ wire everything in here</div>
+    </a>
+    <a href="relaunch.html" class="tile">
+      <div class="glyph">🌱</div>
+      <h3>Relaunch wizard</h3>
+      <p>8-step rebuild from scratch · new email, calendar, FB, phone, laptop, hub phone · written for people who hate tech.</p>
+      <div class="meta">▸ first-time setup walkthrough</div>
+    </a>
+  </div>
+
+  <div class="section-h">Learn · explore</div>
+  <div class="tile-grid">
+    <a href="howitworks.html" class="tile">
+      <div class="glyph">📖</div>
+      <h3>How it works</h3>
+      <p>Plain English explainer · what every part of the system does · with diagrams · written for a 12-year-old.</p>
+      <div class="meta">▸ reference</div>
+    </a>
+    <a href="roost.html" class="tile">
+      <div class="glyph">◊</div>
+      <h3>About roost</h3>
+      <p>Wishwood is founding host #001 of roost · a host-owned, AI-operated marketplace. Read what that means.</p>
+      <div class="meta">▸ context</div>
+    </a>
+    <a href="ai.html" class="tile">
+      <div class="glyph">🤖</div>
+      <h3>AI agent dossier</h3>
+      <p>Machine-readable + human-readable info for AI booking agents that find Wishwood (ChatGPT · Claude · Perplexity).</p>
+      <div class="meta">▸ for the agent era</div>
+    </a>
+  </div>
+
 </div>
 
-<!-- COMPARISON -->
-<section>
-  <div class="section-eyebrow">vs the SaaS alternative</div>
-  <h2 class="section-h2">What you'd pay for <em>less than this</em> via Hospitable, Lodgify, Hostaway.</h2>
-  <p class="section-lead">The SaaS channel-managers do roughly the same job — and charge £40-150 per property per month, forever, while your data lives on their servers.</p>
-
-  <table class="compare">
-    <thead><tr><th></th><th>Wishwood Engine</th><th>Hospitable</th><th>Lodgify</th><th>Hostaway</th></tr></thead>
-    <tbody>
-      <tr><td>Monthly fee (3 cabins)</td><td class="yes">£0</td><td class="no">£90</td><td class="no">£60</td><td class="no">£150</td></tr>
-      <tr><td>Yearly cost</td><td class="yes">£0</td><td class="no">£1,080</td><td class="no">£720</td><td class="no">£1,800</td></tr>
-      <tr><td>Unified inbox · all channels</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-      <tr><td>AI-drafted replies</td><td class="yes">✓ in your voice</td><td class="partial">+£40/mo</td><td class="no">—</td><td class="partial">+£70/mo</td></tr>
-      <tr><td>Direct booking site</td><td class="yes">✓ included</td><td class="partial">+£25/mo</td><td class="yes">✓</td><td class="partial">+£50/mo</td></tr>
-      <tr><td>Channel sync (iCal)</td><td class="yes">✓ 60s</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-      <tr><td>Your data stays yours</td><td class="yes">✓ sovereign</td><td class="no">on their servers</td><td class="no">on their servers</td><td class="no">on their servers</td></tr>
-      <tr><td>Works fully offline</td><td class="yes">✓ off-grid native</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-      <tr><td>Off-grid ops integration</td><td class="yes">✓ Victron-ready</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-      <tr><td>Lock-in if you stop paying</td><td class="yes">✓ nothing changes</td><td class="no">loses access</td><td class="no">loses access</td><td class="no">loses access</td></tr>
-    </tbody>
-  </table>
-</section>
-
-<!-- THE GIFT -->
-<section id="ask">
-  <div class="ask">
-    <div class="section-eyebrow" style="color:var(--ember)">It's yours</div>
-    <h2>The engine is built. <em>If you want it switched on, it's yours.</em></h2>
-    <p style="font-size:17px">
-      No charge from me — not now, not later. Wishwood is the off-grid operation this system was designed around, and you running it live is worth more to me than any fee.
-    </p>
-    <p style="font-size:15px;color:var(--text);max-width:540px;margin:0 auto 20px">
-      When you're ready, I'll connect everything — your Airbnb iCals, the Booking.com setup, Stripe on your bank, Gmail forwarding, the Cloudflare worker — and hand you the keys. Should take a long afternoon. No subscription. No lock-in. The source is on GitHub under your name once it's switched on.
-    </p>
-    <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:30px 0;max-width:680px;margin-left:auto;margin-right:auto">
-      <div style="background:var(--deep);border:1px solid var(--ember-glow);border-radius:6px;padding:18px 22px;min-width:200px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ember);margin-bottom:6px">What I'm asking</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--linen);line-height:1.2">Be the proof</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:6px">Wishwood live = everything else I build is real</div>
-      </div>
-      <div style="background:var(--deep);border:1px solid var(--border);border-radius:6px;padding:18px 22px;min-width:200px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">What you give back</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--linen);line-height:1.2">Honest feedback</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:6px">where it works · where it doesn't · what's missing</div>
-      </div>
-      <div style="background:var(--deep);border:1px solid var(--border);border-radius:6px;padding:18px 22px;min-width:200px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Setup time</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--linen);line-height:1.2">One afternoon</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:6px">with you on a call · tea + biscuits</div>
-      </div>
-    </div>
-
-    <p style="font-size:14px;color:var(--muted);max-width:520px;margin:0 auto;font-style:italic">
-      We can talk about money later if you ever want to · for now Wishwood being the live reference makes everything else I'm building real.
-    </p>
-
-    <div class="cta-row" style="margin-top:32px">
-      <a href="mailto:ainativesolutions@gmail.com?subject=Wishwood%20Engine%20-%20Switch%20it%20on" class="btn primary">Switch it on →</a>
-      <a href="howitworks.html" class="btn secondary">Read how it works first</a>
-    </div>
-    <div class="terms">No commitment · no card · no follow-up emails unless you reply</div>
-  </div>
-</section>
-
-<!-- White-label hint -->
-<section>
-  <div class="section-eyebrow">After Wishwood</div>
-  <h2 class="section-h2">Wishwood becomes the <em>proof</em>. Other hosts get the same engine.</h2>
-  <p class="section-lead">Built multi-tenant from day one. The same engine works for any off-grid host with multiple channels — just change one config file. Once Wishwood is running live, I open it to other hosts as the template. Wishwood gets a 10% referral on any host who joins through your recommendation, in perpetuity.</p>
-</section>
-
-<!-- FOOTER -->
 <footer>
-  <div class="footer-inner">
-    <div class="footer-brand">◊ Wishwood Engine</div>
-    <p class="footer-blurb">Sovereign multi-channel automation for off-grid hospitality. Built by AI Native Solutions · Simon Gant · Kent. Built for Chrissy at Wishwood Glamping & Forestry · hers to switch on whenever she wants it.</p>
-    <div class="footer-seal">◊ · κ = 1 · Powered by Konomi</div>
-    <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase">
-      <a href="https://www.ai-nativesolutions.com" target="_blank">ai-nativesolutions.com</a> · MIT licensed
-    </div>
-  </div>
+  <div class="footer-line">◊ Wishwood Glamping &amp; Forestry · Canterbury, Kent · 16 acres ancient woodland · <a href="https://github.com/sjgant80-hub/wishwood" target="_blank">source on github</a> · MIT</div>
 </footer>
 
 </body>
