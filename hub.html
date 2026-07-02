@@ -3,6 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<script>
+// ═══ Wishwood auth gate · redirects to login.html if no valid session ═══
+(function(){
+  var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
+  var s = null;
+  try { s = raw ? JSON.parse(raw) : null; } catch(e) { s = null; }
+  var now = Math.floor(Date.now()/1000);
+  if (!s || !s.token || !s.exp || s.exp < now) {
+    // clear anything already parsed to prevent protected content flash
+    if (document.documentElement) document.documentElement.innerHTML = '';
+    location.replace('login.html');
+    return;
+  }
+  var WORKER = 'https://wishwood-engine.workers.dev';
+  window.WW_AUTH = {
+    token: s.token, sub: s.sub, exp: s.exp, workerUrl: WORKER,
+    fetch: function(path, opts){
+      opts = opts || {};
+      var headers = Object.assign({}, opts.headers || {}, { 'Authorization': 'Bearer ' + s.token });
+      return fetch((path.indexOf('http')===0 ? path : WORKER + path), Object.assign({}, opts, { headers: headers }));
+    },
+    logout: function(){
+      localStorage.removeItem('wishwood.session');
+      sessionStorage.removeItem('wishwood.session');
+      location.replace('login.html');
+    },
+  };
+  // Floating pills · WhatsApp launcher + Log out · always visible
+  window.addEventListener('DOMContentLoaded', function(){
+    if (document.getElementById('__ww_pills')) return;
+    var pills = document.createElement('div');
+    pills.id = '__ww_pills';
+    pills.style.cssText = 'position:fixed;top:10px;right:14px;z-index:9999;display:flex;gap:6px;font:600 10px/1 "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;align-items:center';
+    pills.innerHTML =
+      '<a href="wa.html" title="WhatsApp Multi-Device launcher" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;padding:7px 12px;border-radius:99px;text-decoration:none;box-shadow:0 2px 8px rgba(37,211,102,0.35)">WhatsApp</a>' +
+      '<button onclick="WW_AUTH.logout()" title="Sign out of this device" style="background:rgba(255,255,255,0.08);color:#c4bfb2;border:1px solid rgba(235,229,214,0.18);padding:7px 12px;border-radius:99px;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit">Log out</button>';
+    document.body.appendChild(pills);
+  });
+})();
+</script>
 <title>Wishwood · Operator Hub</title>
 <meta name="description" content="Unified inbox · calendar · ops dashboard for off-grid glamping. Sovereign · no SaaS · works on 4G.">
 <meta name="theme-color" content="#18171a">

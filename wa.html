@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wishwood · WhatsApp Web · Multi-Device Setup</title>
+<meta name="description" content="Chrissy and trusted staff all see the same WhatsApp Business conversations via Multi-Device. Zero Twilio approval needed.">
+<meta name="theme-color" content="#18171a">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --woodsmoke:#18171a;--deep:#1f1e22;--surface:#27262b;--raised:#302f35;
+  --moss:#2d4a3e;--moss-bright:#3d6a55;--leaf:#6b9d6f;
+  --ember:#c97a3d;--ember-glow:rgba(201,122,61,0.12);
+  --gold:#c9a84c;--linen:#ebe5d6;
+  --text:#d4cfc8;--muted:#7a7681;
+  --border:rgba(235,229,214,0.08);--border-strong:rgba(235,229,214,0.18);
+  --good:#6b9d6f;--warn:#d4a83d;--bad:#c75a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--woodsmoke);color:var(--text);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--ember);text-decoration:none}
+a:hover{color:var(--gold)}
+.site-header{position:sticky;top:0;z-index:50;background:rgba(24,23,26,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen);letter-spacing:0.02em}
+.brand .glyph{color:var(--ember);font-size:28px}
+.nav{display:flex;gap:22px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase}
+.nav a{color:var(--muted)}
+.nav a:hover{color:var(--ember)}
+.nav a.active{color:var(--ember)}
+@media(max-width:760px){.nav{display:none}}
+
+.hero{padding:60px 28px 30px;background:radial-gradient(ellipse at top,var(--moss) 0%,var(--woodsmoke) 70%);border-bottom:1px solid var(--border);text-align:center}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ember);margin-bottom:14px}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,6vw,54px);line-height:1.1;color:var(--linen);margin:0 auto 16px;font-weight:400;max-width:780px}
+h1 em{color:var(--ember);font-style:italic}
+.hero-sub{font-size:17px;color:var(--text);max-width:620px;margin:0 auto;line-height:1.7}
+
+.big-cta{padding:40px 28px;background:var(--deep);border-bottom:1px solid var(--border);text-align:center}
+.big-btn{display:inline-flex;align-items:center;gap:12px;padding:20px 40px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:0;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:8px;cursor:pointer;transition:transform .1s,box-shadow .15s;text-decoration:none;box-shadow:0 6px 20px rgba(37,211,102,0.35)}
+.big-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(37,211,102,0.5);color:#fff;text-decoration:none}
+.big-btn svg{width:24px;height:24px}
+.big-hint{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;margin-top:14px}
+
+section{padding:44px 28px;max-width:820px;margin:0 auto}
+.section-num{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ember);background:var(--ember-glow);width:32px;height:32px;border-radius:50%;text-align:center;line-height:32px;margin-right:12px;vertical-align:middle;border:1px solid var(--ember)}
+h2{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--linen);margin-bottom:6px;font-weight:400;line-height:1.2}
+h2 em{color:var(--ember);font-style:italic}
+.sec-desc{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px}
+p{margin-bottom:14px}
+strong{color:var(--linen)}
+.callout{background:var(--deep);border:1px solid var(--border-strong);border-left:4px solid var(--ember);border-radius:0 8px 8px 0;padding:20px 24px;margin:20px 0}
+.callout h3{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.callout p{color:var(--text);font-size:15px;margin-bottom:8px}
+.callout p:last-child{margin-bottom:0}
+.steps{list-style:none;padding:0;margin:24px 0}
+.steps li{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--border)}
+.steps li:last-child{border-bottom:0}
+.steps .step-n{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--ember);line-height:1;font-weight:500}
+.steps .step-body strong{display:block;color:var(--linen);font-size:16px;margin-bottom:4px}
+.steps .step-body p{margin-bottom:0;color:var(--text);font-size:14px;line-height:1.65}
+.steps .step-body code{background:var(--surface);color:var(--gold);padding:2px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.warn-block{background:linear-gradient(135deg,rgba(199,90,74,0.08),var(--deep));border:1px solid var(--bad);border-radius:8px;padding:22px 26px;margin:24px 0}
+.warn-block h3{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--bad);margin-bottom:8px;font-weight:500}
+.warn-block p{color:var(--text);font-size:14px;margin-bottom:8px}
+.warn-block ul{margin-left:20px;color:var(--text);font-size:14px}
+.warn-block li{margin-bottom:6px}
+footer{padding:30px 28px;text-align:center;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.05em;border-top:1px solid var(--border);margin-top:20px}
+footer .glyph{color:var(--ember)}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand"><span class="glyph">◊</span>Wishwood</div>
+  <nav class="nav">
+    <a href="./">Home</a>
+    <a href="book.html">Book</a>
+    <a href="hub.html">Hub</a>
+    <a href="howitworks.html">How it works</a>
+    <a href="credentials.html">Credentials</a>
+    <a href="wa.html" class="active">WhatsApp</a>
+    <a href="ai.html">AI</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">◆ Zero Twilio delay · everyone gets guest messages</div>
+  <h1>WhatsApp Web <em>· Multi-Device</em>.</h1>
+  <p class="hero-sub">One WhatsApp Business account · up to 4 devices linked · Chrissy + trusted staff (Marius etc.) all see the same conversations and can reply. No API approval wait. Works today.</p>
+</div>
+
+<div class="big-cta">
+  <a class="big-btn" href="https://web.whatsapp.com/" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Open WhatsApp Web
+  </a>
+  <div class="big-hint">◆ Opens in a new tab · scan the QR code from Chrissy's phone once · stays signed in</div>
+</div>
+
+<section>
+  <h2><span class="section-num">1</span>Chrissy — <em>the master phone</em></h2>
+  <div class="sec-desc">◆ One-time setup · takes 5 minutes</div>
+  <p>Chrissy's WhatsApp Business phone is the master. Everyone else is a "linked device" and shows up in the same conversations. Chrissy retains full control — she can revoke any device at any time from her phone.</p>
+  <ol class="steps">
+    <li><span class="step-n">1</span><div class="step-body">
+      <strong>Open WhatsApp Business on Chrissy's phone</strong>
+      <p>The regular WhatsApp Business app · not personal WhatsApp · not any Meta browser app.</p>
+    </div></li>
+    <li><span class="step-n">2</span><div class="step-body">
+      <strong>Settings → Linked devices</strong>
+      <p>On Android: Settings icon (bottom right) → Linked devices. On iPhone: Settings tab (bottom right) → Linked devices.</p>
+    </div></li>
+    <li><span class="step-n">3</span><div class="step-body">
+      <strong>Tap "Link a device"</strong>
+      <p>WhatsApp shows a QR scanner. Chrissy points it at whatever browser wants to link (her own laptop, Marius's laptop, etc.). One scan per device.</p>
+    </div></li>
+    <li><span class="step-n">4</span><div class="step-body">
+      <strong>Optional: turn on "Require unlock" for extra security</strong>
+      <p>Anyone with Chrissy's phone can otherwise scan a new device. This step forces face/fingerprint before scanning.</p>
+    </div></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="section-num">2</span>Chrissy's own laptop / iPad</h2>
+  <div class="sec-desc">◆ Chrissy's browser session</div>
+  <ol class="steps">
+    <li><span class="step-n">1</span><div class="step-body">
+      <strong>Click the big green "Open WhatsApp Web" button above</strong>
+      <p>Opens <code>web.whatsapp.com</code> in a new tab.</p>
+    </div></li>
+    <li><span class="step-n">2</span><div class="step-body">
+      <strong>Scan the QR code from Chrissy's phone</strong>
+      <p>Use the "Linked devices → Link a device" flow from §1 above.</p>
+    </div></li>
+    <li><span class="step-n">3</span><div class="step-body">
+      <strong>Tick "Keep me signed in" on the web.whatsapp.com side</strong>
+      <p>Stays logged in on that laptop indefinitely · no need to re-scan every session.</p>
+    </div></li>
+    <li><span class="step-n">4</span><div class="step-body">
+      <strong>Add web.whatsapp.com to your home screen</strong>
+      <p>On desktop: bookmark it. On tablet: browser menu → "Install as app" · gives you a WhatsApp Business app icon that opens straight to the web session.</p>
+    </div></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="section-num">3</span>Adding staff (Marius etc.)</h2>
+  <div class="sec-desc">◆ Up to 3 more devices · 4 total linked</div>
+  <div class="callout">
+    <h3>◆ Trust model</h3>
+    <p><strong>Anyone Chrissy links can see + send from her business number.</strong> They see every guest conversation. Only link people she trusts to represent Wishwood in writing.</p>
+    <p>Chrissy can revoke any device from her phone instantly — Linked Devices → tap the device → "Log out". That device is dead within seconds.</p>
+  </div>
+  <ol class="steps">
+    <li><span class="step-n">1</span><div class="step-body">
+      <strong>Marius opens web.whatsapp.com on his own laptop / phone</strong>
+      <p>His own browser · his own device · his own home screen.</p>
+    </div></li>
+    <li><span class="step-n">2</span><div class="step-body">
+      <strong>Chrissy scans his QR with her phone</strong>
+      <p>WhatsApp Business on Chrissy's phone → Linked devices → Link a device → scan the QR shown on Marius's browser.</p>
+    </div></li>
+    <li><span class="step-n">3</span><div class="step-body">
+      <strong>Marius's laptop is now linked</strong>
+      <p>He sees every conversation Chrissy sees. Sends and receives as Wishwood. Notifications go to his device too.</p>
+    </div></li>
+    <li><span class="step-n">4</span><div class="step-body">
+      <strong>Repeat for up to 2 more staff / devices</strong>
+      <p>Cap is 4 linked devices total (excluding the master phone). If Chrissy needs more, use WhatsApp Business API via Twilio (still worth setting up in the background — but you don't need it to start).</p>
+    </div></li>
+  </ol>
+</section>
+
+<section>
+  <div class="warn-block">
+    <h3>◆ Things to be honest about</h3>
+    <p>WhatsApp Web Multi-Device works well for a small operator. It's not the same as the full WhatsApp Business API. Specifically:</p>
+    <ul>
+      <li><strong>No auto-send from the hub AI.</strong> AI drafts appear in the Wishwood hub · Chrissy or staff copy-paste into WhatsApp Web to actually send. The Business API adds true auto-send later, once Twilio approves.</li>
+      <li><strong>Chrissy's phone must stay online.</strong> If her phone is off / no signal for &gt;14 days, all linked devices go offline until she reconnects.</li>
+      <li><strong>Guest privacy.</strong> Every linked device sees every conversation. Don't link anyone you wouldn't want reading Chrissy's business messages.</li>
+      <li><strong>Automation risks a ban.</strong> Do not use browser extensions or scripts that auto-send from web.whatsapp.com. WhatsApp bans numbers doing that.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="section-num">4</span>What to do while Twilio approval catches up</h2>
+  <div class="sec-desc">◆ Belt and braces · both paths in parallel</div>
+  <p>Multi-Device works today. The Twilio Business API path is worth completing in the background so the hub AI can auto-send later. Steps to run in parallel:</p>
+  <ol class="steps">
+    <li><span class="step-n">A</span><div class="step-body">
+      <strong>Today · Multi-Device via steps above</strong>
+      <p>Chrissy, Marius, and up to 2 more devices all see Wishwood messages inside 24 hours. Zero delay.</p>
+    </div></li>
+    <li><span class="step-n">B</span><div class="step-body">
+      <strong>Meanwhile · Twilio sender request</strong>
+      <p>Fill in <a href="credentials.html#5">§5A on the credentials page</a> · Twilio takes 1-2 weeks to approve. When approved, hub AI gets auto-send capability alongside the Multi-Device browsers.</p>
+    </div></li>
+    <li><span class="step-n">C</span><div class="step-body">
+      <strong>Later · both channels working together</strong>
+      <p>Multi-Device browsers stay live for manual replies · Twilio handles automated confirmations, reminders, and check-in messages. Best of both.</p>
+    </div></li>
+  </ol>
+</section>
+
+<footer>
+  <span class="glyph">◊</span> · <a href="./">Wishwood</a> · <a href="hub.html">Hub</a> · <a href="howitworks.html">How it works</a> · <a href="credentials.html">Credentials</a> · MIT · ◊·κ=1
+</footer>
+
+</body>
+</html>

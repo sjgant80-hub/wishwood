@@ -50,13 +50,87 @@ const textResp = (body, status = 200, ct = 'text/plain') =>
   new Response(body, { status, headers: { 'Content-Type': ct, ...CORS } });
 
 /* ─── Auth ─── */
-function requireOperator(req, env) {
+// Accepts EITHER the legacy static OPERATOR_TOKEN (for API clients / cron / dev),
+// OR a browser session JWT signed by SESSION_SECRET (issued by /auth/login).
+async function requireOperator(req, env) {
   const auth = req.headers.get('Authorization') || '';
   const token = auth.replace(/^Bearer\s+/i, '');
-  if (!env.OPERATOR_TOKEN || token !== env.OPERATOR_TOKEN) {
-    return jsonResp({ error: 'unauthorised' }, 401);
+  if (!token) return jsonResp({ error: 'unauthorised · missing token' }, 401);
+  // Legacy static token (backwards compatible)
+  if (env.OPERATOR_TOKEN && token === env.OPERATOR_TOKEN) return null;
+  // Browser session JWT
+  if (env.SESSION_SECRET && await verifyJwt(token, env.SESSION_SECRET)) return null;
+  return jsonResp({ error: 'unauthorised · invalid token' }, 401);
+}
+
+/* ─── JWT (HMAC-SHA256 · minimal, no deps) ─── */
+const b64url = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes)))
+  .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64urlToStr = (s) => atob(s.replace(/-/g, '+').replace(/_/g, '/'));
+
+async function hmac(secret, data) {
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  return crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
+}
+
+async function signJwt(payload, secret) {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const encHead = b64url(new TextEncoder().encode(JSON.stringify(header)));
+  const encPay  = b64url(new TextEncoder().encode(JSON.stringify(payload)));
+  const sig     = b64url(await hmac(secret, `${encHead}.${encPay}`));
+  return `${encHead}.${encPay}.${sig}`;
+}
+
+async function verifyJwt(token, secret) {
+  try {
+    const [h, p, s] = token.split('.');
+    if (!h || !p || !s) return false;
+    const expected = b64url(await hmac(secret, `${h}.${p}`));
+    if (expected !== s) return false;
+    const payload = JSON.parse(b64urlToStr(p));
+    if (payload.exp && Math.floor(Date.now() / 1000) > payload.exp) return false;
+    return payload;
+  } catch { return false; }
+}
+
+/* Constant-time string compare · protects against timing attacks on password check */
+function ctEq(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  if (a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
+}
+
+/* ─── /auth endpoints ─── */
+async function handleAuthLogin(req, env) {
+  if (!env.MASTER_PASSWORD || !env.SESSION_SECRET) {
+    return jsonResp({ error: 'auth not configured · set MASTER_PASSWORD + SESSION_SECRET secrets' }, 500);
   }
-  return null;
+  let body;
+  try { body = await req.json(); } catch { return jsonResp({ error: 'invalid json' }, 400); }
+  const password = String(body?.password || '');
+  if (!password || !ctEq(password, env.MASTER_PASSWORD)) {
+    // Small delay to reduce brute-force velocity
+    await new Promise(r => setTimeout(r, 400));
+    return jsonResp({ error: 'wrong password' }, 401);
+  }
+  const now = Math.floor(Date.now() / 1000);
+  const exp = now + 60 * 60 * 24 * 30;  // 30 days
+  const token = await signJwt({ sub: 'operator', iat: now, exp }, env.SESSION_SECRET);
+  return jsonResp({ token, exp, sub: 'operator' });
+}
+
+async function handleAuthVerify(req, env) {
+  const auth = req.headers.get('Authorization') || '';
+  const token = auth.replace(/^Bearer\s+/i, '');
+  if (!token || !env.SESSION_SECRET) return jsonResp({ ok: false }, 401);
+  const payload = await verifyJwt(token, env.SESSION_SECRET);
+  if (!payload) return jsonResp({ ok: false }, 401);
+  return jsonResp({ ok: true, sub: payload.sub, exp: payload.exp });
 }
 
 /* ─── KV helpers ─── */
@@ -392,8 +466,12 @@ async function handle(req, env) {
   if (path === '/webhook/instagram') return handleFacebookWebhook(req, env); // shared IG/FB
   if (path === '/webhook/stripe' && method === 'POST') return handleStripeWebhook(req, env);
 
-  // Operator endpoints (auth required)
-  const authErr = requireOperator(req, env);
+  // Public: browser session auth
+  if (method === 'POST' && path === '/auth/login')  return handleAuthLogin(req, env);
+  if (method === 'GET'  && path === '/auth/verify') return handleAuthVerify(req, env);
+
+  // Operator endpoints (auth required · legacy token OR session JWT)
+  const authErr = await requireOperator(req, env);
   if (authErr) return authErr;
 
   if (method === 'GET' && path === '/bookings') {

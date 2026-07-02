@@ -3,7 +3,10 @@ main = "worker.js"
 compatibility_date = "2026-06-01"
 
 # Set per-env via `wrangler secret put`:
-#   OPERATOR_TOKEN       — bearer token for operator endpoints
+#   MASTER_PASSWORD      — Chrissy's operator password (browser login via login.html)
+#   SESSION_SECRET       — random 32-byte hex, signs the session JWT
+#                          generate with: openssl rand -hex 32
+#   OPERATOR_TOKEN       — legacy static bearer for API clients / cron (optional)
 #   FB_VERIFY_TOKEN      — Meta webhook verify token
 #   CLAUDE_API_KEY       — Anthropic API key for AI drafts
 #   STRIPE_WEBHOOK_SECRET — Stripe webhook signing secret
