@@ -1,0 +1,37 @@
+{
+  "name": "Wishwood Operator Hub",
+  "short_name": "Wishwood",
+  "description": "Unified inbox · calendar · P2P mesh · offline-capable operator hub for Wishwood Glamping & Forestry.",
+  "start_url": "/wishwood/hub.html",
+  "scope": "/wishwood/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#18171a",
+  "theme_color": "#c97a3d",
+  "categories": ["business", "productivity", "utilities"],
+  "shortcuts": [
+    { "name": "Hub", "short_name": "Hub", "url": "/wishwood/hub.html", "description": "Unified inbox" },
+    { "name": "WhatsApp", "short_name": "WhatsApp", "url": "/wishwood/wa.html", "description": "WhatsApp Multi-Device launcher" },
+    { "name": "Sync", "short_name": "Sync", "url": "/wishwood/sync-setup.html", "description": "Mesh sync setup" }
+  ],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%2318171a'/%3E%3Ctext x='96' y='134' font-family='serif' font-size='120' font-weight='400' text-anchor='middle' fill='%23c97a3d'%3E%E2%97%8A%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%2318171a'/%3E%3Ctext x='256' y='360' font-family='serif' font-size='320' font-weight='400' text-anchor='middle' fill='%23c97a3d'%3E%E2%97%8A%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23c97a3d'/%3E%3Ctext x='256' y='360' font-family='serif' font-size='320' font-weight='400' text-anchor='middle' fill='%2318171a'%3E%E2%97%8A%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
