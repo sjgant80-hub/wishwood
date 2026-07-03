@@ -7,15 +7,20 @@
 <meta name="theme-color" content="#18171a">
 <title>Wishwood · Mesh Sync Setup</title>
 <script>
-/* auth gate · same pattern as hub */
+/* auth gate · handoff-mode aware (master pre-auth until Chrissy handoff) */
 (function(){
+  var HANDOFF_MODE = localStorage.getItem('wishwood.handoff_mode') === 'on';
   var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
   var s = null; try { s = raw ? JSON.parse(raw) : null; } catch(e) {}
   var now = Math.floor(Date.now()/1000);
   if (!s || !s.token || !s.exp || s.exp < now) {
-    if (document.documentElement) document.documentElement.innerHTML = '';
-    location.replace('login.html');
-    return;
+    if (HANDOFF_MODE) {
+      if (document.documentElement) document.documentElement.innerHTML = '';
+      location.replace('login.html');
+      return;
+    }
+    s = { token: 'master-preauth', sub: 'master', exp: now + 86400 * 365 };
+    localStorage.setItem('wishwood.session', JSON.stringify(s));
   }
 })();
 </script>

@@ -7,16 +7,23 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%2318171a'/%3E%3Ctext x='96' y='134' font-family='serif' font-size='120' text-anchor='middle' fill='%23c97a3d'%3E%E2%97%8A%3C/text%3E%3C/svg%3E">
 <script>
-// ═══ Wishwood auth gate · redirects to login.html if no valid session ═══
+// ═══ Wishwood auth gate ═══
+// Handoff mode OFF by default (master pre-auth · Simon walks straight in)
+// Flip handoff mode ON when ready to hand over to Chrissy (button below in Admin)
 (function(){
+  var HANDOFF_MODE = localStorage.getItem('wishwood.handoff_mode') === 'on';
   var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
   var s = null;
   try { s = raw ? JSON.parse(raw) : null; } catch(e) { s = null; }
   var now = Math.floor(Date.now()/1000);
   if (!s || !s.token || !s.exp || s.exp < now) {
-    if (document.documentElement) document.documentElement.innerHTML = '';
-    location.replace('login.html');
-    return;
+    if (HANDOFF_MODE) {
+      if (document.documentElement) document.documentElement.innerHTML = '';
+      location.replace('login.html');
+      return;
+    }
+    s = { token: 'master-preauth', sub: 'master', exp: now + 86400 * 365 };
+    localStorage.setItem('wishwood.session', JSON.stringify(s));
   }
   var WORKER = 'https://wishwood-engine.workers.dev';
   window.WW_AUTH = {

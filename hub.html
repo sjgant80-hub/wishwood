@@ -5,17 +5,24 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
 <script>
-// ═══ Wishwood auth gate · redirects to login.html if no valid session ═══
+// ═══ Wishwood auth gate ═══
+// Handoff mode OFF by default (master pre-auth · Simon walks straight in)
+// Flip handoff mode ON in admin when ready to hand over to Chrissy
 (function(){
+  var HANDOFF_MODE = localStorage.getItem('wishwood.handoff_mode') === 'on';
   var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
   var s = null;
   try { s = raw ? JSON.parse(raw) : null; } catch(e) { s = null; }
   var now = Math.floor(Date.now()/1000);
   if (!s || !s.token || !s.exp || s.exp < now) {
-    // clear anything already parsed to prevent protected content flash
-    if (document.documentElement) document.documentElement.innerHTML = '';
-    location.replace('login.html');
-    return;
+    if (HANDOFF_MODE) {
+      if (document.documentElement) document.documentElement.innerHTML = '';
+      location.replace('login.html');
+      return;
+    }
+    // Master pre-auth · handoff not enabled yet · synthetic session (1 year)
+    s = { token: 'master-preauth', sub: 'master', exp: now + 86400 * 365 };
+    localStorage.setItem('wishwood.session', JSON.stringify(s));
   }
   var WORKER = 'https://wishwood-engine.workers.dev';
   window.WW_AUTH = {
