@@ -1,178 +1,174 @@
 // ══════════════════════════════════════════════════════════════════
-// Wishwood · Universal top bar · v2 · built for Chrissy
-// Two clear modes: SETUP (getting live) · OPERATOR (daily use)
-// Giant obvious HOME + BACK · title of where you are · no clutter.
-// Small overflow menu for everything else.
+// Wishwood · Left sidebar v3 · FallCube pattern
+// Persistent left sidebar · section groups · click item → open page
+// Body content shifts right on desktop · hamburger drawer on mobile
 // ══════════════════════════════════════════════════════════════════
 (function () {
   if (window.__ww_nav_loaded) return;
   window.__ww_nav_loaded = true;
 
   var HERE = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-
-  // Every page: title + mode + destination-if-back-not-history
-  var PAGES = {
-    'index.html':            { title: 'Home',                   mode: null,       parent: null },
-    '':                      { title: 'Home',                   mode: null,       parent: null },
-    'hub.html':              { title: 'Operator hub',           mode: 'operator', parent: 'index.html' },
-    'admin.html':            { title: 'Admin · connections',    mode: 'operator', parent: 'index.html' },
-    'book.html':             { title: 'Guest booking site',     mode: 'operator', parent: 'index.html' },
-    'hubphone.html':         { title: 'Duty phone',             mode: 'operator', parent: 'index.html' },
-    'media.html':            { title: 'Media tools',            mode: 'operator', parent: 'index.html' },
-    'credentials.html':      { title: 'Setup checklist',        mode: 'setup',    parent: 'index.html' },
-    'credentials-guide.html':{ title: 'Setup guide (plain English)', mode: 'setup', parent: 'credentials.html' },
-    'howitworks.html':       { title: 'How it works',           mode: 'setup',    parent: 'index.html' },
-    'relaunch.html':         { title: 'Relaunch wizard',        mode: 'setup',    parent: 'index.html' },
-    'wa.html':               { title: 'WhatsApp setup',         mode: 'setup',    parent: 'credentials.html' },
-    'sync-setup.html':       { title: 'Share on other devices', mode: 'setup',    parent: 'admin.html' },
-    'login.html':            { title: 'Login',                  mode: null,       parent: 'index.html' },
-    'ai.html':               { title: 'AI agent dossier',       mode: 'setup',    parent: 'index.html' },
-    'roost.html':            { title: 'About roost',            mode: 'setup',    parent: 'index.html' },
-  };
-  var page = PAGES[HERE] || { title: HERE.replace('.html',''), mode: null, parent: 'index.html' };
   var isHome = (HERE === '' || HERE === 'index.html');
 
-  var OVERFLOW = [
-    { group: 'Operator (daily)',  items: [
-      { href: 'hub.html',       label: 'Operator hub' },
-      { href: 'admin.html',     label: 'Admin · connections' },
-      { href: 'book.html',      label: 'Guest booking site' },
-      { href: 'hubphone.html',  label: 'Duty phone' },
-      { href: 'media.html',     label: 'Media tools' },
+  // Sidebar structure · groups map to how Chrissy thinks about her day
+  var SIDEBAR = [
+    { header: null, items: [
+      { href: 'index.html', icon: '◊',  label: 'Home' },
     ]},
-    { group: 'Setup (once)',      items: [
-      { href: 'credentials.html',       label: 'Setup checklist' },
-      { href: 'credentials-guide.html', label: 'Setup guide (plain English)' },
-      { href: 'howitworks.html',        label: 'How it works' },
-      { href: 'wa.html',                label: 'WhatsApp setup' },
-      { href: 'sync-setup.html',        label: 'Share on other devices (mesh)' },
-      { href: 'relaunch.html',          label: 'Relaunch wizard' },
+    { header: 'DAILY · operator', items: [
+      { href: 'hub.html',      icon: '⌬',  label: 'Operator hub' },
+      { href: 'book.html',     icon: '◊',  label: 'Guest booking site' },
+      { href: 'hubphone.html', icon: '📱', label: 'Duty phone' },
+      { href: 'media.html',    icon: '⛁',  label: 'Media tools' },
     ]},
-    { group: 'Reference', items: [
-      { href: 'ai.html',        label: 'AI agent dossier' },
-      { href: 'roost.html',     label: 'About roost' },
+    { header: 'SETUP · once', items: [
+      { href: 'credentials.html',       icon: '🔑', label: 'Setup checklist' },
+      { href: 'credentials-guide.html', icon: '📖', label: 'Setup guide' },
+      { href: 'admin.html',             icon: '⚙',  label: 'Admin · connections' },
+      { href: 'relaunch.html',          icon: '🌱', label: 'Relaunch wizard' },
+    ]},
+    { header: 'HELP · reference', items: [
+      { href: 'howitworks.html', icon: '📘', label: 'How it works' },
+      { href: 'wa.html',         icon: '💬', label: 'WhatsApp setup' },
+      { href: 'sync-setup.html', icon: '🔗', label: 'Share on devices' },
+      { href: 'ai.html',         icon: '🤖', label: 'AI agent dossier' },
+      { href: 'roost.html',      icon: '◊',  label: 'About roost' },
     ]},
   ];
 
   var css = ''
-    + '#__wwnav{position:fixed;top:0;left:0;right:0;z-index:9998;background:#18171a;border-bottom:1px solid rgba(235,229,214,0.14);height:56px;display:flex;align-items:center;padding:0 12px;gap:8px;font-family:"Inter",-apple-system,system-ui,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,0.35)}'
-    + '#__wwnav .btn{color:#ebe5d6;background:rgba(235,229,214,0.06);border:1px solid rgba(235,229,214,0.14);text-decoration:none;font-family:inherit;font-size:13px;font-weight:600;padding:9px 14px;border-radius:6px;transition:background .15s,border-color .15s,transform .1s;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;line-height:1}'
-    + '#__wwnav .btn:hover{background:rgba(201,122,61,0.14);border-color:#c97a3d;color:#c97a3d}'
-    + '#__wwnav .btn:active{transform:translateY(1px)}'
-    + '#__wwnav .btn.home{background:linear-gradient(135deg,#c97a3d,#a86428);color:#18171a;border-color:transparent;font-weight:700}'
-    + '#__wwnav .btn.home:hover{filter:brightness(1.1);color:#18171a}'
-    + '#__wwnav .btn.back svg{width:16px;height:16px}'
-    + '#__wwnav .where{flex:1;text-align:center;color:#ebe5d6;font-family:"Cormorant Garamond",serif;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px}'
-    + '#__wwnav .where .mode{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-right:8px;vertical-align:middle}'
-    + '#__wwnav .where .mode.setup{background:rgba(107,157,111,0.15);color:#8ce0a5;border:1px solid rgba(107,157,111,0.4)}'
-    + '#__wwnav .where .mode.operator{background:rgba(201,122,61,0.15);color:#e8b077;border:1px solid rgba(201,122,61,0.4)}'
-    + '#__wwnav .where em{color:#c97a3d;font-style:italic}'
-    + '#__wwnav .more{position:relative}'
-    + '#__wwnav .morebtn svg{width:16px;height:16px}'
-    + '#__wwnav .moremenu{display:none;position:absolute;top:calc(100% + 4px);right:0;background:#1f1e22;border:1px solid rgba(235,229,214,0.18);border-radius:8px;box-shadow:0 12px 32px rgba(0,0,0,0.6);min-width:300px;padding:8px;max-height:calc(100vh - 80px);overflow-y:auto}'
-    + '#__wwnav .moremenu.open{display:block}'
-    + '#__wwnav .moremenu .grp{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#7a7681;padding:10px 12px 4px}'
-    + '#__wwnav .moremenu a{display:block;padding:9px 14px;font-size:13px;color:#ebe5d6;text-decoration:none;border-radius:6px;line-height:1.3}'
-    + '#__wwnav .moremenu a:hover{background:rgba(201,122,61,0.12);color:#c97a3d}'
-    + '#__wwnav .moremenu a.active{background:rgba(201,122,61,0.18);color:#c97a3d}'
-    + '@media(max-width:520px){'
-    + '#__wwnav .btn{font-size:11px;padding:8px 10px}'
-    + '#__wwnav .btn.home span{display:none}'
-    + '#__wwnav .btn.back span{display:none}'
-    + '#__wwnav .where{font-size:14px}'
-    + '#__wwnav .where .mode{display:none}'
+    // Sidebar frame
+    + '#__wwside{position:fixed;top:0;left:0;bottom:0;width:264px;background:#1a1922;border-right:1px solid rgba(235,229,214,0.1);z-index:9998;display:flex;flex-direction:column;font-family:"Inter",-apple-system,system-ui,sans-serif;overflow-y:auto;overflow-x:hidden;box-shadow:2px 0 20px rgba(0,0,0,0.3)}'
+    + '#__wwside::-webkit-scrollbar{width:6px}'
+    + '#__wwside::-webkit-scrollbar-track{background:transparent}'
+    + '#__wwside::-webkit-scrollbar-thumb{background:rgba(235,229,214,0.1);border-radius:3px}'
+    // Brand block
+    + '#__wwside .__brand{display:flex;align-items:center;gap:12px;padding:20px 18px 14px;border-bottom:1px solid rgba(235,229,214,0.08)}'
+    + '#__wwside .__brandlogo{width:38px;height:38px;border-radius:10px;background:#0b0a0f;display:grid;place-items:center;color:#c97a3d;font-size:22px;font-family:"Cormorant Garamond",serif;flex-shrink:0}'
+    + '#__wwside .__brandtxt{display:flex;flex-direction:column;line-height:1.2;overflow:hidden}'
+    + '#__wwside .__brandtxt .n{font-family:"Cormorant Garamond",serif;font-size:20px;color:#ebe5d6;font-weight:500;letter-spacing:0.02em}'
+    + '#__wwside .__brandtxt .s{font-family:"JetBrains Mono",monospace;font-size:10px;color:#7a7681;letter-spacing:0.05em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    // Seal pill
+    + '#__wwside .__seal{margin:14px 18px;padding:8px 12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:8px;font-family:"JetBrains Mono",monospace;font-size:11px;color:#c9a84c;text-align:center;letter-spacing:0.1em}'
+    // Group headers
+    + '#__wwside .__hdr{padding:14px 22px 6px;font-family:"JetBrains Mono",monospace;font-size:9.5px;color:#5a5750;letter-spacing:0.16em;text-transform:uppercase;font-weight:600}'
+    // Menu items
+    + '#__wwside .__group{padding:2px 10px}'
+    + '#__wwside a.__it{display:flex;align-items:center;gap:12px;padding:10px 14px;color:#a09d95;text-decoration:none;border-radius:8px;font-size:13.5px;line-height:1.2;transition:background .12s,color .12s;position:relative;font-weight:500}'
+    + '#__wwside a.__it:hover{background:rgba(201,122,61,0.08);color:#e8b077}'
+    + '#__wwside a.__it .__ic{font-size:16px;width:18px;text-align:center;flex-shrink:0;opacity:0.85}'
+    + '#__wwside a.__it.__active{background:rgba(201,122,61,0.16);color:#c97a3d;font-weight:600}'
+    + '#__wwside a.__it.__active::before{content:"";position:absolute;left:-10px;top:8px;bottom:8px;width:3px;background:#c97a3d;border-radius:0 3px 3px 0}'
+    // Bottom card
+    + '#__wwside .__foot{margin-top:auto;padding:14px 18px 18px;border-top:1px solid rgba(235,229,214,0.06)}'
+    + '#__wwside .__foot .__mode{background:linear-gradient(135deg,rgba(107,157,111,0.15),rgba(45,74,62,0.35));border:1px solid rgba(107,157,111,0.3);border-radius:8px;padding:10px 12px}'
+    + '#__wwside .__foot .__mlabel{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:#8ce0a5;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px}'
+    + '#__wwside .__foot .__mval{color:#ebe5d6;font-size:12.5px;line-height:1.35}'
+    // Hamburger toggle (mobile)
+    + '#__wwtoggle{position:fixed;top:12px;left:12px;z-index:9999;width:44px;height:44px;border-radius:10px;background:#1a1922;border:1px solid rgba(235,229,214,0.15);color:#ebe5d6;font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.35)}'
+    + '#__wwback{position:fixed;top:12px;left:64px;z-index:9999;height:44px;padding:0 14px;border-radius:10px;background:#1a1922;border:1px solid rgba(235,229,214,0.15);color:#c97a3d;font-size:13px;font-weight:600;cursor:pointer;display:none;align-items:center;gap:6px;font-family:"Inter",sans-serif;box-shadow:0 4px 16px rgba(0,0,0,0.35);text-decoration:none}'
+    + '#__wwback:hover{border-color:#c97a3d}'
+    // Body shift
+    + 'body{padding-left:264px !important;transition:padding-left .2s}'
+    // Backdrop (mobile drawer)
+    + '#__wwback_drop{position:fixed;inset:0;background:rgba(11,10,15,0.6);z-index:9997;display:none}'
+    // Mobile
+    + '@media(max-width:820px){'
+    + '#__wwside{transform:translateX(-100%);transition:transform .22s}'
+    + '#__wwside.__open{transform:translateX(0)}'
+    + '#__wwback_drop.__show{display:block}'
+    + '#__wwtoggle{display:flex}'
+    + '#__wwback{display:flex}'
+    + 'body{padding-left:0 !important;padding-top:64px !important}'
     + '}'
-    + 'body{padding-top:56px !important}'
-    + '#__ww_bottom_home{display:block;max-width:520px;margin:40px auto 32px;padding:0 22px}'
-    + '#__ww_bottom_home a{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#c97a3d,#a86428);color:#18171a;padding:16px 22px;border-radius:10px;text-decoration:none;font-family:"Inter",sans-serif;font-size:16px;font-weight:700;letter-spacing:0.02em;box-shadow:0 4px 16px rgba(201,122,61,0.3);transition:transform .15s}'
-    + '#__ww_bottom_home a:hover{transform:translateY(-2px)}'
   ;
   var style = document.createElement('style');
   style.textContent = css;
   document.head.appendChild(style);
 
-  var backArrow = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg>';
-  var moreIcon = '<svg viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>';
+  // Build sidebar
+  var side = document.createElement('aside');
+  side.id = '__wwside';
 
-  var nav = document.createElement('nav');
-  nav.id = '__wwnav';
+  var brand = document.createElement('a');
+  brand.href = 'index.html';
+  brand.style.textDecoration = 'none';
+  brand.className = '__brand';
+  brand.innerHTML = '<div class="__brandlogo">◊</div><div class="__brandtxt"><span class="n">Wishwood</span><span class="s">ai-nativesolutions.com</span></div>';
+  side.appendChild(brand);
 
+  var seal = document.createElement('div');
+  seal.className = '__seal';
+  seal.textContent = '◊ Konomi · ◊·κ=1';
+  side.appendChild(seal);
+
+  SIDEBAR.forEach(function (grp) {
+    if (grp.header) {
+      var h = document.createElement('div');
+      h.className = '__hdr';
+      h.textContent = grp.header;
+      side.appendChild(h);
+    }
+    var g = document.createElement('div');
+    g.className = '__group';
+    grp.items.forEach(function (it) {
+      var a = document.createElement('a');
+      a.className = '__it' + (it.href === HERE ? ' __active' : '');
+      a.href = it.href;
+      a.innerHTML = '<span class="__ic">' + it.icon + '</span><span>' + it.label + '</span>';
+      g.appendChild(a);
+    });
+    side.appendChild(g);
+  });
+
+  // Bottom mode card
+  var foot = document.createElement('div');
+  foot.className = '__foot';
+  var currentMode = 'Setup mode';
+  var currentModeText = 'Getting live · gathering credentials';
+  var operatorPages = ['hub.html', 'book.html', 'hubphone.html', 'media.html'];
+  if (operatorPages.indexOf(HERE) !== -1) {
+    currentMode = 'Operator mode';
+    currentModeText = 'Daily operations · live tools';
+  } else if (isHome) {
+    currentMode = 'Home';
+    currentModeText = 'Pick a door';
+  }
+  foot.innerHTML = '<div class="__mode"><div class="__mlabel">◆ ' + currentMode + '</div><div class="__mval">' + currentModeText + '</div></div>';
+  side.appendChild(foot);
+
+  // Mobile hamburger + back
+  var toggle = document.createElement('button');
+  toggle.id = '__wwtoggle';
+  toggle.innerHTML = '☰';
+  toggle.setAttribute('aria-label', 'Open menu');
+
+  var backdrop = document.createElement('div');
+  backdrop.id = '__wwback_drop';
+
+  var backBtn = null;
   if (!isHome) {
-    var homeBtn = document.createElement('a');
-    homeBtn.className = 'btn home';
-    homeBtn.href = 'index.html';
-    homeBtn.innerHTML = '<span style="font-size:16px">◊</span><span>Home</span>';
-    homeBtn.title = 'Back to Home';
-    nav.appendChild(homeBtn);
-
-    var backBtn = document.createElement('a');
-    backBtn.className = 'btn back';
-    backBtn.href = page.parent || 'index.html';
-    backBtn.innerHTML = backArrow + '<span>Back</span>';
-    backBtn.title = 'Go back';
-    backBtn.onclick = function (e) {
-      // Prefer browser history if we have any, else fall back to parent
-      if (history.length > 1 && document.referrer && document.referrer.indexOf(location.host) !== -1) {
-        e.preventDefault();
-        history.back();
-      }
-    };
-    nav.appendChild(backBtn);
-  } else {
-    // On home page: just show the brand
-    var brand = document.createElement('span');
-    brand.className = 'btn home';
-    brand.style.cursor = 'default';
-    brand.innerHTML = '<span style="font-size:16px">◊</span><span>Wishwood</span>';
-    nav.appendChild(brand);
+    backBtn = document.createElement('a');
+    backBtn.id = '__wwback';
+    backBtn.href = 'index.html';
+    backBtn.innerHTML = '<span style="font-size:16px">◊</span>Home';
   }
 
-  var where = document.createElement('div');
-  where.className = 'where';
-  var modeHtml = page.mode
-    ? '<span class="mode ' + page.mode + '">' + (page.mode === 'setup' ? '🌱 Setup' : '⌬ Operator') + '</span>'
-    : '';
-  where.innerHTML = modeHtml + (isHome ? 'Welcome <em>back</em>' : page.title);
-  nav.appendChild(where);
-
-  var moreWrap = document.createElement('div');
-  moreWrap.className = 'more';
-  var moreBtn = document.createElement('button');
-  moreBtn.className = 'btn morebtn';
-  moreBtn.innerHTML = moreIcon + '<span style="margin-left:2px">More</span>';
-  moreBtn.setAttribute('aria-expanded', 'false');
-  var moreMenu = document.createElement('div');
-  moreMenu.className = 'moremenu';
-  var menuHtml = '';
-  OVERFLOW.forEach(function (grp) {
-    menuHtml += '<div class="grp">' + grp.group + '</div>';
-    grp.items.forEach(function (it) {
-      var active = (it.href === HERE) ? ' active' : '';
-      menuHtml += '<a class="' + active + '" href="' + it.href + '">' + it.label + '</a>';
-    });
-  });
-  moreMenu.innerHTML = menuHtml;
-  moreWrap.appendChild(moreBtn);
-  moreWrap.appendChild(moreMenu);
-  moreBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    var open = moreMenu.classList.toggle('open');
-    moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-  document.addEventListener('click', function () { moreMenu.classList.remove('open'); });
-  nav.appendChild(moreWrap);
-
-  // Inject nav
   function inject() {
-    document.body.insertBefore(nav, document.body.firstChild);
-    // Also inject a big "back to Home" button at the bottom of every non-home page
-    if (!isHome) {
-      var bottom = document.createElement('div');
-      bottom.id = '__ww_bottom_home';
-      bottom.innerHTML = '<a href="index.html">◊ Back to Home</a>';
-      document.body.appendChild(bottom);
-    }
+    document.body.insertBefore(side, document.body.firstChild);
+    document.body.appendChild(toggle);
+    document.body.appendChild(backdrop);
+    if (backBtn) document.body.appendChild(backBtn);
   }
   if (document.body) inject();
   else document.addEventListener('DOMContentLoaded', inject);
+
+  toggle.addEventListener('click', function () {
+    side.classList.add('__open');
+    backdrop.classList.add('__show');
+  });
+  backdrop.addEventListener('click', function () {
+    side.classList.remove('__open');
+    backdrop.classList.remove('__show');
+  });
 })();
