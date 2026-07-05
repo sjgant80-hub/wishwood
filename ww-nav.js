@@ -16,10 +16,11 @@
       { href: 'index.html', icon: '◊',  label: 'Home' },
     ]},
     { header: 'DAILY · operator', items: [
-      { href: 'hub.html',      icon: '⌬',  label: 'Operator hub' },
-      { href: 'book.html',     icon: '◊',  label: 'Guest booking site' },
-      { href: 'hubphone.html', icon: '📱', label: 'Duty phone' },
-      { href: 'media.html',    icon: '⛁',  label: 'Media tools' },
+      { href: 'hub.html',       icon: '⌬',  label: 'Operator hub' },
+      { href: 'autopilot.html', icon: '⚡', label: 'AI autopilot' },
+      { href: 'book.html',      icon: '◊',  label: 'Guest booking site' },
+      { href: 'hubphone.html',  icon: '📱', label: 'Duty phone' },
+      { href: 'media.html',     icon: '⛁',  label: 'Media tools' },
     ]},
     { header: 'SETUP · once', items: [
       { href: 'credentials.html',       icon: '🔑', label: 'Setup checklist' },
@@ -126,7 +127,7 @@
   foot.className = '__foot';
   var currentMode = 'Setup mode';
   var currentModeText = 'Getting live · gathering credentials';
-  var operatorPages = ['hub.html', 'book.html', 'hubphone.html', 'media.html'];
+  var operatorPages = ['hub.html', 'autopilot.html', 'book.html', 'hubphone.html', 'media.html'];
   if (operatorPages.indexOf(HERE) !== -1) {
     currentMode = 'Operator mode';
     currentModeText = 'Daily operations · live tools';

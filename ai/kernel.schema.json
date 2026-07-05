@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sjgant80-hub.github.io/wishwood/ai/kernel.schema.json",
+  "title": "Wishwood AI Kernel",
+  "description": "The grounding kernel for the AI-first operator. Distilled from all property signals before any LLM turn.",
+  "type": "object",
+  "required": ["property", "voice", "policies", "operations", "market"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "kernel_version": { "type": "string" },
+        "harvested_at": { "type": "string", "format": "date-time" },
+        "refresh_interval_hours": { "type": "number" },
+        "signature": { "type": "string", "description": "Ed25519 signature of the kernel body" },
+        "sources": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "property": {
+      "type": "object",
+      "description": "Ground-truth facts. LLM cannot invent or contradict these.",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["cottage", "cabin", "lodge", "villa", "apartment", "estate", "yurt", "shepherd_hut", "other"] },
+        "sleeps": { "type": "integer" },
+        "bedrooms": { "type": "integer" },
+        "bathrooms": { "type": "number" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "address": { "type": "string" },
+            "lat": { "type": "number" },
+            "lng": { "type": "number" },
+            "region": { "type": "string" },
+            "country": { "type": "string" }
+          }
+        },
+        "amenities": { "type": "array", "items": { "type": "string" } },
+        "not_present": { "type": "array", "items": { "type": "string" }, "description": "Explicit list of things the LLM must NOT claim exist (e.g. hot tub, pool) to prevent hallucination." },
+        "photos": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "quirks": { "type": "array", "items": { "type": "string" }, "description": "Non-obvious facts (uneven stairs, water pressure, phone reception dead zone)" }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "description": "How to speak as the host. Learned from past reviews + host replies.",
+      "properties": {
+        "tone": { "type": "string", "enum": ["warm", "professional", "playful", "concise", "poetic"] },
+        "greeting_style": { "type": "string" },
+        "signature": { "type": "string" },
+        "banned_phrases": { "type": "array", "items": { "type": "string" } },
+        "example_replies": { "type": "array", "items": { "type": "object", "properties": { "situation": { "type": "string" }, "reply": { "type": "string" } } } }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "description": "Non-negotiable rules the agent must respect.",
+      "properties": {
+        "check_in": { "type": "string" },
+        "check_out": { "type": "string" },
+        "min_nights": { "type": "integer" },
+        "max_nights": { "type": "integer" },
+        "cancellation": { "type": "string" },
+        "pets": { "type": "string", "enum": ["yes", "no", "on_request"] },
+        "children": { "type": "string", "enum": ["yes", "no", "over_age"] },
+        "smoking": { "type": "boolean" },
+        "events_parties": { "type": "boolean" },
+        "quiet_hours": { "type": "string" },
+        "deposit_gbp": { "type": "number" },
+        "cleaning_fee_gbp": { "type": "number" }
+      }
+    },
+    "operations": {
+      "type": "object",
+      "description": "How the property is run day-to-day. Enables agent to execute.",
+      "properties": {
+        "check_in_method": { "type": "string", "enum": ["meet_greet", "lockbox", "smart_lock", "self_check_in"] },
+        "wifi": { "type": "object", "properties": { "ssid": { "type": "string" }, "password": { "type": "string" } } },
+        "arrival_instructions": { "type": "string" },
+        "checkout_instructions": { "type": "string" },
+        "housekeeping": { "type": "object", "properties": { "contact": { "type": "string" }, "turnover_hours": { "type": "number" } } },
+        "maintenance_contacts": { "type": "array", "items": { "type": "object", "properties": { "role": { "type": "string" }, "name": { "type": "string" }, "phone": { "type": "string" } } } },
+        "faq": { "type": "array", "items": { "type": "object", "properties": { "q": { "type": "string" }, "a": { "type": "string" } } } }
+      }
+    },
+    "market": {
+      "type": "object",
+      "description": "External signals for pricing + positioning.",
+      "properties": {
+        "competitors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "url": { "type": "string" },
+              "sleeps": { "type": "integer" },
+              "avg_nightly_gbp": { "type": "number" },
+              "review_score": { "type": "number" },
+              "review_count": { "type": "integer" },
+              "distance_km": { "type": "number" }
+            }
+          }
+        },
+        "seasonality": {
+          "type": "object",
+          "properties": {
+            "peak_months": { "type": "array", "items": { "type": "string" } },
+            "shoulder_months": { "type": "array", "items": { "type": "string" } },
+            "off_months": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "local_events": { "type": "array", "items": { "type": "object", "properties": { "date": { "type": "string" }, "name": { "type": "string" }, "impact": { "type": "string", "enum": ["low", "med", "high"] } } } },
+        "avg_nightly_gbp": { "type": "number" },
+        "occupancy_target": { "type": "number", "description": "0-1" }
+      }
+    },
+    "reviews": {
+      "type": "object",
+      "description": "Distilled review intelligence.",
+      "properties": {
+        "count": { "type": "integer" },
+        "avg_score": { "type": "number" },
+        "score_by_dimension": { "type": "object", "additionalProperties": { "type": "number" } },
+        "recurring_praise": { "type": "array", "items": { "type": "string" } },
+        "recurring_complaints": { "type": "array", "items": { "type": "string" } },
+        "guest_archetypes": { "type": "array", "items": { "type": "object", "properties": { "label": { "type": "string" }, "share": { "type": "number" }, "notes": { "type": "string" } } } }
+      }
+    },
+    "financials": {
+      "type": "object",
+      "properties": {
+        "adr_gbp": { "type": "number" },
+        "revpar_gbp": { "type": "number" },
+        "occupancy_actual": { "type": "number" },
+        "alos_nights": { "type": "number" },
+        "cost_baseline_gbp_month": { "type": "number" }
+      }
+    }
+  }
+}

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#18171a">
+<title>Wishwood · Autopilot</title>
+<script>
+/* auth · no-login setup mode · walks straight in */
+(function(){
+  var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
+  var s = null; try { s = raw ? JSON.parse(raw) : null; } catch(e) {}
+  var now = Math.floor(Date.now()/1000);
+  if (!s || !s.token || !s.exp || s.exp < now) {
+    s = { token: 'master-preauth', sub: 'master', exp: now + 86400 * 365 };
+    localStorage.setItem('wishwood.session', JSON.stringify(s));
+  }
+  localStorage.removeItem('wishwood.handoff_mode');
+})();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --woodsmoke:#18171a;--deep:#1f1e22;--surface:#27262b;--raised:#302f35;
+  --moss:#2d4a3e;--moss-bright:#3d6a55;--leaf:#6b9d6f;
+  --ember:#c97a3d;--ember-glow:rgba(201,122,61,0.12);
+  --gold:#c9a84c;--linen:#ebe5d6;
+  --text:#d4cfc8;--muted:#7a7681;
+  --border:rgba(235,229,214,0.08);--border-strong:rgba(235,229,214,0.18);
+  --good:#6b9d6f;--warn:#d4a83d;--bad:#c75a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--woodsmoke);color:var(--text);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--ember);text-decoration:none}
+a:hover{color:var(--gold)}
+.site-header{position:sticky;top:0;z-index:50;background:rgba(24,23,26,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);letter-spacing:0.02em}
+.brand .glyph{color:var(--ember);font-size:26px}
+.nav{display:flex;gap:22px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase}
+.nav a{color:var(--muted)}
+.nav a:hover, .nav a.on{color:var(--linen)}
+main{max-width:1200px;margin:0 auto;padding:32px 28px 80px}
+h1{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--linen);letter-spacing:0.01em;margin-bottom:10px}
+h1 em{color:var(--ember);font-style:italic}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:26px}
+.card{background:var(--deep);border:1px solid var(--border);border-radius:14px;padding:24px 26px;margin-bottom:20px}
+.card h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--linen);margin-bottom:14px}
+.card h2 em{color:var(--ember);font-style:italic}
+.card .sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:720px){.row{grid-template-columns:1fr}}
+label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+input, select, textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:11px 13px;border-radius:8px;font-family:inherit;font-size:14px}
+input:focus, select:focus, textarea:focus{outline:none;border-color:var(--ember)}
+textarea{min-height:110px;font-family:'JetBrains Mono',monospace;font-size:12px}
+button{background:var(--ember);color:var(--woodsmoke);border:none;padding:11px 22px;border-radius:8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;transition:background 0.15s}
+button:hover{background:var(--gold)}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--border-strong)}
+button.ghost:hover{background:var(--surface);color:var(--linen)}
+.pill{display:inline-block;padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600}
+.pill.off{background:rgba(122,118,129,0.2);color:var(--muted)}
+.pill.watch{background:rgba(213,168,61,0.18);color:var(--warn)}
+.pill.live{background:rgba(107,157,111,0.2);color:var(--good)}
+.autonomy{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
+.autonomy button{background:var(--surface);color:var(--muted);border:1px solid var(--border);font-size:10px;padding:12px 6px}
+.autonomy button.on{background:var(--moss);color:var(--linen);border-color:var(--leaf)}
+.stream{max-height:400px;overflow-y:auto;background:var(--surface);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.evt{padding:8px 0;border-bottom:1px solid var(--border)}
+.evt:last-child{border-bottom:none}
+.evt .t{color:var(--muted);font-size:10px;letter-spacing:0.1em}
+.evt .k{color:var(--ember);margin:0 8px}
+.evt .p{color:var(--text);word-break:break-word}
+.kernel-view{background:var(--surface);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;max-height:400px;overflow-y:auto;white-space:pre-wrap;color:var(--text)}
+.status-strip{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.stat{background:var(--deep);border:1px solid var(--border);border-radius:10px;padding:14px 18px;flex:1;min-width:140px}
+.stat .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.stat .val{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--linen)}
+.stat .val em{color:var(--ember);font-style:italic;font-size:18px;margin-left:6px}
+.hint{color:var(--muted);font-size:13px;font-style:italic;margin-top:8px}
+.warn-box{background:rgba(213,168,61,0.08);border-left:3px solid var(--warn);padding:12px 16px;border-radius:6px;color:var(--linen);font-size:13px;margin:14px 0}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="hub.html" class="brand"><span class="glyph">◊</span> Wishwood</a>
+  <nav class="nav">
+    <a href="hub.html">Hub</a>
+    <a href="admin.html">Admin</a>
+    <a href="autopilot.html" class="on">Autopilot</a>
+    <a href="sync-setup.html">Sync</a>
+  </nav>
+</header>
+
+<main>
+  <h1><em>Autopilot</em></h1>
+  <div class="tag">◊ · BYOK · Kernel-grounded · Signed events</div>
+
+  <div class="status-strip">
+    <div class="stat"><div class="lbl">Status</div><div class="val"><span id="statusPill" class="pill off">Off</span></div></div>
+    <div class="stat"><div class="lbl">Provider</div><div class="val" id="providerStat">—</div></div>
+    <div class="stat"><div class="lbl">Kernel</div><div class="val" id="kernelStat">Empty</div></div>
+    <div class="stat"><div class="lbl">Events (24h)</div><div class="val" id="eventsStat">0</div></div>
+  </div>
+
+  <div class="card">
+    <h2>1 · <em>Bring your own key</em></h2>
+    <div class="sub">Your key hits the provider directly — never our servers. Stored encrypted in your browser only.</div>
+    <div class="row">
+      <div>
+        <label>Provider</label>
+        <select id="provider">
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="openai">OpenAI (GPT)</option>
+          <option value="gemini">Google (Gemini)</option>
+          <option value="groq">Groq (Llama)</option>
+          <option value="mistral">Mistral</option>
+          <option value="webllm">Local WebLLM (free · slower)</option>
+        </select>
+      </div>
+      <div>
+        <label>Model</label>
+        <input id="model" placeholder="auto (uses provider default)">
+      </div>
+    </div>
+    <div>
+      <label>API Key</label>
+      <input id="apiKey" type="password" placeholder="sk-... · never leaves your browser">
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button onclick="saveByok()">Save configuration</button>
+      <button class="ghost" onclick="testConnection()">Test connection</button>
+    </div>
+    <div id="byokMsg" class="hint"></div>
+  </div>
+
+  <div class="card">
+    <h2>2 · <em>Seed harvest</em></h2>
+    <div class="sub">Distil the property's online footprint into the grounding kernel. This is what stops the agent from hallucinating.</div>
+    <div>
+      <label>Review URLs (one per line)</label>
+      <textarea id="reviewUrls" placeholder="https://www.airbnb.com/rooms/12345/reviews&#10;https://www.booking.com/hotel/gb/wishwood.en-gb.html#reviews"></textarea>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div>
+        <label>Property lat</label>
+        <input id="lat" placeholder="51.5">
+      </div>
+      <div>
+        <label>Property lng</label>
+        <input id="lng" placeholder="-0.1">
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button onclick="runHarvest()">Run harvest</button>
+      <button class="ghost" onclick="loadKernelExample()">Load example kernel</button>
+      <button class="ghost" onclick="exportKernel()">Export kernel</button>
+    </div>
+    <div id="harvestProgress" class="hint"></div>
+  </div>
+
+  <div class="card">
+    <h2>3 · <em>Autonomy dial</em></h2>
+    <div class="sub">How much can the agent do without asking you first?</div>
+    <div class="autonomy" id="autonomyRow">
+      <button data-mode="watch">Watch</button>
+      <button data-mode="suggest">Suggest</button>
+      <button data-mode="auto-low">Auto · Low</button>
+      <button data-mode="auto-med">Auto · Med</button>
+      <button data-mode="full">Full</button>
+    </div>
+    <div class="hint" id="autonomyHint">Watch mode — agent thinks aloud, does nothing.</div>
+  </div>
+
+  <div class="card">
+    <h2>4 · <em>Kernel viewer</em></h2>
+    <div class="sub">What the agent knows about the property. Edit inline — corrections flow into the next turn.</div>
+    <div class="kernel-view" id="kernelView">No kernel loaded yet. Run harvest or load the example.</div>
+  </div>
+
+  <div class="card">
+    <h2>5 · <em>Event stream</em></h2>
+    <div class="sub">Every agent action · signed with Ed25519 · tail-able from the hub.</div>
+    <div class="stream" id="stream">No events yet.</div>
+  </div>
+
+  <div class="warn-box">
+    <strong>Setup mode.</strong> This is scaffolding. Wire real inbox connectors + PMS sync in <a href="admin.html">Admin</a> before flipping autonomy above <b>Watch</b>.
+  </div>
+</main>
+
+<script type="module">
+import { SUPPORTED_PROVIDERS, DEFAULT_MODELS, chat } from './ai/adapter.js';
+import { harvest } from './ai/harvest.js';
+import { logEvent, tailRing } from './ai/events.js';
+import { loadSettings, saveSettings, loadAutonomy, saveAutonomy, loadKernel, saveKernel } from './ai/agent.js';
+
+const $ = (id) => document.getElementById(id);
+
+function refreshUI() {
+  const s = loadSettings();
+  const a = loadAutonomy();
+  const k = loadKernel();
+
+  if (s.provider) $('provider').value = s.provider;
+  if (s.model) $('model').value = s.model;
+  if (s.key) $('apiKey').value = '••••••••' + s.key.slice(-4);
+
+  $('providerStat').textContent = s.provider || '—';
+  $('kernelStat').textContent = k ? (k.meta?.sources?.length ? `${k.meta.sources.length} src` : 'Example') : 'Empty';
+
+  const evts = tailRing(500);
+  const last24h = evts.filter(e => Date.now() - new Date(e.ts).getTime() < 86400000);
+  $('eventsStat').textContent = last24h.length;
+
+  const pill = $('statusPill');
+  pill.className = 'pill ' + (a.mode === 'watch' ? 'watch' : a.mode === 'off' ? 'off' : 'live');
+  pill.textContent = a.mode || 'off';
+
+  document.querySelectorAll('.autonomy button').forEach(b => {
+    b.classList.toggle('on', b.dataset.mode === a.mode);
+  });
+  const hints = {
+    'watch': 'Watch mode — agent thinks aloud, does nothing.',
+    'suggest': 'Suggest mode — agent proposes actions, you approve each.',
+    'auto-low': 'Auto Low — FAQ replies + welcome messages sent automatically.',
+    'auto-med': 'Auto Med — quotes + pricing tweaks ±15% sent automatically.',
+    'full': 'Full autopilot — everything except explicit human-flags.'
+  };
+  $('autonomyHint').textContent = hints[a.mode] || hints.watch;
+
+  if (k) {
+    $('kernelView').textContent = JSON.stringify(k, null, 2);
+  }
+
+  const stream = $('stream');
+  if (evts.length === 0) {
+    stream.innerHTML = 'No events yet.';
+  } else {
+    stream.innerHTML = evts.slice(0, 100).map(e => `
+      <div class="evt">
+        <span class="t">${new Date(e.ts).toLocaleString()}</span>
+        <span class="k">${e.type}</span>
+        <span class="p">${_esc(JSON.stringify(e.payload || {}).slice(0, 200))}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function _esc(s) { return String(s).replace(/[<>&]/g, c => ({ '<':'&lt;','>':'&gt;','&':'&amp;' }[c])); }
+
+window.saveByok = function() {
+  const key = $('apiKey').value;
+  const provider = $('provider').value;
+  const model = $('model').value || DEFAULT_MODELS[provider];
+  if (!key || key.startsWith('••')) {
+    // keep existing key if masked
+    const cur = loadSettings();
+    saveSettings({ ...cur, provider, model });
+  } else {
+    saveSettings({ provider, model, key });
+  }
+  $('byokMsg').textContent = 'Saved. Nothing sent to any server yet.';
+  refreshUI();
+};
+
+window.testConnection = async function() {
+  $('byokMsg').textContent = 'Testing...';
+  try {
+    const s = loadSettings();
+    if (!s.provider || !s.key) throw new Error('save configuration first');
+    const r = await chat({
+      provider: s.provider, model: s.model, key: s.key,
+      messages: [{ role: 'user', content: 'Reply with just the word "ok"' }],
+      max_tokens: 20
+    });
+    $('byokMsg').textContent = 'Connected · reply: ' + (r.text || '(no text)').slice(0, 60);
+    await logEvent({ type: 'byok_test_ok', payload: { provider: s.provider } });
+  } catch (e) {
+    $('byokMsg').textContent = 'Failed: ' + e.message;
+  }
+  refreshUI();
+};
+
+window.loadKernelExample = async function() {
+  try {
+    const r = await fetch('ai/kernel.example.json');
+    const k = await r.json();
+    saveKernel(k);
+    await logEvent({ type: 'kernel_loaded_example', payload: {} });
+    refreshUI();
+  } catch (e) {
+    alert('failed: ' + e.message);
+  }
+};
+
+window.exportKernel = function() {
+  const k = loadKernel();
+  if (!k) { alert('no kernel'); return; }
+  const blob = new Blob([JSON.stringify(k, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'wishwood-kernel.json'; a.click();
+  URL.revokeObjectURL(url);
+};
+
+window.runHarvest = async function() {
+  const s = loadSettings();
+  if (!s.provider || !s.key) { alert('configure BYOK first'); return; }
+  const urls = $('reviewUrls').value.split('\n').map(x => x.trim()).filter(Boolean);
+  const lat = parseFloat($('lat').value) || null;
+  const lng = parseFloat($('lng').value) || null;
+  $('harvestProgress').textContent = 'Harvesting...';
+  try {
+    const cur = loadKernel() || await (await fetch('ai/kernel.example.json')).json();
+    const k = await harvest({
+      config: {
+        kernelSeed: cur,
+        reviews: { urls },
+        local: { lat, lng },
+        listings: {},
+        competitors: {}
+      },
+      provider: s.provider, key: s.key, model: s.model,
+      onProgress: (p) => { $('harvestProgress').textContent = `${p.phase}: ${p.source}...`; }
+    });
+    saveKernel(k);
+    $('harvestProgress').textContent = 'Complete · sources: ' + (k.meta?.sources || []).join(', ');
+    refreshUI();
+  } catch (e) {
+    $('harvestProgress').textContent = 'Failed: ' + e.message;
+  }
+};
+
+document.querySelectorAll('.autonomy button').forEach(b => {
+  b.onclick = () => {
+    saveAutonomy({ mode: b.dataset.mode });
+    logEvent({ type: 'autonomy_change', payload: { mode: b.dataset.mode }, actor: 'human' });
+    refreshUI();
+  };
+});
+
+window.addEventListener('wishwood:event', refreshUI);
+refreshUI();
+setInterval(refreshUI, 5000);
+</script>
+</body>
+</html>

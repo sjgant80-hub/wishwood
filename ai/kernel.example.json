@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "kernel_version": "0.1.0",
+    "harvested_at": "2026-07-05T09:00:00Z",
+    "refresh_interval_hours": 168,
+    "signature": null,
+    "sources": ["placeholder"]
+  },
+  "property": {
+    "name": "Wishwood",
+    "type": "cottage",
+    "sleeps": 6,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "location": {
+      "address": "TBC",
+      "lat": null,
+      "lng": null,
+      "region": "TBC",
+      "country": "GB"
+    },
+    "amenities": ["wifi", "log burner", "garden", "parking", "fully equipped kitchen"],
+    "not_present": ["hot tub", "swimming pool", "sauna", "gym"],
+    "photos": [],
+    "quirks": ["placeholder — fill after real harvest"]
+  },
+  "voice": {
+    "tone": "warm",
+    "greeting_style": "First name · one-line welcome · get to the point",
+    "signature": "— The Wishwood team",
+    "banned_phrases": ["at your earliest convenience", "please do not hesitate", "we regret to inform"],
+    "example_replies": [
+      {
+        "situation": "guest asks if pets allowed",
+        "reply": "Hi {name} — we welcome one well-behaved dog with a £30 pet cleaning fee. Bedding not provided, so bring their basket. Any specific breed to check?"
+      }
+    ]
+  },
+  "policies": {
+    "check_in": "16:00",
+    "check_out": "10:00",
+    "min_nights": 2,
+    "max_nights": 21,
+    "cancellation": "Full refund up to 14 days before arrival",
+    "pets": "on_request",
+    "children": "yes",
+    "smoking": false,
+    "events_parties": false,
+    "quiet_hours": "22:00-08:00",
+    "deposit_gbp": 200,
+    "cleaning_fee_gbp": 75
+  },
+  "operations": {
+    "check_in_method": "smart_lock",
+    "wifi": { "ssid": "Wishwood-Guest", "password": "TBC" },
+    "arrival_instructions": "TBC after real setup",
+    "checkout_instructions": "Strip beds · load dishwasher · lock door · code auto-clears at 10:00",
+    "housekeeping": { "contact": "TBC", "turnover_hours": 5 },
+    "maintenance_contacts": [],
+    "faq": [
+      { "q": "Is the wifi fast?", "a": "Around 60 Mbps — works fine for streaming and video calls." },
+      { "q": "Is there parking?", "a": "Yes — off-road for 2 cars." }
+    ]
+  },
+  "market": {
+    "competitors": [],
+    "seasonality": {
+      "peak_months": ["Jul", "Aug", "Dec"],
+      "shoulder_months": ["Apr", "May", "Jun", "Sep", "Oct"],
+      "off_months": ["Jan", "Feb", "Mar", "Nov"]
+    },
+    "local_events": [],
+    "avg_nightly_gbp": 180,
+    "occupancy_target": 0.72
+  },
+  "reviews": {
+    "count": 0,
+    "avg_score": null,
+    "score_by_dimension": {},
+    "recurring_praise": [],
+    "recurring_complaints": [],
+    "guest_archetypes": []
+  },
+  "financials": {
+    "adr_gbp": null,
+    "revpar_gbp": null,
+    "occupancy_actual": null,
+    "alos_nights": null,
+    "cost_baseline_gbp_month": null
+  }
+}

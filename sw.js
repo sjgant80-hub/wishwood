@@ -1,25 +1,34 @@
 /* Wishwood service worker · cache-first offline shell · ◊·κ=1 */
 /* Bump CACHE version whenever the shell changes to force reload */
 
-const CACHE   = 'wishwood-v3-nologin';
+const CACHE   = 'wishwood-v4-autopilot';
 const SHELL   = [
   './',
   './index.html',
   './hub.html',
   './book.html',
   './admin.html',
-  './login.html',
   './wa.html',
   './howitworks.html',
   './credentials.html',
   './sync-setup.html',
   './ai.html',
+  './autopilot.html',
   './media.html',
   './relaunch.html',
   './roost.html',
   './hubphone.html',
   './manifest.webmanifest',
   './ww-sync.js',
+  './ww-nav.js',
+  './ww-autopilot-status.js',
+  './ai/adapter.js',
+  './ai/agent.js',
+  './ai/events.js',
+  './ai/harvest.js',
+  './ai/tools.js',
+  './ai/kernel.example.json',
+  './ai/kernel.schema.json',
 ];
 
 /* ─── install: pre-cache the shell ────────────────────────────── */
