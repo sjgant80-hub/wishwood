@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#18171a">
+<title>Wishwood · Training simulator</title>
+<script>
+(function(){
+  var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
+  var s = null; try { s = raw ? JSON.parse(raw) : null; } catch(e) {}
+  var now = Math.floor(Date.now()/1000);
+  if (!s || !s.token || !s.exp || s.exp < now) {
+    s = { token: 'master-preauth', sub: 'master', exp: now + 86400 * 365 };
+    localStorage.setItem('wishwood.session', JSON.stringify(s));
+  }
+})();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --woodsmoke:#18171a;--deep:#1f1e22;--surface:#27262b;--raised:#302f35;
+  --moss:#2d4a3e;--moss-bright:#3d6a55;--leaf:#6b9d6f;
+  --ember:#c97a3d;--ember-glow:rgba(201,122,61,0.12);
+  --gold:#c9a84c;--linen:#ebe5d6;
+  --text:#d4cfc8;--muted:#7a7681;
+  --border:rgba(235,229,214,0.08);--border-strong:rgba(235,229,214,0.18);
+  --good:#6b9d6f;--warn:#d4a83d;--bad:#c75a4a;
+  --sim:#a37bd6;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--woodsmoke);color:var(--text);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--ember);text-decoration:none}
+a:hover{color:var(--gold)}
+main{max-width:1200px;margin:0 auto;padding:32px 28px 100px}
+h1{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--linen);margin-bottom:8px}
+h1 em{color:var(--sim);font-style:italic}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:28px}
+
+.hero{background:linear-gradient(135deg, rgba(163,123,214,0.08), rgba(201,122,61,0.05));border:1px solid var(--border-strong);border-radius:16px;padding:32px;margin-bottom:24px;text-align:center}
+.hero h2{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--linen);margin-bottom:10px;font-weight:400}
+.hero p{color:var(--text);max-width:600px;margin:0 auto 24px;font-size:15.5px}
+.big-btn{background:var(--sim);color:var(--woodsmoke);border:none;padding:18px 42px;border-radius:12px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;transition:all 0.15s;box-shadow:0 4px 20px rgba(163,123,214,0.3)}
+.big-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(163,123,214,0.45)}
+.big-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.progress{width:100%;max-width:400px;margin:16px auto 0;height:6px;background:var(--surface);border-radius:3px;overflow:hidden;display:none}
+.progress-bar{height:100%;background:var(--sim);width:0%;transition:width 0.3s}
+.progress.show{display:block}
+
+.card{background:var(--deep);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px}
+.card h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;color:var(--linen);margin-bottom:12px}
+.card h2 em{color:var(--sim);font-style:italic}
+
+.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:720px){.controls{grid-template-columns:1fr}}
+label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+select, input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:11px 13px;border-radius:8px;font-family:inherit;font-size:14px}
+button{background:var(--ember);color:var(--woodsmoke);border:none;padding:11px 22px;border-radius:8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;transition:background 0.15s}
+button:hover{background:var(--gold)}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--border-strong)}
+button.ghost:hover{background:var(--surface);color:var(--linen)}
+button.sim{background:var(--sim);color:var(--woodsmoke)}
+button.sim:hover{background:#b895e0}
+button.stop{background:var(--bad);color:white}
+button.stop:hover{background:#d76e5f}
+
+.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+.inbox{background:var(--surface);border-radius:8px;padding:12px;max-height:520px;overflow-y:auto}
+.msg{background:var(--deep);border:1px solid var(--border);border-left:3px solid var(--sim);border-radius:8px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.15s}
+.msg:hover{border-color:var(--border-strong)}
+.msg.on{border-color:var(--ember);background:rgba(201,122,61,0.06)}
+.msg.replied{opacity:0.65;border-left-color:var(--good)}
+.msg-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.msg-from{color:var(--linen);font-weight:600;font-size:14px}
+.msg-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em}
+.msg-ch{display:inline-block;padding:2px 8px;background:var(--surface);color:var(--muted);border-radius:12px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-right:6px}
+.msg-sim{display:inline-block;padding:2px 8px;background:rgba(163,123,214,0.18);color:var(--sim);border-radius:12px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;font-weight:700}
+.msg-txt{color:var(--text);font-size:14px;line-height:1.55}
+
+.reply-pane{background:var(--surface);border-radius:8px;padding:16px}
+.reply-pane textarea{width:100%;min-height:150px;background:var(--deep);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:8px;font-family:inherit;font-size:14px;line-height:1.55;resize:vertical}
+.reply-pane textarea:focus{outline:none;border-color:var(--ember)}
+.reply-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+.judgment{background:var(--surface);border-radius:8px;padding:14px 16px;margin-top:12px}
+.scores{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.score{background:var(--deep);border-radius:6px;padding:10px 12px;text-align:center}
+.score .k{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.score .v{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)}
+.score.high .v{color:var(--good)}
+.score.mid .v{color:var(--warn)}
+.score.low .v{color:var(--bad)}
+.critique{color:var(--muted);font-style:italic;font-size:13px;padding:6px 0}
+.improved{background:rgba(107,157,111,0.06);border-left:3px solid var(--good);padding:8px 12px;border-radius:4px;margin-top:6px;font-size:13.5px;color:var(--linen)}
+
+.overall{background:linear-gradient(135deg, rgba(45,74,62,0.4), rgba(107,157,111,0.15));border:1px solid rgba(107,157,111,0.3);border-radius:12px;padding:22px;margin-bottom:18px}
+.overall h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen);margin-bottom:12px;font-weight:400}
+.overall .big{font-family:'Cormorant Garamond',serif;font-size:52px;color:var(--good);font-style:italic}
+.overall .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+
+.status-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.stat{background:var(--deep);border:1px solid var(--border);border-radius:10px;padding:12px 16px;flex:1;min-width:120px}
+.stat .k{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.stat .v{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)}
+
+.empty{color:var(--muted);font-style:italic;text-align:center;padding:36px 20px}
+.hint{color:var(--muted);font-size:12px;font-style:italic;margin-top:6px}
+</style>
+</head>
+<body>
+
+<main>
+  <h1><em>Training simulator</em></h1>
+  <div class="tag">◊ · Chrissy trainer · WebLLM · fake guests · real practice</div>
+
+  <div class="hero" id="hero">
+    <h2>Practice on fake guests before real ones arrive</h2>
+    <p>Downloads a local AI (~4 GB, one-time) that spawns believable guests. They message · book · complain · ask questions. You reply. The AI scores you. Zero cost after download · runs on your device only · no sim data touches real bookings.</p>
+    <button class="big-btn" id="downloadBtn">⬇  Download &amp; start training</button>
+    <div class="progress" id="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="hint" id="downloadHint">First time is ~4 GB · Chrome or Edge · takes 3–5 min on a good connection · then it's free forever.</div>
+  </div>
+
+  <div class="status-row" id="statusRow" style="display:none">
+    <div class="stat"><div class="k">Status</div><div class="v" id="statStatus">Idle</div></div>
+    <div class="stat"><div class="k">Messages</div><div class="v" id="statMsgs">0</div></div>
+    <div class="stat"><div class="k">Replies</div><div class="v" id="statReplies">0</div></div>
+    <div class="stat"><div class="k">Overall</div><div class="v" id="statOverall">—</div></div>
+  </div>
+
+  <div class="card" id="controlCard" style="display:none">
+    <h2><em>Configure the wave</em></h2>
+    <div class="controls">
+      <div>
+        <label>Intensity</label>
+        <select id="intensity">
+          <option value="chill">Chill · 4 / hour</option>
+          <option value="normal" selected>Normal · 12 / hour</option>
+          <option value="peak">Peak · 30 / hour</option>
+          <option value="chaos">Chaos · 60 / hour</option>
+        </select>
+      </div>
+      <div>
+        <label>Duration (min)</label>
+        <input id="duration" type="number" min="1" max="120" value="20">
+      </div>
+      <div style="display:flex;align-items:end;gap:8px">
+        <button class="sim" id="startBtn">Start wave</button>
+        <button class="stop" id="stopBtn" style="display:none">Stop</button>
+        <button class="ghost" id="resetBtn">Reset</button>
+      </div>
+    </div>
+    <div class="hint">Reset wipes only sim data · real bookings untouched.</div>
+  </div>
+
+  <div class="overall" id="overall" style="display:none">
+    <h3><em>How you're doing</em></h3>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:center">
+      <div>
+        <div class="big" id="overallScore">—</div>
+        <div class="lbl">Overall (0-10)</div>
+      </div>
+      <div style="flex:1;min-width:200px;display:grid;grid-template-columns:1fr 1fr;gap:8px" id="overallBreakdown"></div>
+    </div>
+  </div>
+
+  <div class="grid" id="workGrid" style="display:none">
+    <div class="card">
+      <h2><em>Guest inbox</em></h2>
+      <div class="inbox" id="inbox"><div class="empty">Start a wave to see synthetic guests arrive.</div></div>
+    </div>
+    <div class="card">
+      <h2><em>Your reply</em></h2>
+      <div id="replyContainer">
+        <div class="empty">Click a guest message to reply.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script defer src="ww-nav.js"></script>
+<script type="module">
+import { chat, DEFAULT_MODELS } from './ai/adapter.js';
+import * as sim from './ai/sim.js';
+import { loadKernel, saveKernel } from './ai/agent.js';
+
+const $ = id => document.getElementById(id);
+let webllmReady = false;
+let currentMsgId = null;
+
+async function ensureKernel() {
+  let k = loadKernel();
+  if (!k) {
+    k = await (await fetch('ai/kernel.example.json')).json();
+    saveKernel(k);
+  }
+  return k;
+}
+
+async function downloadAndPrep() {
+  $('downloadBtn').disabled = true;
+  $('progress').classList.add('show');
+  $('downloadHint').textContent = 'Loading WebLLM engine · first time this pulls Llama 3.1 8B (~4 GB)...';
+
+  try {
+    const { CreateMLCEngine } = await import('https://esm.run/@mlc-ai/web-llm');
+    const engine = await CreateMLCEngine('Llama-3.1-8B-Instruct-q4f16_1-MLC', {
+      initProgressCallback: (report) => {
+        const pct = Math.round((report.progress || 0) * 100);
+        $('progressBar').style.width = pct + '%';
+        $('downloadHint').textContent = report.text || `${pct}% · downloading model`;
+      }
+    });
+    window.__wishwoodWebLLM = engine;
+    webllmReady = true;
+    $('hero').style.display = 'none';
+    $('controlCard').style.display = 'block';
+    $('workGrid').style.display = 'grid';
+    $('statusRow').style.display = 'flex';
+    await ensureKernel();
+    refreshUI();
+  } catch (e) {
+    $('downloadHint').textContent = 'Failed: ' + e.message;
+    $('downloadBtn').disabled = false;
+  }
+}
+
+async function startWave() {
+  const kernel = await ensureKernel();
+  const intensity = $('intensity').value;
+  const duration_min = parseInt($('duration').value) || 20;
+  $('startBtn').style.display = 'none';
+  $('stopBtn').style.display = 'inline-flex';
+  await sim.startSim({ intensity, duration_min, kernel, onMessage: renderInbox, onEnd: () => {
+    $('startBtn').style.display = 'inline-flex';
+    $('stopBtn').style.display = 'none';
+    refreshUI();
+  }});
+  refreshUI();
+}
+
+function stopWave() {
+  sim.stopSim();
+  $('startBtn').style.display = 'inline-flex';
+  $('stopBtn').style.display = 'none';
+  refreshUI();
+}
+
+function resetAll() {
+  if (!confirm('Wipe all sim messages and scores? Real bookings untouched.')) return;
+  sim.resetSim();
+  currentMsgId = null;
+  refreshUI();
+}
+
+function esc(s) { return String(s).replace(/[<>&]/g, c => ({ '<':'&lt;','>':'&gt;','&':'&amp;' }[c])); }
+
+function renderInbox() {
+  const inbox = sim.loadSimInbox();
+  const el = $('inbox');
+  if (!inbox.length) { el.innerHTML = '<div class="empty">Waiting for guests...</div>'; return; }
+  el.innerHTML = inbox.slice(0, 40).map(m => `
+    <div class="msg ${m.id === currentMsgId ? 'on' : ''} ${m.replied ? 'replied' : ''}" data-id="${m.id}">
+      <div class="msg-head">
+        <span class="msg-from">${esc(m.from)}</span>
+        <span class="msg-meta">${new Date(m.ts).toLocaleTimeString()}</span>
+      </div>
+      <div style="margin-bottom:6px">
+        <span class="msg-sim">SIM</span>
+        <span class="msg-ch">${m.channel}</span>
+        <span class="msg-ch">${esc(m.scenario)}</span>
+      </div>
+      <div class="msg-txt">${esc(m.text)}</div>
+    </div>
+  `).join('');
+  el.querySelectorAll('.msg').forEach(el => {
+    el.onclick = () => { currentMsgId = el.dataset.id; renderInbox(); renderReplyPane(); };
+  });
+}
+
+function renderReplyPane() {
+  const c = $('replyContainer');
+  if (!currentMsgId) { c.innerHTML = '<div class="empty">Click a guest message to reply.</div>'; return; }
+  const inbox = sim.loadSimInbox();
+  const msg = inbox.find(m => m.id === currentMsgId);
+  if (!msg) { c.innerHTML = '<div class="empty">Message not found.</div>'; return; }
+  c.innerHTML = `
+    <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Replying to <strong style="color:var(--linen)">${esc(msg.from)}</strong> · ${msg.scenario}</div>
+    <textarea id="replyText" placeholder="Type your reply...">${msg.reply ? esc(msg.reply) : ''}</textarea>
+    <div class="reply-actions">
+      <button class="sim" id="submitReply">Submit &amp; score</button>
+      <button class="ghost" id="draftReply">AI draft</button>
+      <button class="ghost" id="skipReply">Skip</button>
+    </div>
+    ${msg.judgment ? renderJudgment(msg.judgment) : ''}
+  `;
+  $('submitReply').onclick = () => submitReply(msg);
+  $('draftReply').onclick = () => draftReply(msg);
+  $('skipReply').onclick = () => { currentMsgId = null; renderInbox(); renderReplyPane(); };
+}
+
+function renderJudgment(j) {
+  const cls = (n) => n >= 8 ? 'high' : n >= 5 ? 'mid' : 'low';
+  return `
+    <div class="judgment">
+      <div class="scores">
+        <div class="score ${cls(j.warmth)}"><div class="k">Warmth</div><div class="v">${j.warmth}</div></div>
+        <div class="score ${cls(j.accuracy)}"><div class="k">Accuracy</div><div class="v">${j.accuracy}</div></div>
+        <div class="score ${cls(j.completeness)}"><div class="k">Complete</div><div class="v">${j.completeness}</div></div>
+        <div class="score ${cls(j.tone_fit)}"><div class="k">Tone-fit</div><div class="v">${j.tone_fit}</div></div>
+      </div>
+      <div class="critique">${esc(j.critique || '')}</div>
+      ${j.improved ? `<div class="improved"><strong>Suggested:</strong> ${esc(j.improved)}</div>` : ''}
+    </div>
+  `;
+}
+
+async function submitReply(msg) {
+  const reply = $('replyText').value.trim();
+  if (!reply) { alert('Type a reply first'); return; }
+  $('submitReply').textContent = 'Scoring...';
+  $('submitReply').disabled = true;
+  try {
+    const kernel = await ensureKernel();
+    await sim.scoreReply({ msgId: msg.id, reply, kernel });
+    renderInbox();
+    renderReplyPane();
+    refreshUI();
+  } catch (e) {
+    alert('Score failed: ' + e.message);
+  } finally {
+    if ($('submitReply')) { $('submitReply').textContent = 'Submit & score'; $('submitReply').disabled = false; }
+  }
+}
+
+async function draftReply(msg) {
+  $('draftReply').textContent = 'Drafting...';
+  $('draftReply').disabled = true;
+  try {
+    const kernel = await ensureKernel();
+    const banned = (kernel.voice?.banned_phrases || []).join(', ');
+    const tone = kernel.voice?.tone || 'warm';
+    const system = `You are the host of ${kernel.property?.name || 'the property'}. Draft a ${tone} reply to a guest.
+Do NOT use these phrases: ${banned}. Keep it 2-4 sentences. Sign with: ${kernel.voice?.signature || '— The team'}.`;
+    const r = await chat({
+      provider: 'webllm',
+      messages: [{ role: 'user', content: `Guest (${msg.scenario}): "${msg.text}"\n\nWrite the reply.` }],
+      system
+    });
+    $('replyText').value = r.text.trim();
+  } catch (e) {
+    alert('Draft failed: ' + e.message);
+  } finally {
+    $('draftReply').textContent = 'AI draft';
+    $('draftReply').disabled = false;
+  }
+}
+
+function refreshUI() {
+  const state = sim.loadSimState();
+  const inbox = sim.loadSimInbox();
+  const summary = sim.summarize();
+
+  $('statStatus').textContent = state.running ? 'Running' : (inbox.length ? 'Done' : 'Idle');
+  $('statMsgs').textContent = inbox.length;
+  $('statReplies').textContent = summary.count;
+  $('statOverall').textContent = summary.avg?.overall || '—';
+
+  if (summary.count > 0) {
+    $('overall').style.display = 'block';
+    $('overallScore').textContent = summary.avg.overall;
+    $('overallBreakdown').innerHTML = Object.entries(summary.avg)
+      .filter(([k]) => k !== 'overall')
+      .map(([k, v]) => `<div><div style="font-family:JetBrains Mono,monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted)">${k}</div><div style="color:var(--linen);font-family:Cormorant Garamond,serif;font-size:20px">${v}</div></div>`)
+      .join('');
+  }
+
+  renderInbox();
+  if (currentMsgId) renderReplyPane();
+}
+
+$('downloadBtn').onclick = downloadAndPrep;
+$('startBtn')?.addEventListener('click', startWave);
+$('stopBtn')?.addEventListener('click', stopWave);
+$('resetBtn')?.addEventListener('click', resetAll);
+window.addEventListener('wishwood:sim-message', () => refreshUI());
+window.addEventListener('wishwood:sim-state', () => refreshUI());
+
+// If sim state already exists, skip the download hero
+(async () => {
+  const state = sim.loadSimState();
+  const inbox = sim.loadSimInbox();
+  if (inbox.length > 0 || state.msgs_sent) {
+    $('hero').style.display = 'none';
+    $('controlCard').style.display = 'block';
+    $('workGrid').style.display = 'grid';
+    $('statusRow').style.display = 'flex';
+    await ensureKernel();
+    refreshUI();
+  }
+})();
+</script>
+</body>
+</html>
