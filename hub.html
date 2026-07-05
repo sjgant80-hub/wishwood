@@ -187,6 +187,57 @@ a{color:var(--ember);text-decoration:none}
 .nav-item.active{background:var(--raised);color:var(--linen);border-left:2px solid var(--ember);padding-left:12px}
 .nav-item .glyph{color:var(--ember);font-size:14px;width:18px;display:inline-block}
 .nav-item .count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:var(--surface);padding:1px 6px;border-radius:9px}
+/* Dashboard v2 · FallCRM Elite pattern · added 2026-07-04 */
+.dash-layout{display:grid;grid-template-columns:1fr 320px;gap:22px;padding:28px 30px;max-width:1500px}
+@media(max-width:1100px){.dash-layout{grid-template-columns:1fr}}
+.dash-main{min-width:0}
+.dash-head{margin-bottom:22px}
+.dash-h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;color:var(--linen);margin:0 0 4px;font-weight:500}
+.dash-sub-line{color:var(--dim);font-size:13px;font-family:'JetBrains Mono',monospace;letter-spacing:0.03em}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+@media(max-width:820px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px}
+.stat-card:hover{border-color:var(--ember);transition:border-color .15s}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.stat-value{font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;color:var(--linen);line-height:1;font-weight:500}
+.stat-value.gold{color:var(--gold)}
+.stat-value.ember{color:var(--ember)}
+.stat-unit{font-size:16px;color:var(--muted);margin-left:2px}
+.stat-mini{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-top:8px;letter-spacing:0.02em}
+.stat-mini.leaf{color:var(--leaf,#7fa66b)}
+.stat-mini.ember{color:var(--ember)}
+.dash-block{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 22px;margin-bottom:18px}
+.dash-block-head{display:flex;justify-content:space-between;align-items:baseline;font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;color:var(--linen);padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:14px;font-weight:500}
+.dash-block-right{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase}
+.pipe-list{display:flex;flex-direction:column;gap:10px}
+.pipe-row{display:grid;grid-template-columns:110px 1fr 80px 60px;align-items:center;gap:12px;font-size:12.5px}
+.pipe-name{color:var(--linen);font-family:'Inter',sans-serif}
+.pipe-bar-wrap{background:var(--raised);height:8px;border-radius:2px;overflow:hidden}
+.pipe-bar{height:100%;border-radius:2px}
+.pipe-bar.airbnb{background:#ff5a5f}
+.pipe-bar.direct{background:var(--ember)}
+.pipe-bar.pitchup{background:#5c8a6a}
+.pipe-bar.facebook{background:#4267b2}
+.pipe-bar.booking{background:var(--gold)}
+.pipe-val{color:var(--linen);font-family:'JetBrains Mono',monospace;text-align:right;font-size:12px}
+.pipe-n{color:var(--dim);font-family:'JetBrains Mono',monospace;text-align:right;font-size:11px}
+.pipe-n.opp{color:var(--ember);text-transform:uppercase;letter-spacing:0.05em;font-size:9.5px}
+.chart-wrap{position:relative}
+.chart-svg{width:100%;height:200px;display:block}
+.chart-grid{stroke:var(--line);stroke-width:1;stroke-dasharray:2 4}
+.chart-line{stroke:var(--ember);stroke-width:2.5;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.chart-dot{fill:var(--surface);stroke:var(--ember);stroke-width:2}
+.chart-dot:hover{fill:var(--ember)}
+.chart-labels{display:grid;grid-template-columns:repeat(6,1fr);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);text-align:center;margin-top:6px;padding:0 30px}
+.dash-side{display:flex;flex-direction:column;gap:14px}
+.side-block{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.side-head{display:flex;justify-content:space-between;align-items:baseline;font-family:'Cormorant Garamond',Georgia,serif;font-size:14px;color:var(--linen);padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:12px;font-weight:500}
+.side-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ember);background:var(--raised);padding:2px 7px;border-radius:9px}
+.side-item{padding:9px 0;border-bottom:1px solid var(--line)}
+.side-item:last-child{border-bottom:none}
+.side-item.hot{border-left:2px solid var(--ember);padding-left:8px;margin-left:-8px}
+.side-item-title{font-size:12.5px;color:var(--linen);font-family:'Inter',sans-serif;margin-bottom:3px}
+.side-item-meta{font-size:10.5px;color:var(--dim);font-family:'JetBrains Mono',monospace;letter-spacing:0.01em}
 .nav-item.active .count{background:var(--ember);color:var(--woodsmoke);font-weight:600}
 .sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;text-align:center}
 .sidebar-footer .seal{color:var(--ember);font-size:11px;margin-bottom:4px;letter-spacing:0.16em}
@@ -508,9 +559,9 @@ a{color:var(--ember);text-decoration:none}
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="nav-section">Operate</div>
-    <div class="nav-item active" data-view="inbox"><span><span class="glyph">✉</span> Inbox</span><span class="count" id="unread-count">5</span></div>
+    <div class="nav-item active" data-view="dashboard"><span><span class="glyph">◐</span> Dashboard</span></div>
+    <div class="nav-item" data-view="inbox"><span><span class="glyph">✉</span> Inbox</span><span class="count" id="unread-count">5</span></div>
     <div class="nav-item" data-view="calendar"><span><span class="glyph">▦</span> Calendar</span><span class="count">10</span></div>
-    <div class="nav-item" data-view="dashboard"><span><span class="glyph">◐</span> Dashboard</span></div>
 
     <div class="nav-section">Estate</div>
     <div class="nav-item" data-view="channels"><span><span class="glyph">≋</span> Channels</span><span class="count">7</span></div>
@@ -545,7 +596,7 @@ a{color:var(--ember);text-decoration:none}
   <div class="main">
 
     <!-- INBOX -->
-    <div class="view active" id="view-inbox">
+    <div class="view" id="view-inbox">
       <div class="inbox">
 
         <div class="inbox-list">
@@ -598,51 +649,102 @@ a{color:var(--ember);text-decoration:none}
     </div>
 
     <!-- DASHBOARD -->
-    <div class="view" id="view-dashboard">
-      <div class="dash">
-        <div class="dash-title">The estate at a glance</div>
-        <div class="dash-sub">Year-to-date · 3 cabins · 7 channels · 0 SaaS subscriptions</div>
+    <div class="view active" id="view-dashboard">
+      <div class="dash-layout">
+        <div class="dash-main">
+          <div class="dash-head">
+            <h1 class="dash-h1">Good day</h1>
+            <div class="dash-sub-line">Wishwood · 3 cabins · 7 channels live · 0 SaaS</div>
+          </div>
 
-        <div class="dash-grid">
-          <div class="card hero">
-            <div class="card-label">YTD revenue</div>
-            <div class="card-value">£32,840</div>
-            <div class="card-sub">73 bookings · 2,167 nights sold</div>
-            <span class="card-trend up">+18% vs same period 2025</span>
+          <div class="stat-row">
+            <div class="stat-card">
+              <div class="stat-label">30-day occupancy</div>
+              <div class="stat-value gold">78<span class="stat-unit">%</span></div>
+              <div class="stat-mini">▲ up from 64% (90-day)</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Weighted forecast (90d)</div>
+              <div class="stat-value">£8,420</div>
+              <div class="stat-mini">Probability-adjusted · 14 hot leads</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Won MTD</div>
+              <div class="stat-value">£3,240</div>
+              <div class="stat-mini leaf">▲ on target · 9 bookings closed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Pending inbox</div>
+              <div class="stat-value">5</div>
+              <div class="stat-mini ember">▼ 2 overdue · reply now</div>
+            </div>
           </div>
-          <div class="card uplift">
-            <div class="card-label">Projected year-1 uplift</div>
-            <div class="card-value ember">+£18,200</div>
-            <div class="card-sub">From Booking.com listing + direct site</div>
-            <span class="card-trend up">+£980 SaaS avoided · +£2,200 fee savings</span>
+
+          <div class="dash-block">
+            <div class="dash-block-head">Pipeline by channel<span class="dash-block-right">YTD</span></div>
+            <div class="pipe-list">
+              <div class="pipe-row"><span class="pipe-name">Airbnb</span><div class="pipe-bar-wrap"><div class="pipe-bar airbnb" style="width:82%"></div></div><span class="pipe-val">£24,120</span><span class="pipe-n">52</span></div>
+              <div class="pipe-row"><span class="pipe-name">Direct site</span><div class="pipe-bar-wrap"><div class="pipe-bar direct" style="width:12%"></div></div><span class="pipe-val">£3,640</span><span class="pipe-n">15</span></div>
+              <div class="pipe-row"><span class="pipe-name">Pitchup</span><div class="pipe-bar-wrap"><div class="pipe-bar pitchup" style="width:9%"></div></div><span class="pipe-val">£2,720</span><span class="pipe-n">2</span></div>
+              <div class="pipe-row"><span class="pipe-name">Facebook</span><div class="pipe-bar-wrap"><div class="pipe-bar facebook" style="width:8%"></div></div><span class="pipe-val">£2,360</span><span class="pipe-n">4</span></div>
+              <div class="pipe-row"><span class="pipe-name">Booking.com</span><div class="pipe-bar-wrap"><div class="pipe-bar booking" style="width:1%"></div></div><span class="pipe-val">£0</span><span class="pipe-n opp">opportunity</span></div>
+            </div>
           </div>
-          <div class="card">
-            <div class="card-label">30-day occupancy</div>
-            <div class="card-value gold">78%</div>
-            <div class="gauge"><div class="gauge-fill" style="width:78%"></div></div>
-            <div class="card-sub" style="margin-top:8px">90-day rolling: 64%</div>
+
+          <div class="dash-block">
+            <div class="dash-block-head">Revenue trend<span class="dash-block-right">6M</span></div>
+            <div class="chart-wrap">
+              <svg class="chart-svg" viewBox="0 0 700 220" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--ember)" stop-opacity="0.28"/>
+                    <stop offset="100%" stop-color="var(--ember)" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <line x1="0" y1="55" x2="700" y2="55" class="chart-grid"/>
+                <line x1="0" y1="110" x2="700" y2="110" class="chart-grid"/>
+                <line x1="0" y1="165" x2="700" y2="165" class="chart-grid"/>
+                <path class="chart-area" d="M 30 155 L 145 130 L 260 108 L 375 118 L 490 78 L 605 92 L 670 92 L 670 220 L 30 220 Z" fill="url(#areaGrad)"/>
+                <polyline class="chart-line" points="30,155 145,130 260,108 375,118 490,78 605,92 670,92"/>
+                <circle class="chart-dot" cx="30" cy="155" r="4"><title>Feb · £3,200</title></circle>
+                <circle class="chart-dot" cx="145" cy="130" r="4"><title>Mar · £4,780</title></circle>
+                <circle class="chart-dot" cx="260" cy="108" r="4"><title>Apr · £6,100</title></circle>
+                <circle class="chart-dot" cx="375" cy="118" r="4"><title>May · £5,540</title></circle>
+                <circle class="chart-dot" cx="490" cy="78" r="4"><title>Jun · £7,920</title></circle>
+                <circle class="chart-dot" cx="605" cy="92" r="4"><title>Jul · £7,220</title></circle>
+              </svg>
+              <div class="chart-labels">
+                <span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span>
+              </div>
+            </div>
           </div>
-          <div class="card">
-            <div class="card-label">Direct booking share</div>
-            <div class="card-value leaf">21%</div>
-            <div class="gauge"><div class="gauge-fill" style="width:21%"></div></div>
-            <div class="card-sub" style="margin-top:8px">Goal: 50% by end of year 1</div>
-          </div>
-          <div class="card">
-            <div class="card-label">Avg response time</div>
-            <div class="card-value">1.4 <span style="font-size:18px;color:var(--muted)">hr</span></div>
-            <div class="card-sub">AI-drafted · 87% approved as-written</div>
-          </div>
-          <div class="card">
-            <div class="card-label">OTA fees paid YTD</div>
-            <div class="card-value" style="color:var(--bad)">£4,248</div>
-            <div class="card-sub">Airbnb 15.5% · Pitchup 8% · saveable via direct</div>
-          </div>
+
+          <div class="section-title"><span class="glyph">≋</span> Channels live</div>
+          <div class="channels-grid" id="channels-grid"></div>
         </div>
 
-        <div class="section-title"><span class="glyph">≋</span> Channels live</div>
-        <div class="channels-grid" id="channels-grid"></div>
+        <aside class="dash-side">
+          <div class="side-block">
+            <div class="side-head">Today's arrivals<span class="side-count">3</span></div>
+            <div class="side-item"><div class="side-item-title">Cabin Oak · Sarah Mitchell</div><div class="side-item-meta">Check-in 15:00 · 2 nights · direct</div></div>
+            <div class="side-item"><div class="side-item-title">Cabin Ash · James O'Brien</div><div class="side-item-meta">Check-in 16:30 · 4 nights · Airbnb</div></div>
+            <div class="side-item"><div class="side-item-title">Cabin Elm · Priya Sharma</div><div class="side-item-meta">Check-in 17:00 · 3 nights · direct</div></div>
+          </div>
 
+          <div class="side-block">
+            <div class="side-head">Today's departures<span class="side-count">2</span></div>
+            <div class="side-item"><div class="side-item-title">Cabin Oak · Marcus Osei</div><div class="side-item-meta">Check-out 11:00 · clean scheduled 12:00</div></div>
+            <div class="side-item"><div class="side-item-title">Cabin Elm · Emma Williams</div><div class="side-item-meta">Check-out 10:00 · review request queued</div></div>
+          </div>
+
+          <div class="side-block">
+            <div class="side-head">Hot inquiries<span class="side-count">4</span></div>
+            <div class="side-item hot"><div class="side-item-title">Nancy Patel — WhatsApp</div><div class="side-item-meta">"Available Aug 15-19?" · 8m ago · draft ready</div></div>
+            <div class="side-item hot"><div class="side-item-title">Tom Reid — Airbnb</div><div class="side-item-meta">"Dogs OK?" · 23m ago · draft ready</div></div>
+            <div class="side-item"><div class="side-item-title">Lisa Chen — Direct</div><div class="side-item-meta">"3 cabins Sept weekend?" · 1h ago</div></div>
+            <div class="side-item"><div class="side-item-title">Adam Cole — Facebook</div><div class="side-item-meta">"Wedding party of 12?" · 2h ago</div></div>
+          </div>
+        </aside>
       </div>
     </div>
 
