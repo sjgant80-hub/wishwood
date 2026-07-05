@@ -9,21 +9,18 @@
 // Handoff mode OFF by default (master pre-auth · Simon walks straight in)
 // Flip handoff mode ON in admin when ready to hand over to Chrissy
 (function(){
-  var HANDOFF_MODE = localStorage.getItem('wishwood.handoff_mode') === 'on';
+  // NO LOGIN · setup mode · walks straight in with synthetic master session
+  // Auth returns when Simon says wishwood is fully set up
   var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
   var s = null;
   try { s = raw ? JSON.parse(raw) : null; } catch(e) { s = null; }
   var now = Math.floor(Date.now()/1000);
   if (!s || !s.token || !s.exp || s.exp < now) {
-    if (HANDOFF_MODE) {
-      if (document.documentElement) document.documentElement.innerHTML = '';
-      location.replace('login.html');
-      return;
-    }
-    // Master pre-auth · handoff not enabled yet · synthetic session (1 year)
     s = { token: 'master-preauth', sub: 'master', exp: now + 86400 * 365 };
     localStorage.setItem('wishwood.session', JSON.stringify(s));
   }
+  // Clear any stale handoff flag from prior sessions
+  localStorage.removeItem('wishwood.handoff_mode');
   var WORKER = 'https://wishwood-engine.workers.dev';
   window.WW_AUTH = {
     token: s.token, sub: s.sub, exp: s.exp, workerUrl: WORKER,
@@ -33,9 +30,11 @@
       return fetch((path.indexOf('http')===0 ? path : WORKER + path), Object.assign({}, opts, { headers: headers }));
     },
     logout: function(){
-      localStorage.removeItem('wishwood.session');
-      sessionStorage.removeItem('wishwood.session');
-      location.replace('login.html');
+      // NO LOGIN · logout re-synths master session and reloads to hub
+      var now2 = Math.floor(Date.now()/1000);
+      var fresh = { token: 'master-preauth', sub: 'master', exp: now2 + 86400 * 365 };
+      localStorage.setItem('wishwood.session', JSON.stringify(fresh));
+      location.replace('hub.html');
     },
   };
   // Register PWA service worker (installable · offline-capable)

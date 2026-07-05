@@ -9,19 +9,15 @@
 <script>
 /* auth gate · handoff-mode aware (master pre-auth until Chrissy handoff) */
 (function(){
-  var HANDOFF_MODE = localStorage.getItem('wishwood.handoff_mode') === 'on';
+  // NO LOGIN · setup mode · walks straight in
   var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
   var s = null; try { s = raw ? JSON.parse(raw) : null; } catch(e) {}
   var now = Math.floor(Date.now()/1000);
   if (!s || !s.token || !s.exp || s.exp < now) {
-    if (HANDOFF_MODE) {
-      if (document.documentElement) document.documentElement.innerHTML = '';
-      location.replace('login.html');
-      return;
-    }
     s = { token: 'master-preauth', sub: 'master', exp: now + 86400 * 365 };
     localStorage.setItem('wishwood.session', JSON.stringify(s));
   }
+  localStorage.removeItem('wishwood.handoff_mode');
 })();
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
