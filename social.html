@@ -157,8 +157,31 @@ button.big{padding:14px 28px;font-size:11.5px}
 
   <div class="grid">
 
-    <!-- LEFT · Compose + planner -->
+    <!-- LEFT · Research + Compose + planner -->
     <div>
+      <div class="card" style="border-color:rgba(107,157,111,0.35);background:linear-gradient(180deg,rgba(107,157,111,0.05),var(--deep))">
+        <h2><em>Research engine</em></h2>
+        <div class="sub">Ask Gemini (recommended) or any BYOK LLM about hospitality strategy. Active insights inject into the composer prompt.</div>
+
+        <label>Quick presets</label>
+        <select id="researchPreset" style="margin-bottom:10px">
+          <option value="">— Pick a preset or type your own below —</option>
+        </select>
+
+        <label>Your question</label>
+        <textarea id="researchQuestion" placeholder="e.g. Which local Facebook groups near my property are worth posting in? What content works · what gets banned. Or leave blank and pick a preset above." style="min-height:80px"></textarea>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button id="researchBtn" class="moss">▸ Run research</button>
+          <span class="hint" style="margin:0">Recommendation: <strong style="color:var(--linen)">Google Gemini Pro</strong> · you likely already have Google AI Pro for images/video</span>
+        </div>
+
+        <div id="researchOutput" style="margin-top:14px"></div>
+
+        <h3 style="margin-top:20px;font-size:15px">Active insights (fed into composer)</h3>
+        <div id="insightsList" style="margin-top:6px"></div>
+      </div>
+
       <div class="card">
         <h2><em>Compose</em></h2>
         <div class="sub">Pick a category · pick a channel · draft grounds in your kernel voice · you approve.</div>
@@ -261,6 +284,7 @@ button.big{padding:14px 28px;font-size:11.5px}
 <script defer src="ww-nav.js"></script>
 <script type="module">
 import * as social from './ai/social.js';
+import * as research from './ai/research.js';
 import { loadKernel, saveKernel, loadSettings, loadAutonomy as loadCoreAutonomy } from './ai/agent.js';
 import { logEvent, tailRing } from './ai/events.js';
 
@@ -546,14 +570,112 @@ $('prevMonth').onclick = () => { currentMonth = new Date(currentMonth.getFullYea
 $('nextMonth').onclick = () => { currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1); currentDayFocus = null; refreshAll(); };
 $('thisMonth').onclick = () => { currentMonth = new Date(); currentDayFocus = null; refreshAll(); };
 
+/* ===== Research engine ===== */
+
+function renderResearchPresets() {
+  const el = $('researchPreset');
+  el.innerHTML = '<option value="">— Pick a preset or type your own below —</option>' +
+    research.RESEARCH_PRESETS.map(p => `<option value="${_esc(p.question)}">${_esc(p.question.slice(0, 80))}${p.question.length > 80 ? '…' : ''}</option>`).join('');
+  el.onchange = () => {
+    if (el.value) $('researchQuestion').value = el.value;
+  };
+}
+
+function renderInsights() {
+  const insights = research.loadInsights();
+  const el = $('insightsList');
+  if (!insights.length) { el.innerHTML = '<div class="hint">No insights yet. Run one above.</div>'; return; }
+  el.innerHTML = insights.slice(0, 12).map(i => `
+    <div class="post-item" style="padding:10px 12px;margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:4px">
+        <div style="font-size:12.5px;color:var(--linen);font-weight:600;flex:1">${_esc(i.question.slice(0, 90))}${i.question.length > 90 ? '…' : ''}</div>
+        <label style="display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:${i.active ? 'var(--good)' : 'var(--muted)'};cursor:pointer">
+          <input type="checkbox" data-toggle="${i.id}" ${i.active ? 'checked' : ''} style="width:auto;margin:0">
+          ${i.active ? 'active' : 'off'}
+        </label>
+      </div>
+      <div style="font-size:12px;color:var(--text);line-height:1.5;margin-bottom:6px">${_esc((i.answer.summary || '').slice(0, 220))}${(i.answer.summary || '').length > 220 ? '…' : ''}</div>
+      ${(i.answer.tactics || []).length ? `<div style="font-size:11.5px;color:var(--muted);font-style:italic">Tactics: ${_esc((i.answer.tactics || []).slice(0, 3).join(' · '))}</div>` : ''}
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+        <button data-expand="${i.id}" class="ghost" style="padding:4px 10px;font-size:9px">See full</button>
+        <button data-delete-insight="${i.id}" class="ghost" style="padding:4px 10px;font-size:9px">Delete</button>
+        <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.1em">${new Date(i.created_at).toLocaleDateString()}</span>
+      </div>
+      <div id="insight-full-${i.id}" style="display:none;margin-top:8px;padding:8px 10px;background:var(--void2,#14131a);border-radius:5px;font-size:11.5px;color:var(--cream);line-height:1.55"></div>
+    </div>
+  `).join('');
+  el.querySelectorAll('input[data-toggle]').forEach(cb => {
+    cb.onclick = (e) => { e.stopPropagation(); research.toggleActive(cb.dataset.toggle); renderInsights(); };
+  });
+  el.querySelectorAll('button[data-delete-insight]').forEach(b => {
+    b.onclick = () => { if (confirm('Delete this insight?')) { research.deleteInsight(b.dataset.deleteInsight); renderInsights(); } };
+  });
+  el.querySelectorAll('button[data-expand]').forEach(b => {
+    b.onclick = () => {
+      const id = b.dataset.expand;
+      const box = document.getElementById('insight-full-' + id);
+      if (!box) return;
+      if (box.style.display === 'none') {
+        const i = research.loadInsights().find(x => x.id === id);
+        if (!i) return;
+        const a = i.answer || {};
+        box.innerHTML = `
+          <div><strong>Summary:</strong> ${_esc(a.summary || '')}</div>
+          ${(a.tactics || []).length ? `<div style="margin-top:6px"><strong>Tactics:</strong><ul style="margin:4px 0 0 18px;padding:0">${(a.tactics || []).map(t => `<li>${_esc(t)}</li>`).join('')}</ul></div>` : ''}
+          ${(a.copy_examples || []).length ? `<div style="margin-top:6px"><strong>Copy examples:</strong><ul style="margin:4px 0 0 18px;padding:0">${(a.copy_examples || []).map(t => `<li>${_esc(t)}</li>`).join('')}</ul></div>` : ''}
+          ${(a.channels || []).length ? `<div style="margin-top:6px"><strong>Channels:</strong> ${_esc((a.channels || []).join(' · '))}</div>` : ''}
+          ${(a.timing || []).length ? `<div style="margin-top:6px"><strong>Timing:</strong> ${_esc((a.timing || []).join(' · '))}</div>` : ''}
+          ${(a.warnings || []).length ? `<div style="margin-top:6px;color:var(--warn)"><strong>Warnings:</strong> ${_esc((a.warnings || []).join(' · '))}</div>` : ''}
+          ${(a.psychology_notes || []).length ? `<div style="margin-top:6px;color:var(--muted);font-style:italic">Psychology: ${_esc((a.psychology_notes || []).join(' · '))}</div>` : ''}
+        `;
+        box.style.display = 'block';
+        b.textContent = 'Hide';
+      } else {
+        box.style.display = 'none';
+        b.textContent = 'See full';
+      }
+    };
+  });
+}
+
+$('researchBtn').onclick = async () => {
+  const settings = loadSettings();
+  if (!settings.provider || !settings.key) {
+    alert('Set BYOK key in Autopilot first. Google Gemini recommended for research.');
+    location.href = 'autopilot.html';
+    return;
+  }
+  const q = $('researchQuestion').value.trim();
+  if (!q) { alert('Type a question or pick a preset.'); return; }
+  const kernel = await ensureKernel();
+  $('researchBtn').disabled = true;
+  $('researchBtn').textContent = 'Researching...';
+  $('researchOutput').innerHTML = '<div class="hint">Waiting for the model…</div>';
+  try {
+    const insight = await research.queryResearch({ question: q, kernel, provider: settings.provider, model: settings.model, key: settings.key });
+    $('researchOutput').innerHTML = `<div style="background:var(--surface);padding:12px 14px;border-radius:8px;border-left:3px solid var(--good);font-size:13px;color:var(--linen);line-height:1.55"><strong>${_esc(insight.answer.summary || 'Done').slice(0, 400)}</strong></div>`;
+    $('researchQuestion').value = '';
+    $('researchPreset').value = '';
+    renderInsights();
+  } catch (e) {
+    $('researchOutput').innerHTML = `<div style="color:var(--bad);font-size:13px">Failed: ${_esc(e.message)}</div>`;
+  } finally {
+    $('researchBtn').disabled = false;
+    $('researchBtn').textContent = '▸ Run research';
+  }
+};
+
 renderCategorySelect();
 renderChannelSelect();
 renderChannelToggles();
 renderAutonomy();
+renderResearchPresets();
+renderInsights();
 updateSlotBrief();
 refreshAll();
 
 window.addEventListener('wishwood:social-updated', refreshAll);
+window.addEventListener('wishwood:research-updated', renderInsights);
 window.addEventListener('wishwood:event', refreshAll);
 </script>
 </body>

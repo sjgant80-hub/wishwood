@@ -6,6 +6,7 @@
 
 import { chat } from './adapter.js';
 import { logEvent } from './events.js';
+import { activeInsightsContext } from './research.js';
 
 /* ---- Hospitality category recipes · monthly cadence · voice flavour ---- */
 
@@ -99,6 +100,20 @@ export const CATEGORIES = [
       'Availability for a specific holiday or event (bank holiday, half-term, local festival).',
       'Direct-booking benefit (better rate, message the owner, guaranteed cottage-specific detail).'
     ]
+  },
+  {
+    key: 'local_outreach',
+    label: 'Local outreach & promotions',
+    icon: '⚡',
+    per_month: 4,
+    day_pref: ['Thu', 'Fri'],
+    tone_hint: 'community-first, specific, honest scarcity · never manufactured urgency',
+    prompts_by_slot: [
+      'Post for a local Facebook group (village community, town noticeboard, what\'s on locally). Community-first tone. Not selling · offering. Include real specific dates if promoting availability.',
+      'Last-minute weekend gap · buy 2 nights get 1 free · or 50% off · for locals or nearby friends & family. Frame honestly: "rather see you enjoy it than sit empty."',
+      'Post targeted at people visiting a specific local event (fair, race, festival). Real dates, specific attendee benefit.',
+      'Referral prompt for past guests or local followers · "know anyone visiting the area · here\'s a direct-booking code."'
+    ]
   }
 ];
 
@@ -168,6 +183,20 @@ export async function composeDraft({ category, channel, slot = 0, kernel, provid
 
   const slotPrompt = cat.prompts_by_slot[slot % cat.prompts_by_slot.length];
 
+  /* Kernel sales psychology block · Cialdini + Freud + Jung archetypes */
+  const psych = kernel?.sales_psychology || {};
+  const activePrinciples = psych.principles || {};
+  const applicablePrinciples = _pickApplicablePrinciples(category, activePrinciples);
+  const archetypes = psych.archetypes || null;
+  const bannedTactics = (psych.banned_tactics || []).join(', ');
+
+  /* Research context · accumulated Gemini/other insights that were marked active */
+  const research = activeInsightsContext(2500);
+
+  const psychBlock = applicablePrinciples.length
+    ? `SALES PSYCHOLOGY (apply subtly · not as slogans):\n${applicablePrinciples.map(p => `- ${p.name}: ${p.how}`).join('\n')}\n${archetypes ? `Archetypes: ${archetypes.primary}${archetypes.secondary ? ' + ' + archetypes.secondary : ''} · ${archetypes.voice_signature || ''}` : ''}\n${bannedTactics ? 'NEVER use: ' + bannedTactics : ''}\n`
+    : '';
+
   const system = `You are the social-media voice of ${propertyName}, a UK holiday-rental property. You write posts for the property's own accounts.
 
 CRITICAL RULES:
@@ -180,6 +209,9 @@ CRITICAL RULES:
 - Channel: ${ch.label} · max ${ch.max_chars} characters · aim for ${ch.hashtag_target} hashtags
 - No "check out our", "book now", "amazing", "absolutely stunning" · no exclamation stacking
 - Write like the owner would write · one voice · not agency copy
+
+${psychBlock}
+${research}
 
 Return STRICT JSON:
 {
@@ -223,6 +255,24 @@ Write the post. JSON only.`;
   upsertPost(post);
   await logEvent({ type: 'social_draft', payload: { id: post.id, category, channel, slot } });
   return post;
+}
+
+/* Map category → which Cialdini principles are most relevant */
+const CATEGORY_PRINCIPLES = {
+  property: ['authority', 'liking'],
+  local: ['authority', 'liking'],
+  guest_moment: ['social_proof', 'liking'],
+  behind_scenes: ['liking', 'reciprocity'],
+  seasonal: ['scarcity', 'liking'],
+  availability: ['scarcity', 'authority'],
+  local_outreach: ['scarcity', 'reciprocity', 'social_proof']
+};
+
+function _pickApplicablePrinciples(categoryKey, principlesObj) {
+  const wanted = CATEGORY_PRINCIPLES[categoryKey] || [];
+  return wanted
+    .map(name => principlesObj[name] ? { name, ...principlesObj[name] } : null)
+    .filter(Boolean);
 }
 
 function _extractJson(text) {

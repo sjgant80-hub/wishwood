@@ -87,5 +87,54 @@
     "occupancy_actual": null,
     "alos_nights": null,
     "cost_baseline_gbp_month": null
+  },
+  "sales_psychology": {
+    "principles": {
+      "reciprocity": {
+        "trigger": "post-inquiry welcome, post-stay follow-up, local guides given without ask",
+        "how": "give useful local info before asking · free walk-guide, restaurant recc, discount for their friends · builds honest obligation"
+      },
+      "scarcity": {
+        "trigger": "availability posts, last-min gaps, seasonal peaks",
+        "how": "specific real dates + real numbers · never fake countdowns · 'only the weekend of the 15th left in July' not 'BOOK NOW LAST CHANCE'"
+      },
+      "social_proof": {
+        "trigger": "guest moments, reviews turned into posts, milestone counts",
+        "how": "specific quotes with context · reviewer type (family/couple/business), season, what they actually did that day"
+      },
+      "authority": {
+        "trigger": "when compared to hotels or nearby cottages, when explaining policies, when answering technical guest questions",
+        "how": "owner voice, years hosting, direct experience · 'we've hosted 400 stays and the log burner is the thing every guest mentions'"
+      },
+      "consistency": {
+        "trigger": "returning-guest outreach, loyalty prompts, direct-booking after OTA stay",
+        "how": "reference their prior visit specifically · 'last November you loved the log burner · here's the same week open this year'"
+      },
+      "liking": {
+        "trigger": "behind-the-scenes posts, owner story, community moments",
+        "how": "photos of real people, pets, quirks · vulnerable admissions ('had to fix the boiler last Tuesday') · not polished, honest"
+      }
+    },
+    "archetypes": {
+      "primary": "the Explorer",
+      "secondary": "the Lover",
+      "voice_signature": "the Explorer speaks of THE JOURNEY (arrivals, walks, discoveries, hidden lanes) · the Lover speaks of the MOMENT (log burner glow, sunset from the garden, morning coffee in the kitchen)"
+    },
+    "freud_motivation": {
+      "pleasure": "warmth, sensory ease, no obligations, being cared for, cheeks-red-from-the-fire, breathing space",
+      "pain_dodged": "cold Sundays in cities, packed pubs with no seat, no phone signal in a chain hotel, kids climbing walls, another Airbnb that overpromises"
+    },
+    "banned_tactics": [
+      "fake countdown timers",
+      "manufactured urgency",
+      "false scarcity",
+      "manipulative loss-aversion framing",
+      "'you'd be crazy to miss'",
+      "'once in a lifetime'",
+      "'don't sleep on this'"
+    ]
+  },
+  "research": {
+    "active_insights_note": "Populated by the Research engine · insights the buyer marks active get injected into the composer prompt · see social.html Research panel"
   }
 }
