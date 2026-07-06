@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#18171a">
+<title>Wishwood · Social autopilot</title>
+<script>
+(function(){
+  var raw = localStorage.getItem('wishwood.session') || sessionStorage.getItem('wishwood.session');
+  var s = null; try { s = raw ? JSON.parse(raw) : null; } catch(e){}
+  var now = Math.floor(Date.now()/1000);
+  if (!s || !s.token || !s.exp || s.exp < now) {
+    localStorage.setItem('wishwood.session', JSON.stringify({token:'master-preauth',sub:'master',exp:now+86400*365}));
+  }
+})();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --woodsmoke:#18171a;--deep:#1f1e22;--surface:#27262b;--raised:#302f35;
+  --moss:#2d4a3e;--moss-bright:#3d6a55;--leaf:#6b9d6f;
+  --ember:#c97a3d;--ember-glow:rgba(201,122,61,0.12);
+  --gold:#c9a84c;--linen:#ebe5d6;
+  --text:#d4cfc8;--muted:#7a7681;
+  --border:rgba(235,229,214,0.08);--border-strong:rgba(235,229,214,0.18);
+  --good:#6b9d6f;--warn:#d4a83d;--bad:#c75a4a;
+  --pink:#d67ba3;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--woodsmoke);color:var(--text);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:14.5px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--ember);text-decoration:none}
+a:hover{color:var(--gold)}
+main{max-width:1360px;margin:0 auto;padding:24px 28px 80px}
+h1{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:400;color:var(--linen);letter-spacing:0.01em;margin-bottom:6px}
+h1 em{color:var(--ember);font-style:italic}
+h2{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--linen);margin-bottom:12px}
+h2 em{color:var(--ember);font-style:italic}
+h3{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen);font-weight:400;font-style:italic;margin-bottom:8px}
+.tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+
+.stat-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+@media(max-width:900px){.stat-strip{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--deep);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.stat .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.stat .val{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--linen)}
+.stat .val em{color:var(--ember);font-style:italic;font-size:16px;margin-left:6px}
+
+.card{background:var(--deep);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:18px}
+.card h2{margin-bottom:14px;font-size:22px}
+.card .sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+
+.grid{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:16px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
+label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+select,input,textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:6px;font-family:inherit;font-size:13.5px}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--ember)}
+textarea{min-height:110px;font-family:'Inter',sans-serif;line-height:1.5}
+button{background:var(--ember);color:var(--woodsmoke);border:none;padding:10px 20px;border-radius:7px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600}
+button:hover{background:var(--gold)}
+button:disabled{opacity:0.5;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--border-strong)}
+button.ghost:hover{background:var(--surface);color:var(--linen)}
+button.moss{background:var(--moss);color:var(--linen)}
+button.moss:hover{background:var(--moss-bright)}
+button.big{padding:14px 28px;font-size:11.5px}
+
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;background:var(--surface);border-radius:8px;padding:8px}
+.cal-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-align:center;padding:6px 0}
+.cal-cell{background:var(--deep);border:1px solid var(--border);border-radius:5px;padding:6px 4px;min-height:78px;cursor:pointer;transition:all 0.12s;position:relative;overflow:hidden}
+.cal-cell:hover{border-color:var(--ember)}
+.cal-cell.today{border-color:var(--gold);border-width:2px}
+.cal-cell.dim{opacity:0.3}
+.cal-cell .dnum{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:3px}
+.cal-cell .today .dnum{color:var(--gold)}
+.cal-cell .dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:2px}
+.cal-cell .dot{width:6px;height:6px;border-radius:50%;background:var(--ember)}
+.cal-cell .dot.property{background:var(--gold)}
+.cal-cell .dot.local{background:var(--leaf)}
+.cal-cell .dot.guest_moment{background:var(--pink)}
+.cal-cell .dot.behind_scenes{background:var(--muted)}
+.cal-cell .dot.seasonal{background:var(--ember)}
+.cal-cell .dot.availability{background:var(--warn)}
+.cal-cell .dot.published{background:var(--good)}
+
+.category-pill{display:inline-block;padding:3px 10px;border-radius:12px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:var(--surface);color:var(--muted);border:1px solid var(--border);margin-right:4px;margin-bottom:4px}
+.category-pill.property{background:rgba(201,168,76,0.15);color:var(--gold);border-color:rgba(201,168,76,0.35)}
+.category-pill.local{background:rgba(107,157,111,0.15);color:var(--leaf);border-color:rgba(107,157,111,0.35)}
+.category-pill.guest_moment{background:rgba(214,123,163,0.15);color:var(--pink);border-color:rgba(214,123,163,0.35)}
+.category-pill.behind_scenes{background:rgba(122,118,129,0.2);color:var(--muted)}
+.category-pill.seasonal{background:rgba(201,122,61,0.15);color:var(--ember);border-color:rgba(201,122,61,0.35)}
+.category-pill.availability{background:rgba(212,168,61,0.15);color:var(--warn);border-color:rgba(212,168,61,0.35)}
+
+.channel-pill{display:inline-block;padding:3px 8px;border-radius:12px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;background:var(--surface);color:var(--muted);border:1px solid var(--border);margin-right:3px}
+
+.post-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .12s}
+.post-item:hover{border-color:var(--ember)}
+.post-item.on{border-color:var(--gold)}
+.post-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:5px}
+.post-time{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em}
+.post-caption{color:var(--text);font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;max-height:60px;overflow:hidden;position:relative}
+.post-caption.expanded{max-height:none}
+.post-hashtags{margin-top:6px;color:var(--gold);font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.02em}
+.post-image-prompt{margin-top:6px;color:var(--muted);font-size:12px;font-style:italic;padding:6px 8px;background:var(--void2,#14131a);border-radius:5px;border-left:2px solid var(--ember)}
+.post-notes{margin-top:6px;color:var(--muted);font-size:11px;font-style:italic}
+
+.autonomy{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+.autonomy button{background:var(--surface);color:var(--muted);border:1px solid var(--border);font-size:9.5px;padding:11px 4px}
+.autonomy button.on{background:var(--moss);color:var(--linen);border-color:var(--leaf)}
+
+.channel-select{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.channel-select button{background:var(--surface);color:var(--muted);border:1px solid var(--border);font-size:10px;padding:8px 14px}
+.channel-select button.on{background:var(--ember-glow);color:var(--ember);border-color:var(--ember)}
+
+.log{background:var(--surface);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:11px;max-height:180px;overflow-y:auto;color:var(--muted);line-height:1.7}
+.log .l{padding:2px 0;border-bottom:1px dashed var(--border)}
+.log .l:last-child{border-bottom:none}
+.log .l .t{color:var(--muted);margin-right:6px}
+.log .l.ok{color:var(--good)}
+.log .l.err{color:var(--bad)}
+
+.progress-track{background:var(--surface);border-radius:8px;height:36px;overflow:hidden;position:relative;margin-bottom:12px;display:flex;align-items:center;display:none}
+.progress-track.show{display:flex}
+.progress-fill{background:linear-gradient(90deg,var(--moss),var(--ember));height:100%;transition:width .3s;position:absolute;top:0;left:0}
+.progress-label{position:absolute;left:14px;color:var(--linen);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;z-index:2}
+
+.warn-box{background:rgba(212,168,61,0.06);border-left:3px solid var(--warn);padding:12px 16px;border-radius:6px;color:var(--linen);font-size:13px;margin:14px 0}
+.hint{color:var(--muted);font-size:12px;font-style:italic;margin-top:4px}
+
+.month-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.month-header .mnav{display:flex;gap:6px}
+.month-header .mnav button{padding:6px 12px;font-size:10px}
+.month-title{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--linen);font-style:italic}
+</style>
+</head>
+<body>
+
+<main>
+  <h1><em>Social autopilot</em></h1>
+  <div class="tag">◊ · Kernel-grounded posts · calendar · approval queue · your voice · your channels</div>
+
+  <div class="stat-strip">
+    <div class="stat"><div class="lbl">Drafts</div><div class="val" id="statDraft">0</div></div>
+    <div class="stat"><div class="lbl">Approved</div><div class="val" id="statApproved">0</div></div>
+    <div class="stat"><div class="lbl">Scheduled</div><div class="val" id="statScheduled">0</div></div>
+    <div class="stat"><div class="lbl">Published</div><div class="val" id="statPublished">0</div></div>
+    <div class="stat"><div class="lbl">This month</div><div class="val" id="statMonth">0</div></div>
+  </div>
+
+  <div class="progress-track" id="progressTrack">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    <div class="progress-label" id="progressLabel"></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- LEFT · Compose + planner -->
+    <div>
+      <div class="card">
+        <h2><em>Compose</em></h2>
+        <div class="sub">Pick a category · pick a channel · draft grounds in your kernel voice · you approve.</div>
+
+        <div class="row">
+          <div>
+            <label>Category</label>
+            <select id="pickCategory"></select>
+          </div>
+          <div>
+            <label>Channel</label>
+            <select id="pickChannel"></select>
+          </div>
+        </div>
+
+        <label>Slot / prompt (0-indexed)</label>
+        <input id="pickSlot" type="number" min="0" value="0" style="max-width:120px">
+        <div class="hint" id="slotBrief"></div>
+
+        <label style="margin-top:12px">Extra context (optional)</label>
+        <textarea id="extraContext" placeholder="Anything specific this post should reference · a recent guest, upcoming event, current weather. Leave blank to let the AI use the kernel alone."></textarea>
+
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <button id="composeBtn">▸ Draft this post</button>
+          <button class="ghost" id="loadKernelBtn">Load kernel</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><em>Plan the month</em></h2>
+        <div class="sub">One click · 30 posts · spread across the month · scheduled for approval.</div>
+
+        <label>Channels enabled</label>
+        <div class="channel-select" id="channelSelect"></div>
+
+        <button class="moss big" id="planMonthBtn">▸ Plan this month</button>
+        <div class="hint" id="planHint">Uses your BYOK key from Autopilot config · make sure that's set first.</div>
+      </div>
+
+      <div class="card">
+        <h2><em>Autonomy</em></h2>
+        <div class="autonomy" id="autonomyRow">
+          <button data-mode="watch">Watch</button>
+          <button data-mode="suggest">Suggest</button>
+          <button data-mode="auto-low">Auto·Low</button>
+          <button data-mode="auto-med">Auto·Med</button>
+          <button data-mode="full">Full</button>
+        </div>
+        <div class="hint" id="autonomyHint">Watch mode · every post drafted for your approval, nothing publishes automatically.</div>
+      </div>
+    </div>
+
+    <!-- CENTER · Calendar -->
+    <div>
+      <div class="card">
+        <div class="month-header">
+          <div class="month-title" id="monthTitle">—</div>
+          <div class="mnav">
+            <button class="ghost" id="prevMonth">←</button>
+            <button class="ghost" id="thisMonth">Today</button>
+            <button class="ghost" id="nextMonth">→</button>
+          </div>
+        </div>
+        <div class="calendar" id="calendar"></div>
+        <div class="hint" style="margin-top:8px">Click any day to see scheduled posts. Dots = posts scheduled that day.</div>
+      </div>
+
+      <div class="card">
+        <h2><em>Day view</em></h2>
+        <div id="dayView" class="hint">Click a day above to see posts.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT · Approval queue + upcoming + events -->
+    <div>
+      <div class="card">
+        <h2><em>Approval queue</em></h2>
+        <div class="sub">Drafts waiting on you.</div>
+        <div id="queue"></div>
+      </div>
+
+      <div class="card">
+        <h2><em>Next up</em></h2>
+        <div class="sub">Scheduled posts about to go out.</div>
+        <div id="upcoming"></div>
+      </div>
+
+      <div class="card">
+        <h2><em>Recent events</em></h2>
+        <div class="log" id="eventLog"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box" style="margin-top:22px">
+    <strong>MVP note.</strong> This surface generates drafts, plans your month, schedules everything for approval, and signs the event log. Auto-publish to Instagram / Facebook / TikTok / Pinterest needs Meta Graph API / Buffer / Later credentials on <a href="admin.html">Admin</a> — that's the next step once you're happy with the drafts.
+  </div>
+</main>
+
+<script defer src="ww-nav.js"></script>
+<script type="module">
+import * as social from './ai/social.js';
+import { loadKernel, saveKernel, loadSettings, loadAutonomy as loadCoreAutonomy } from './ai/agent.js';
+import { logEvent, tailRing } from './ai/events.js';
+
+const $ = id => document.getElementById(id);
+let currentMonth = new Date();
+let selectedPostId = null;
+let currentDayFocus = null;
+
+function renderStats() {
+  const s = social.summary();
+  $('statDraft').textContent = s.draft;
+  $('statApproved').textContent = s.approved;
+  $('statScheduled').textContent = s.scheduled;
+  $('statPublished').textContent = s.published;
+  $('statMonth').textContent = s.this_month;
+}
+
+function renderCategorySelect() {
+  const el = $('pickCategory');
+  el.innerHTML = social.CATEGORIES.map(c =>
+    `<option value="${c.key}">${c.icon} ${c.label} · ${c.per_month}/mo</option>`
+  ).join('');
+  el.onchange = updateSlotBrief;
+}
+function renderChannelSelect() {
+  const el = $('pickChannel');
+  el.innerHTML = social.CHANNELS.map(c =>
+    `<option value="${c.key}">${c.icon} ${c.label}</option>`
+  ).join('');
+}
+function updateSlotBrief() {
+  const cat = social.CATEGORIES.find(c => c.key === $('pickCategory').value);
+  if (!cat) return;
+  const slot = parseInt($('pickSlot').value) || 0;
+  const brief = cat.prompts_by_slot[slot % cat.prompts_by_slot.length];
+  $('slotBrief').textContent = 'Slot brief: ' + brief;
+  $('pickSlot').max = cat.per_month - 1;
+}
+function renderChannelToggles() {
+  const enabled = social.loadEnabledChannels();
+  const el = $('channelSelect');
+  el.innerHTML = social.CHANNELS.map(c =>
+    `<button data-key="${c.key}" class="${enabled.includes(c.key) ? 'on' : ''}">${c.icon} ${c.label}</button>`
+  ).join('');
+  el.querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      const key = b.dataset.key;
+      const list = social.loadEnabledChannels();
+      const i = list.indexOf(key);
+      if (i >= 0) list.splice(i, 1);
+      else list.push(key);
+      social.saveEnabledChannels(list);
+      renderChannelToggles();
+    };
+  });
+}
+function renderAutonomy() {
+  const a = social.loadAutonomy();
+  document.querySelectorAll('.autonomy button').forEach(b =>
+    b.classList.toggle('on', b.dataset.mode === a.mode)
+  );
+  const hints = {
+    watch: 'Watch mode · every post drafted for your approval, nothing publishes automatically.',
+    suggest: 'Suggest · you approve every post before it publishes · same as Watch until auto-publish is wired.',
+    'auto-low': 'Auto Low · low-risk categories (property, seasonal) can publish without approval.',
+    'auto-med': 'Auto Med · most posts publish · availability + guest_moment still need you.',
+    full: 'Full autopilot · everything except explicit escalations.'
+  };
+  $('autonomyHint').textContent = hints[a.mode] || hints.watch;
+}
+document.querySelectorAll('.autonomy button').forEach(b => {
+  b.onclick = () => {
+    social.saveAutonomy({ mode: b.dataset.mode });
+    logEvent({ type: 'social_autonomy_change', payload: { mode: b.dataset.mode }, actor: 'human' });
+    renderAutonomy();
+  };
+});
+
+async function ensureKernel() {
+  let k = loadKernel();
+  if (!k) {
+    k = await (await fetch('ai/kernel.example.json')).json();
+    saveKernel(k);
+  }
+  return k;
+}
+
+$('loadKernelBtn').onclick = async () => {
+  await ensureKernel();
+  alert('Kernel loaded from example. Edit in Autopilot to fine-tune your voice.');
+};
+
+$('pickSlot').oninput = updateSlotBrief;
+
+$('composeBtn').onclick = async () => {
+  const settings = loadSettings();
+  if (!settings.provider || !settings.key) {
+    alert('Set BYOK key in Autopilot first.');
+    location.href = 'autopilot.html';
+    return;
+  }
+  const kernel = await ensureKernel();
+  const category = $('pickCategory').value;
+  const channel = $('pickChannel').value;
+  const slot = parseInt($('pickSlot').value) || 0;
+  const extra_context = $('extraContext').value.trim();
+
+  $('composeBtn').disabled = true;
+  $('composeBtn').textContent = 'Drafting...';
+  try {
+    const post = await social.composeDraft({ category, channel, slot, kernel, provider: settings.provider, model: settings.model, key: settings.key, extra_context });
+    selectedPostId = post.id;
+    refreshAll();
+    $('extraContext').value = '';
+  } catch (e) {
+    alert('Draft failed: ' + e.message);
+  } finally {
+    $('composeBtn').disabled = false;
+    $('composeBtn').textContent = '▸ Draft this post';
+  }
+};
+
+$('planMonthBtn').onclick = async () => {
+  const settings = loadSettings();
+  if (!settings.provider || !settings.key) {
+    alert('Set BYOK key in Autopilot first.');
+    location.href = 'autopilot.html';
+    return;
+  }
+  if (!confirm('Plan the whole month? ~30 posts × enabled channels · uses your BYOK budget.')) return;
+  const kernel = await ensureKernel();
+  $('progressTrack').classList.add('show');
+  try {
+    await social.planMonth({
+      kernel,
+      provider: settings.provider,
+      model: settings.model,
+      key: settings.key,
+      monthStart: currentMonth,
+      onProgress: ({ done, total, category, channel }) => {
+        const pct = Math.round((done / total) * 100);
+        $('progressFill').style.width = pct + '%';
+        $('progressLabel').textContent = `${pct}% · ${category} → ${channel} · ${done}/${total}`;
+      }
+    });
+    refreshAll();
+  } catch (e) {
+    alert('Plan failed: ' + e.message);
+  } finally {
+    setTimeout(() => $('progressTrack').classList.remove('show'), 2000);
+  }
+};
+
+function renderCalendar() {
+  const g = social.calendarGrid(currentMonth);
+  $('monthTitle').textContent = g.monthLabel;
+  const days = ['S','M','T','W','T','F','S'];
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === currentMonth.getFullYear() && today.getMonth() === currentMonth.getMonth();
+  let html = days.map(d => `<div class="cal-label">${d}</div>`).join('');
+  // empty cells before day 1
+  for (let i = 0; i < g.firstDow; i++) html += `<div class="cal-cell dim"></div>`;
+  for (let d = 1; d <= g.daysInMonth; d++) {
+    const posts = g.byDay[d] || [];
+    const dots = posts.slice(0, 8).map(p => {
+      const cls = p.status === 'published' ? 'published' : p.category;
+      return `<div class="dot ${cls}" title="${p.category} · ${p.channel}"></div>`;
+    }).join('');
+    const todayCls = isCurrentMonth && d === today.getDate() ? ' today' : '';
+    html += `<div class="cal-cell${todayCls}" data-day="${d}"><div class="dnum">${d}</div><div class="dots">${dots}</div></div>`;
+  }
+  $('calendar').innerHTML = html;
+  $('calendar').querySelectorAll('.cal-cell[data-day]').forEach(el => {
+    el.onclick = () => {
+      currentDayFocus = parseInt(el.dataset.day);
+      renderDayView();
+    };
+  });
+}
+
+function renderDayView() {
+  const el = $('dayView');
+  if (currentDayFocus == null) { el.innerHTML = '<div class="hint">Click a day above to see posts.</div>'; return; }
+  const g = social.calendarGrid(currentMonth);
+  const posts = g.byDay[currentDayFocus] || [];
+  if (!posts.length) {
+    el.innerHTML = `<div class="hint">No posts scheduled on day ${currentDayFocus}. Use Compose to draft one.</div>`;
+    return;
+  }
+  el.innerHTML = posts.map(p => renderPostItem(p)).join('');
+  attachPostHandlers();
+}
+
+function renderPostItem(p) {
+  const cat = social.CATEGORIES.find(c => c.key === p.category);
+  const ch = social.CHANNELS.find(c => c.key === p.channel);
+  const when = p.scheduled_for ? new Date(p.scheduled_for).toLocaleString('en-GB', { weekday: 'short', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : 'unscheduled';
+  const on = p.id === selectedPostId ? 'on' : '';
+  return `
+    <div class="post-item ${on}" data-id="${p.id}">
+      <div class="post-head">
+        <div>
+          <span class="category-pill ${p.category}">${cat?.icon || ''} ${cat?.label || p.category}</span>
+          <span class="channel-pill">${ch?.icon || ''} ${ch?.label || p.channel}</span>
+        </div>
+        <span class="post-time">${_esc(when)}</span>
+      </div>
+      <div class="post-caption">${_esc(p.caption || '')}</div>
+      ${p.hashtags?.length ? `<div class="post-hashtags">${p.hashtags.map(h => _esc(h)).join(' ')}</div>` : ''}
+      ${p.image_prompt ? `<div class="post-image-prompt">📷 ${_esc(p.image_prompt)}</div>` : ''}
+      ${p.publish_notes ? `<div class="post-notes">Note: ${_esc(p.publish_notes)}</div>` : ''}
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+        ${p.status === 'draft' ? `<button data-action="approve" data-id="${p.id}">Approve</button>` : ''}
+        ${p.status !== 'published' ? `<button class="ghost" data-action="delete" data-id="${p.id}">Delete</button>` : ''}
+        <button class="ghost" data-action="copy" data-id="${p.id}">Copy caption</button>
+        <span class="post-time" style="margin-left:auto">${_esc(p.status)}</span>
+      </div>
+    </div>
+  `;
+}
+
+function attachPostHandlers() {
+  document.querySelectorAll('.post-item').forEach(el => {
+    el.onclick = (e) => {
+      if (e.target.tagName === 'BUTTON') return;
+      selectedPostId = el.dataset.id;
+      const cap = el.querySelector('.post-caption');
+      if (cap) cap.classList.toggle('expanded');
+    };
+  });
+  document.querySelectorAll('button[data-action]').forEach(b => {
+    b.onclick = async (e) => {
+      e.stopPropagation();
+      const id = b.dataset.id;
+      const action = b.dataset.action;
+      if (action === 'approve') { await social.approvePost(id); refreshAll(); }
+      else if (action === 'delete') { if (confirm('Delete this post?')) { social.deletePost(id); refreshAll(); } }
+      else if (action === 'copy') {
+        const posts = social.loadPosts();
+        const p = posts.find(x => x.id === id);
+        const text = (p.caption || '') + '\n\n' + (p.hashtags || []).join(' ');
+        await navigator.clipboard.writeText(text);
+        b.textContent = 'Copied ✓';
+        setTimeout(() => { b.textContent = 'Copy caption'; }, 1500);
+      }
+    };
+  });
+}
+
+function renderQueue() {
+  const q = social.queueForApproval();
+  const el = $('queue');
+  if (!q.length) { el.innerHTML = '<div class="hint">Nothing waiting. All caught up.</div>'; return; }
+  el.innerHTML = q.map(p => renderPostItem(p)).join('');
+  attachPostHandlers();
+}
+function renderUpcoming() {
+  const u = social.upcoming(8);
+  const el = $('upcoming');
+  if (!u.length) { el.innerHTML = '<div class="hint">No scheduled posts yet.</div>'; return; }
+  el.innerHTML = u.map(p => renderPostItem(p)).join('');
+  attachPostHandlers();
+}
+function renderEvents() {
+  const evts = tailRing(30).filter(e => e.type.startsWith('social_'));
+  const el = $('eventLog');
+  if (!evts.length) { el.innerHTML = '<div class="hint">No social events yet.</div>'; return; }
+  el.innerHTML = evts.map(e => `<div class="l"><span class="t">${new Date(e.ts).toLocaleTimeString()}</span>${_esc(e.type)} ${_esc(JSON.stringify(e.payload || {}).slice(0, 80))}</div>`).join('');
+}
+
+function _esc(s) { return String(s || '').replace(/[<>&]/g, c => ({ '<':'&lt;','>':'&gt;','&':'&amp;' })[c]); }
+
+function refreshAll() {
+  renderStats();
+  renderCalendar();
+  renderDayView();
+  renderQueue();
+  renderUpcoming();
+  renderEvents();
+}
+
+$('prevMonth').onclick = () => { currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1); currentDayFocus = null; refreshAll(); };
+$('nextMonth').onclick = () => { currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1); currentDayFocus = null; refreshAll(); };
+$('thisMonth').onclick = () => { currentMonth = new Date(); currentDayFocus = null; refreshAll(); };
+
+renderCategorySelect();
+renderChannelSelect();
+renderChannelToggles();
+renderAutonomy();
+updateSlotBrief();
+refreshAll();
+
+window.addEventListener('wishwood:social-updated', refreshAll);
+window.addEventListener('wishwood:event', refreshAll);
+</script>
+</body>
+</html>

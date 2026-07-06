@@ -1,7 +1,7 @@
 /* Wishwood service worker · cache-first offline shell · ◊·κ=1 */
 /* Bump CACHE version whenever the shell changes to force reload */
 
-const CACHE   = 'wishwood-v5-sim';
+const CACHE   = 'wishwood-v6-social';
 const SHELL   = [
   './',
   './index.html',
@@ -15,6 +15,7 @@ const SHELL   = [
   './ai.html',
   './autopilot.html',
   './sim.html',
+  './social.html',
   './media.html',
   './relaunch.html',
   './roost.html',
@@ -28,6 +29,7 @@ const SHELL   = [
   './ai/events.js',
   './ai/harvest.js',
   './ai/sim.js',
+  './ai/social.js',
   './ai/tools.js',
   './ai/kernel.example.json',
   './ai/kernel.schema.json',

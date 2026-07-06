@@ -18,6 +18,7 @@
     { header: 'DAILY · operator', items: [
       { href: 'hub.html',       icon: '⌬',  label: 'Operator hub' },
       { href: 'autopilot.html', icon: '⚡', label: 'AI autopilot' },
+      { href: 'social.html',    icon: '◐',  label: 'Social autopilot' },
       { href: 'sim.html',       icon: '🎯', label: 'Training sim' },
       { href: 'book.html',      icon: '◊',  label: 'Guest booking site' },
       { href: 'hubphone.html',  icon: '📱', label: 'Duty phone' },
@@ -128,7 +129,7 @@
   foot.className = '__foot';
   var currentMode = 'Setup mode';
   var currentModeText = 'Getting live · gathering credentials';
-  var operatorPages = ['hub.html', 'autopilot.html', 'sim.html', 'book.html', 'hubphone.html', 'media.html'];
+  var operatorPages = ['hub.html', 'autopilot.html', 'social.html', 'sim.html', 'book.html', 'hubphone.html', 'media.html'];
   if (operatorPages.indexOf(HERE) !== -1) {
     currentMode = 'Operator mode';
     currentModeText = 'Daily operations · live tools';
