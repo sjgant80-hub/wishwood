@@ -230,12 +230,40 @@ async function importIcal(env, cabin, sourceUrl, channel) {
         created: new Date().toISOString(),
       };
       await kvPut(env, key, b);
+      await enqueueTurnaround(env, b); // OTA booking → same staff alerts as a direct booking
       imported++;
     }
     return { ok: true, imported, total: events.length };
   } catch (err) {
     return { error: err.message };
   }
+}
+
+/* ─── Staff turnaround alerts ───
+ * Every booking — direct (Stripe) OR OTA (Airbnb/Booking via iCal) — auto-creates its two jobs:
+ * welcome on arrival, clean on checkout. Written to KV as task:* so the always-on layer can push
+ * them out (SMS the cleaner etc.) the moment a channel is wired. The hub already SHOWS these,
+ * derived from bookings; these records are the shared server-side queue behind that. Idempotent.
+ */
+async function enqueueTurnaround(env, b) {
+  if (!b || !b.id || !b.checkin) return;
+  const camp = (CABINS[b.cabin] && CABINS[b.cabin].name) || b.cabin || 'a camp';
+  const nights = b.nights || 1;
+  const stamp = new Date().toISOString();
+  await kvPut(env, `task:welcome:${b.id}`, {
+    bookingId: b.id, cabin: b.cabin, type: 'welcome', status: 'open',
+    guest: b.guest, checkin: b.checkin,
+    note: `Welcome prep · ${camp} · arrival ${b.checkin} · ${b.guest || 'guest'} · ${nights} night${nights > 1 ? 's' : ''} · gate code + welcome pack`,
+    runAt: new Date(b.checkin + 'T08:00:00Z').getTime(),
+    created: stamp,
+  });
+  if (b.checkout) await kvPut(env, `task:clean:${b.id}`, {
+    bookingId: b.id, cabin: b.cabin, type: 'clean', status: 'open',
+    guest: b.guest, checkout: b.checkout,
+    note: `Clean needed · ${camp} · checkout ${b.checkout} (${b.guest || 'guest'}) · turnaround before next guest`,
+    runAt: new Date(b.checkout + 'T10:00:00Z').getTime(),
+    created: stamp,
+  });
 }
 
 /* ─── Pricing engine ─── */
@@ -317,14 +345,8 @@ async function handleStripeWebhook(req, env) {
       trigger: 'T+5min',
       runAt: Date.now() + 5 * 60_000,
     });
-    // Auto-task: cleaner needed on checkout day (reads the stay length from the booking)
-    await kvPut(env, `task:clean:${booking.id}`, {
-      bookingId: booking.id, cabin: booking.cabin, type: 'clean', status: 'open',
-      guest: booking.guest, checkout: booking.checkout,
-      note: `Clean needed · ${booking.cabin} · checkout ${booking.checkout} (${booking.guest})`,
-      runAt: booking.checkout ? new Date(booking.checkout + 'T10:00:00Z').getTime() : Date.now(),
-      created: new Date().toISOString(),
-    });
+    // Auto-tasks: welcome on arrival + clean on checkout (visible to all staff)
+    await enqueueTurnaround(env, booking);
   }
   return jsonResp({ ok: true });
 }
@@ -587,6 +609,11 @@ async function handle(req, env) {
   if (method === 'GET' && path === '/messages') {
     const items = await kvList(env, 'message:');
     return jsonResp({ count: items.length, messages: items });
+  }
+  if (method === 'GET' && path === '/tasks') {
+    // Shared staff turnaround queue (welcome + clean), soonest first — the always-on alert feed.
+    const items = (await kvList(env, 'task:')).sort((a, b) => (a.runAt || 0) - (b.runAt || 0));
+    return jsonResp({ count: items.length, tasks: items });
   }
   if (method === 'POST' && path === '/draft') {
     const body = await req.json();
