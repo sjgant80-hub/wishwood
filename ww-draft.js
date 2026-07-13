@@ -18,10 +18,10 @@ export const WISHWOOD_KERNEL = {
   shared: 'A sheltered communal outdoor kitchen (gas BBQ, sink, worktops, pots & pans), fire pits, log nets, parking.',
   connectivity: 'Wifi is available (confirmed at Fern Lodge and the Hobbit; the Yurt is solar/off-grid so signal there is limited).',
   hotTub: 'No hot tubs.',
-  dogs: 'UNCERTAIN — do not state a dog policy. Fern Lodge lists no pets; other camps unclear. If a guest asks about dogs, say you will confirm with Chrissy.',
+  dogs: 'No dogs — Wishwood sits in protected semi-ancient woodland, kept for its wildlife, so it is not dog-friendly. If a guest asks, say so warmly and give the reason (the woodland and its wildlife).',
   location: 'Sturry, near Canterbury (~10 min drive), by Blean Woods NNR and a lake; ~20 min to the coast (Whitstable/Herne Bay). Exact address is shared after booking.',
   checkInOut: 'Check-in mid-afternoon to evening (roughly 2–8pm), check-out late morning (11am–12pm) — varies by camp.',
-  booking: 'Bookings currently run through the listing platforms (Glamping Hub, Snaptrip, Pitchup, Airbnb). Do not quote a nightly price from memory — offer to confirm the current rate and availability.',
+  booking: 'Prices and live availability are set on the booking channels (Glamping Hub, Pitchup, Airbnb). Do NOT quote a nightly price — point the guest to book/check on the channel they came from, or offer to confirm it for them.',
   policy: 'A peaceful retreat — no loud parties. Cancellation terms are set by the booking platform; if asked, offer to check rather than guessing.',
   voice: [
     'Warm, personal, concise. Lowercase-leaning, em-dashes and middots (·) over heavy punctuation. Never corporate, never "Dear guest".',
