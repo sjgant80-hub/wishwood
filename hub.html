@@ -871,6 +871,12 @@ a{color:var(--ember);text-decoration:none}
         <div class="dash-title">Guest journey automation</div>
         <div class="dash-sub">Every booking triggers the right message at the right time · all editable, all opt-out-able</div>
 
+        <div class="card" style="margin-top:16px;border-left:4px solid var(--brass)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen)">Turnarounds &amp; staff tasks</div><span style="font-size:11px;color:var(--muted)">auto-made from every booking · everyone on the app sees these</span></div>
+          <div style="font-size:12px;color:var(--muted);margin:4px 0 8px">A booking lands → the OS reads the dates and creates the jobs: welcome on arrival, clean on checkout. Nobody has to remember or coordinate.</div>
+          <div id="tasks"></div>
+        </div>
+
         <table class="table">
           <thead><tr><th>When</th><th>Trigger</th><th>Channel</th><th>What goes</th><th>Status</th></tr></thead>
           <tbody>
@@ -1486,6 +1492,28 @@ async function loadLiveMessages(){
     if(added) renderMsgList();
   }catch(e){ /* worker not up yet — keep the sample data */ }
 }
+
+/* TURNAROUNDS · every booking auto-makes its jobs (welcome on arrival, clean on checkout) — shared to all staff */
+function renderTasks(){
+  const box=$("#tasks"); if(!box) return;
+  const fmtD=d=>{ try{ return new Date(d+"T00:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}); }catch(e){ return d; } };
+  const today=new Date(); today.setHours(0,0,0,0);
+  const cutoff=today.getTime()-86400000;
+  const tasks=[];
+  BOOKINGS.forEach(b=>{
+    if(b.status==="cancelled") return;
+    const c=CABINS.find(x=>x.id===b.cabin); const name=c?c.name:(b.cabin||"a camp");
+    if(b.checkin)  tasks.push({date:b.checkin, type:"arrival", label:`Welcome · ${name}`, detail:`${b.guest||"guest"} arriving · ${b.nights||""} nights · gate code + welcome pack`});
+    if(b.checkout) tasks.push({date:b.checkout,type:"clean",   label:`Clean needed · ${name}`, detail:`${b.guest||"guest"} checks out · turnaround before the next guest`});
+  });
+  const up=tasks.filter(t=>t.date && new Date(t.date+"T00:00:00").getTime()>=cutoff).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,24);
+  if(!up.length){ box.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0">No upcoming turnarounds.</div>'; return; }
+  const ic={clean:"🧹",arrival:"🔑"};
+  box.innerHTML=up.map(t=>{
+    const cl=t.type==="clean"?"--brass":"--leaf";
+    return `<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)"><span style="font-size:18px">${ic[t.type]||"•"}</span><div style="flex:1"><div style="color:var(--linen);font-size:14px">${t.label}</div><div style="color:var(--muted);font-size:12px;line-height:1.5">${t.detail}</div></div><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(${cl})">${fmtD(t.date)}</span></div>`;
+  }).join("");
+}
 function editFirst(){$("#draft-text").focus();$("#draft-text").select()}
 async function regenDraft(){
   const m=MESSAGES.find(x=>x.id===activeMsgId); if(!m) return;
@@ -1643,6 +1671,7 @@ $$(".nav-item").forEach(el=>{
     if(activeView==="agents") wwBrainLoad();
     if(activeView==="clinic") wwClinicRender();
     if(activeView==="inbox") loadLiveMessages();
+    if(activeView==="journey") renderTasks();
   };
 });
 
@@ -1741,6 +1770,7 @@ function netInfo(){
 renderMsgList();
 bindChips();
 loadLiveMessages();
+renderTasks();
 renderChannelsGrid();
 renderCabins();
 renderCalendar();

@@ -317,6 +317,14 @@ async function handleStripeWebhook(req, env) {
       trigger: 'T+5min',
       runAt: Date.now() + 5 * 60_000,
     });
+    // Auto-task: cleaner needed on checkout day (reads the stay length from the booking)
+    await kvPut(env, `task:clean:${booking.id}`, {
+      bookingId: booking.id, cabin: booking.cabin, type: 'clean', status: 'open',
+      guest: booking.guest, checkout: booking.checkout,
+      note: `Clean needed · ${booking.cabin} · checkout ${booking.checkout} (${booking.guest})`,
+      runAt: booking.checkout ? new Date(booking.checkout + 'T10:00:00Z').getTime() : Date.now(),
+      created: new Date().toISOString(),
+    });
   }
   return jsonResp({ ok: true });
 }
