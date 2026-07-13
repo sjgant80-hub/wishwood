@@ -21,7 +21,7 @@
   }
   // Clear any stale handoff flag from prior sessions
   localStorage.removeItem('wishwood.handoff_mode');
-  var WORKER = 'https://wishwood-engine.workers.dev';
+  var WORKER = 'https://wishwood-engine.sjgant80.workers.dev';
   window.WW_AUTH = {
     token: s.token, sub: s.sub, exp: s.exp, workerUrl: WORKER,
     fetch: function(path, opts){

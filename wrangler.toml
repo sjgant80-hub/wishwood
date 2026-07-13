@@ -27,7 +27,7 @@ compatibility_date = "2026-06-01"
 # KV namespace for bookings, messages, journey queue
 [[kv_namespaces]]
 binding = "WISHWOOD_KV"
-id = "TBD-replace-after-first-deploy"
+id = "d30e9f71cfac477184b0c6c1934e4b17"
 
 # Cron: iCal sync + journey queue flush every minute
 [triggers]
