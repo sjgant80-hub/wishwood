@@ -323,29 +323,38 @@ async function handleStripeWebhook(req, env) {
 
 /* ─── AI draft (Claude) ─── */
 async function draftReply(env, { messageText, fromName, channel, context }) {
-  if (!env.CLAUDE_API_KEY) return { error: 'no Claude key configured' };
-  const systemPrompt = `You are drafting a reply on behalf of Chrissy, who runs Wishwood Glamping & Forestry — a 16-acre off-grid woodland glamping site near Canterbury, Kent. Three cabins: Hobbit Hut (£95 base, sleeps 3), Vintage Caravan (£85 base, sleeps 2), Family Yurt (£135 base, sleeps 6). All have wood-burners, outdoor kitchens, composting loos, fire pits. Dogs welcome (£15/dog). No wifi by design. Reply in Chrissy's voice: warm, brief, uses "·" instead of comma lists, signs off "Chrissy" or "Chrissy & Andy" depending on the message. Include practical info. Never over-explain. Reply is going via ${channel}.`;
-
+  // Facts kept in sync with the hub's Property Brain (single source of truth).
+  const systemPrompt = `You are drafting a reply on behalf of Chrissy, who runs Wishwood Glamping — private semi-ancient woodland at Sturry, near Canterbury, Kent, beside Blean Woods and a lake. FOUR camps: The Yurt (solar off-grid, sleeps 6), Fern Lodge (woodland lodge, sleeps 4, private bathroom, wifi), Thistle Caravan (couples, sleeps 3, private bathroom, £10 cleaning fee), The Hobbit (sleeps 3, wifi). Every camp has a wood-burner, private outdoor kitchen, compost loo and fire pit. Wifi is available. NO hot tubs. NO dogs — it is protected woodland (explain warmly if asked). Prices and availability live on the booking channels — NEVER quote a nightly price; point the guest to book/check on the channel they came from. Reply in Chrissy's voice: warm, brief, uses "·" instead of comma lists, signs off "Chrissy". Only state facts above; if unsure, say you'll check. Reply is going via ${channel}.`;
   const userPrompt = `Incoming message from ${fromName}:\n\n"""\n${messageText}\n"""\n\nContext: ${context || 'none'}\n\nDraft Chrissy's reply.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': env.CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 400,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) return { error: data.error?.message || 'Claude error', raw: data };
-    return { draft: data.content?.[0]?.text || '', model: data.model, usage: data.usage };
+    // Prefer Gemini Flash (cheap + fast); fall back to Claude if that's what's set.
+    if (env.GEMINI_API_KEY) {
+      const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error?.message || 'Gemini error', raw: data };
+      const text = (data.candidates?.[0]?.content?.parts || []).map(p => p.text).filter(Boolean).join('');
+      return { draft: text, model };
+    }
+    if (env.CLAUDE_API_KEY) {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'x-api-key': env.CLAUDE_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 400, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }] }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error?.message || 'Claude error', raw: data };
+      return { draft: data.content?.[0]?.text || '', model: data.model, usage: data.usage };
+    }
+    return { error: 'no AI key configured — set GEMINI_API_KEY (Gemini Flash) as a Worker secret' };
   } catch (err) {
     return { error: err.message };
   }

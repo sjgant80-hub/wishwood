@@ -8,7 +8,9 @@ compatibility_date = "2026-06-01"
 #                          generate with: openssl rand -hex 32
 #   OPERATOR_TOKEN       — legacy static bearer for API clients / cron (optional)
 #   FB_VERIFY_TOKEN      — Meta webhook verify token
-#   CLAUDE_API_KEY       — Anthropic API key for AI drafts
+#   GEMINI_API_KEY       — Google Gemini key (Gemini Flash) · drafts the replies · free at aistudio.google.com/apikey
+#   GEMINI_MODEL         — optional · defaults to gemini-2.5-flash
+#   CLAUDE_API_KEY       — optional Anthropic key (fallback if no Gemini key)
 #   STRIPE_WEBHOOK_SECRET — Stripe webhook signing secret
 #   STRIPE_SECRET_KEY    — Stripe API key
 #   AIRBNB_ICAL_HOBBIT   — Airbnb iCal export URL for Hobbit Hut
