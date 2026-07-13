@@ -663,6 +663,30 @@ async function handle(req, env) {
     const items = JSON.parse((await env.WISHWOOD_KV.get('log:events')) || '[]');
     return jsonResp({ count: items.length, logs: items });
   }
+  // Problems — anyone can log a fault they find (leak, broken kitchen…), all in one place.
+  if (method === 'GET' && path === '/issues') {
+    const items = (await kvList(env, 'issue:')).sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+    return jsonResp({ count: items.length, open: items.filter(i => i.status !== 'resolved').length, issues: items });
+  }
+  if (method === 'POST' && path === '/issue') {
+    const body = await req.json().catch(() => ({}));
+    const title = (body.title || '').trim();
+    if (!title) return jsonResp({ error: 'a short description is required' }, 400);
+    const id = `issue-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const issue = { id, title, detail: (body.detail || '').trim(), area: body.area || 'general', camp: body.camp || null, reporter: (body.reporter || 'staff').trim(), status: 'open', created: new Date().toISOString() };
+    await kvPut(env, `issue:${id}`, issue);
+    await logEvent(env, 'issue', `Problem reported · ${issue.area}${issue.camp ? ' · ' + issue.camp : ''} · ${title}`, { issueId: id, reporter: issue.reporter });
+    return jsonResp({ ok: true, issue });
+  }
+  if (method === 'POST' && path === '/issue/resolve') {
+    const body = await req.json().catch(() => ({}));
+    const issue = await env.WISHWOOD_KV.get(`issue:${body.id}`, 'json');
+    if (!issue) return jsonResp({ error: 'not found' }, 404);
+    issue.status = 'resolved'; issue.resolved = new Date().toISOString();
+    await kvPut(env, `issue:${body.id}`, issue);
+    await logEvent(env, 'issue', `Problem resolved · ${issue.title}`, { issueId: issue.id });
+    return jsonResp({ ok: true, issue });
+  }
   if (method === 'POST' && path === '/draft') {
     const body = await req.json();
     const out = await draftReply(env, body);
