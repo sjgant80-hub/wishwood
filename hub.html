@@ -1126,6 +1126,17 @@ a{color:var(--ember);text-decoration:none}
         <div class="dash-title">Brain · Lia + MACCubeFACE(127)</div>
         <div class="dash-sub">Lia is the conversational face · MACCubeFACE is the 127-agent brain organised by 8 specialist groups · you prompt, they execute, you approve</div>
 
+        <div class="card" style="margin-top:18px;border-left:4px solid var(--brass)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)">◊ Property Brain <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· single source of truth</span></div>
+            <button class="btn ghost" style="font-size:11px" onclick="wwBrainHarvest()">✦ AI tidy &amp; gap-check</button>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Edit the truth once here — every reply, listing and post grounds on it. The AI never states anything that isn't in the brain.</div>
+          <div id="wwBrainForm" style="display:grid;gap:10px"></div>
+          <div id="wwBrainCheckBox" style="display:none;margin-top:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--linen);line-height:1.6;white-space:pre-wrap"></div>
+          <div style="margin-top:14px;display:flex;gap:8px"><button class="btn" onclick="wwBrainSave()">Save the brain</button><button class="btn ghost" onclick="wwBrainLoad()">Reset from saved</button></div>
+        </div>
+
         <div class="card" style="margin-top:18px;border-left:4px solid var(--ember)">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
             <div style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--linen)">◊ Lia · always-on assistant</div>
@@ -1273,9 +1284,12 @@ a{color:var(--ember);text-decoration:none}
 </div>
 
 <script type="module">
-  /* real AI drafting (grounded on true property facts) → exposed for the inbox */
-  import { wwDraft } from './ww-draft.js';
+  /* real AI drafting + live Property Brain (the single source of truth) → exposed to the hub */
+  import { wwDraft, loadKernel, saveKernel, wwBrainCheck } from './ww-draft.js';
   window.wwDraft = wwDraft;
+  window.wwLoadKernel = loadKernel;
+  window.wwSaveKernel = saveKernel;
+  window.wwBrainCheck = wwBrainCheck;
 </script>
 <script>
 /* ────────────── DATA (inlined for sovereign single-file ops) ────────────── */
@@ -1465,6 +1479,44 @@ function wwAddEntry(){
   }catch(e){ toast("Couldn't save — try again"); }
 }
 
+/* PROPERTY BRAIN · the editable single source of truth (grounds every AI reply/listing/post) */
+function wwEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+const WW_BRAIN_FIELDS=[
+  {k:'property',label:'Property',ta:1},
+  {k:'units',label:'The camps · one per line',ta:1,arr:1},
+  {k:'connectivity',label:'Wifi / connectivity'},
+  {k:'dogs',label:'Dogs'},
+  {k:'hotTub',label:'Hot tub'},
+  {k:'shared',label:'Shared facilities'},
+  {k:'location',label:'Location',ta:1},
+  {k:'checkInOut',label:'Check-in / out'},
+  {k:'booking',label:'Booking & prices',ta:1},
+  {k:'policy',label:'Policy',ta:1}
+];
+function wwBrainLoad(){
+  const form=$("#wwBrainForm"); if(!form||!window.wwLoadKernel)return;
+  const k=window.wwLoadKernel();
+  const st="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:13px";
+  form.innerHTML=WW_BRAIN_FIELDS.map(f=>{
+    const v=f.arr?(Array.isArray(k[f.k])?k[f.k].join("\n"):(k[f.k]||"")):(k[f.k]||"");
+    const inp=f.ta?`<textarea id="wwb-${f.k}" rows="${f.arr?4:2}" style="${st}">${wwEsc(v)}</textarea>`:`<input id="wwb-${f.k}" value="${wwEsc(v)}" style="${st}">`;
+    return `<label style="display:flex;flex-direction:column;gap:4px;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase">${f.label}${inp}</label>`;
+  }).join("");
+}
+function wwBrainSave(){
+  const patch={};
+  WW_BRAIN_FIELDS.forEach(f=>{const el=$("#wwb-"+f.k);if(!el)return;patch[f.k]=f.arr?el.value.split("\n").map(s=>s.trim()).filter(Boolean):el.value.trim();});
+  if(window.wwSaveKernel){window.wwSaveKernel(patch);toast("✓ Property Brain saved — every reply grounds on this now");}
+}
+async function wwBrainHarvest(){
+  const box=$("#wwBrainCheckBox");
+  if(!window.wwBrainCheck){toast("AI not loaded yet");return;}
+  if(box){box.style.display="block";box.textContent="✦ AI reviewing your facts…";}
+  toast("✦ AI checking the brain…");
+  try{ const t=await window.wwBrainCheck(); if(box)box.textContent=t||"No issues flagged."; }
+  catch(e){ if(box)box.textContent="Couldn't run — add a Gemini/BYOK key in Settings (or first load pulls the free local model)."; console.warn(e); }
+}
+
 /* Channel filter */
 function bindChips(){
   $$("#channel-chips .chip").forEach(c=>{
@@ -1497,6 +1549,7 @@ $$(".nav-item").forEach(el=>{
     $("#view-"+activeView).classList.add("active");
     if(activeView==="calendar") renderCalendar();
     if(activeView==="cabins") renderCabins();
+    if(activeView==="agents") wwBrainLoad();
   };
 });
 

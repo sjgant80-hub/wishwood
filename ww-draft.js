@@ -5,8 +5,10 @@
  */
 import { chat, DEFAULT_MODELS } from './ai/adapter.js';
 
-/* The grounding kernel — the TRUTH about Wishwood (off-grid glamping, Canterbury, Kent). */
-export const WISHWOOD_KERNEL = {
+/* The grounding kernel — the TRUTH about Wishwood. DEFAULT_KERNEL seeds it; the
+ * operator edits the live copy in the hub's Property Brain (localStorage), which
+ * every draft/reply/listing then grounds on. One source of truth. */
+const DEFAULT_KERNEL = {
   property: 'Wishwood Glamping — private ancient woodland at Sturry, near Canterbury, Kent, beside Blean Woods National Nature Reserve and a lake.',
   host: 'Chrissy (the owner-host who answers guests personally).',
   units: [
@@ -30,8 +32,21 @@ export const WISHWOOD_KERNEL = {
   ]
 };
 
+const KERNEL_KEY = 'wishwood.brain.kernel';
+/* Live kernel = the operator's edits (Property Brain) layered over DEFAULT_KERNEL. */
+export function loadKernel(){
+  try{ const s = JSON.parse(localStorage.getItem(KERNEL_KEY) || 'null'); return s ? { ...DEFAULT_KERNEL, ...s } : { ...DEFAULT_KERNEL }; }
+  catch { return { ...DEFAULT_KERNEL }; }
+}
+export function saveKernel(patch){
+  const next = { ...loadKernel(), ...(patch || {}) };
+  localStorage.setItem(KERNEL_KEY, JSON.stringify(next));
+  return next;
+}
+export const WISHWOOD_KERNEL = DEFAULT_KERNEL; // seed/default for reference
+
 function kernelText() {
-  const k = WISHWOOD_KERNEL;
+  const k = loadKernel();
   return [
     `PROPERTY: ${k.property}`,
     `HOST: ${k.host}`,
@@ -78,4 +93,17 @@ export async function wwDraft(msg, voiceExamples = []) {
 
   const r = await chat({ ...primary, system, messages: [{ role: 'user', content: user }], fallback });
   return { text: (r.text || '').trim(), engine: hasKey ? primary.provider : 'webllm (free, local)' };
+}
+
+/* AI audit of the Property Brain — flags contradictions, stale claims, gaps. */
+export async function wwBrainCheck() {
+  const s = loadSettings();
+  const hasKey = s.key && s.provider && s.provider !== 'webllm';
+  const primary = hasKey
+    ? { provider: s.provider, model: s.model || DEFAULT_MODELS[s.provider], key: s.key }
+    : { provider: 'webllm', model: DEFAULT_MODELS.webllm };
+  const system = 'You are auditing a small glamping business\'s fact sheet that grounds its guest-facing AI. Do NOT invent facts. In a short bulleted list the owner can act on, flag: (1) internal contradictions, (2) claims too specific or likely stale (e.g. exact wifi speeds), (3) common guest questions the sheet does not answer.';
+  const user = 'Current fact sheet (the "brain"):\n\n' + kernelText() + '\n\nGive the short bulleted audit.';
+  const r = await chat({ ...primary, system, messages: [{ role: 'user', content: user }], fallback: hasKey ? [{ provider: 'webllm', model: DEFAULT_MODELS.webllm }] : [] });
+  return (r.text || '').trim();
 }
