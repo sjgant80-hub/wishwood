@@ -515,6 +515,42 @@ async function draftReply(env, { messageText, fromName, channel, context }) {
   }
 }
 
+/* ─── AI Trainer (Lia) ─── same Gemini Flash key powers the in-hub tutor, so it's fast (no WebLLM download).
+ * The hub passes Lia's system prompt (built from the guide); the worker just relays to Gemini. */
+async function teachReply(env, { question, system }) {
+  const sys = system || 'You are Lia, the warm, plain-spoken built-in helper for WISHWOOD-OS. No jargon; assume the person is not technical; finish with one tiny next step.';
+  try {
+    if (env.GEMINI_API_KEY) {
+      const model = env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: sys }] },
+          contents: [{ role: 'user', parts: [{ text: question }] }],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error?.message || 'Gemini error' };
+      const text = (data.candidates?.[0]?.content?.parts || []).map(p => p.text).filter(Boolean).join('');
+      return { answer: text, model };
+    }
+    if (env.CLAUDE_API_KEY) {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'x-api-key': env.CLAUDE_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 700, system: sys, messages: [{ role: 'user', content: question }] }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error?.message || 'Claude error' };
+      return { answer: data.content?.[0]?.text || '', model: data.model };
+    }
+    return { error: 'no AI key configured' };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
 /* ─── Direct booking (from /book.html) ─── */
 async function createDirectBooking(req, env) {
   const data = await req.json();
@@ -691,6 +727,11 @@ async function handle(req, env) {
     const body = await req.json();
     const out = await draftReply(env, body);
     return jsonResp(out);
+  }
+  if (method === 'POST' && path === '/teach') {
+    const body = await req.json().catch(() => ({}));
+    if (!body.question) return jsonResp({ error: 'no question' }, 400);
+    return jsonResp(await teachReply(env, body));
   }
   if (method === 'POST' && path === '/send') {
     const { channel, to, text } = await req.json();

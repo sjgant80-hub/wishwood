@@ -114,6 +114,24 @@ export async function wwTeach(question) {
     `gently show them ("you could just type: how do I add a price?"). Ground ONLY in the guide below — never ` +
     `invent features. Use "you" and "we", never "the user".\n\nGUIDE:\n${WW_OS_GUIDE}\n\n${facts}`;
 
+  // 1) Gemini Flash FIRST — via the always-on worker (the owner's key stays server-side).
+  //    Fast, instant, no ~4GB WebLLM download. This is the default engine for the trainer.
+  try {
+    const auth = (typeof window !== 'undefined') && window.WW_AUTH;
+    if (auth && typeof auth.fetch === 'function') {
+      const res = await auth.fetch('/teach', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ question, system })
+      });
+      if (res && res.ok) {
+        const d = await res.json();
+        if (d && d.answer && d.answer.trim()) return { text: d.answer.trim(), engine: 'Gemini Flash' };
+      }
+    }
+  } catch (e) { /* worker unreachable → fall back to BYOK / free local below */ }
+
+  // 2) Fallback — the owner's own key if they set one, otherwise free local WebLLM.
   const r = await chat({
     ...primary, system,
     messages: [{ role: 'user', content: question }],

@@ -1,7 +1,7 @@
 /* Wishwood service worker · cache-first offline shell · ◊·κ=1 */
 /* Bump CACHE version whenever the shell changes to force reload */
 
-const CACHE   = 'wishwood-v12-trainer-chat';
+const CACHE   = 'wishwood-v13-trainer-gemini';
 const SHELL   = [
   './',
   './index.html',

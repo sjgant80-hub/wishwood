@@ -1043,7 +1043,7 @@ a{color:var(--ember);text-decoration:none}
       <div class="chat">
         <div class="chat-head">
           <div class="chat-title">AI Trainer · Lia</div>
-          <div class="chat-sub">Free · runs on your machine · ask anything and I'll walk you through it</div>
+          <div class="chat-sub">Ask anything — I'll walk you through it, step by step</div>
         </div>
         <div class="chat-scroll" id="ww-chat">
           <div class="chat-empty" id="ww-chat-empty">
@@ -1690,7 +1690,7 @@ async function wwAsk(preset){
   if(!q){ if(inp) inp.focus(); return; }
   if(inp&&!preset) inp.value="";
   wwChatAppend('user', q);
-  const bub=wwChatAppend('ai', "Lia is thinking… (the first answer warms up the free local AI, ~a moment)");
+  const bub=wwChatAppend('ai', "Lia is thinking…");
   if(bub) bub.classList.add('thinking');
   if(!window.wwTeach){ if(bub){ bub.classList.remove('thinking'); bub.textContent="One sec — the guide's still loading. Try again in a moment."; } return; }
   try{
