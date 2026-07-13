@@ -10,16 +10,13 @@ export const WISHWOOD_KERNEL = {
   property: 'Wishwood Glamping — 16 acres of ancient woodland near Canterbury, Kent. Off-grid by design.',
   host: 'Chrissy (the owner-host who answers guests personally).',
   units: [
-    'The Hobbit Hut — storybook hut, sleeps 3 (1 double + 1 twin), dogs welcome. £95 base / £120 weekend / £145 peak per night.',
-    'The Vintage Caravan — restored retro caravan, couples, sleeps 2 (1 double), dogs welcome. £85 / £110 / £130.',
-    'The Family Yurt — family yurt, sleeps 6 (1 double + 2 twin + 1 air bed), dogs welcome, has a walk-in shower. £135 / £165 / £195.'
+    'The Yurt — family yurt, sleeps up to 6, walk-in shower, dogs welcome.',
+    'Fern Lodge — lodge camp, dogs welcome.',
+    'Thistle Caravan — restored caravan for couples, sleeps 2, dogs welcome.',
+    'The Hobbit — storybook hut, sleeps 3, dogs welcome.'
   ],
-  everyUnitHas: 'wood-burner, private outdoor kitchen (gas hob, BBQ, fridge, sink), compost loo, fire pit, log net, gas BBQ.',
-  hardTruths: [
-    'NO wifi — off-grid by design (never promise wifi).',
-    'NO hot tubs — off-grid, no mains water (never promise a hot tub).',
-    'Off-grid: no mains electricity/water; wood-burners for heat, gas for cooking, compost loos.'
-  ],
+  everyUnitHas: 'wood-burner, private outdoor kitchen (gas hob, BBQ, fridge, sink), compost loo, fire pit.',
+  connectivity: 'Wifi is available.',
   dogs: 'Dogs welcome — £15 per dog for the stay. Outdoor warm-water dog rinse by the boiler shed.',
   location: 'Near Canterbury (~12 min for shops, incl. gluten-free). Bluebells across the woodland in spring (around April).',
   booking: 'Direct booking at wishwood.co.uk/book (best value — no OTA fee). Facebook-follower code WOOD10 = 10% off direct.',
@@ -38,7 +35,7 @@ function kernelText() {
     `HOST: ${k.host}`,
     `UNITS:\n- ${k.units.join('\n- ')}`,
     `EVERY UNIT HAS: ${k.everyUnitHas}`,
-    `HARD TRUTHS (never contradict):\n- ${k.hardTruths.join('\n- ')}`,
+    `CONNECTIVITY: ${k.connectivity}`,
     `DOGS: ${k.dogs}`,
     `LOCATION: ${k.location}`,
     `BOOKING: ${k.booking}`,
@@ -61,7 +58,7 @@ export async function wwDraft(msg, voiceExamples = []) {
     `You are drafting a reply AS Chrissy, the host of Wishwood Glamping. You are writing in her voice to a real guest.\n\n` +
     `GROUNDING (the only facts you may state):\n${kernelText()}\n\n` +
     (examples ? examples + '\n\n' : '') +
-    `RULES: only use facts from the grounding above. If you don't know, say you'll check and come back — never invent wifi, hot tubs, or prices. Keep it short and human. End with "Chrissy". Output ONLY the reply text, nothing else.`;
+    `RULES: only use facts from the grounding above. If you don't know a specific price, unit size, or detail, say you'll check and come back rather than guessing. Keep it short and human. End with "Chrissy". Output ONLY the reply text, nothing else.`;
   const user =
     `A guest messaged via ${msg.channel || 'a booking channel'}.\n` +
     `From: ${msg.from || 'a guest'}\n` +
