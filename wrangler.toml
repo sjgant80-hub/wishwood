@@ -9,7 +9,7 @@ compatibility_date = "2026-06-01"
 #   OPERATOR_TOKEN       — legacy static bearer for API clients / cron (optional)
 #   FB_VERIFY_TOKEN      — Meta webhook verify token
 #   GEMINI_API_KEY       — Google Gemini key (Gemini Flash) · drafts the replies · free at aistudio.google.com/apikey
-#   GEMINI_MODEL         — optional · defaults to gemini-2.5-flash
+#   GEMINI_MODEL         — optional · defaults to gemini-3.1-flash-lite (free on new keys · fast)
 #   CLAUDE_API_KEY       — optional Anthropic key (fallback if no Gemini key)
 #
 #   ── GUEST CHANNELS · add each secret as you get it; its /webhook route activates automatically ──

@@ -424,7 +424,7 @@ async function draftReply(env, { messageText, fromName, channel, context }) {
   try {
     // Prefer Gemini Flash (cheap + fast); fall back to Claude if that's what's set.
     if (env.GEMINI_API_KEY) {
-      const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
+      const model = env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },

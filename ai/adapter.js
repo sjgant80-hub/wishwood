@@ -60,7 +60,7 @@ const PROVIDERS = {
   },
 
   gemini: {
-    endpoint: (model, key) => `https://generativelanguage.googleapis.com/v1beta/models/${model || 'gemini-2.5-flash'}:generateContent?key=${key}`,
+    endpoint: (model, key) => `https://generativelanguage.googleapis.com/v1beta/models/${model || 'gemini-3.1-flash-lite'}:generateContent?key=${key}`,
     headers: () => ({ 'content-type': 'application/json' }),
     body: ({ messages, tools, system }) => ({
       systemInstruction: system ? { parts: [{ text: system }] } : undefined,
@@ -183,7 +183,7 @@ export const SUPPORTED_PROVIDERS = Object.keys(PROVIDERS);
 export const DEFAULT_MODELS = {
   anthropic: 'claude-opus-4-8',
   openai: 'gpt-4.1',
-  gemini: 'gemini-2.5-flash',
+  gemini: 'gemini-3.1-flash-lite',
   groq: 'llama-3.3-70b-versatile',
   mistral: 'mistral-large-latest',
   webllm: 'Llama-3.1-8B-Instruct-q4f16_1-MLC'
