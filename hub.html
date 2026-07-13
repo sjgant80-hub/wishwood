@@ -143,12 +143,13 @@ body{
   line-height:1.45;
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
 }
 button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer}
 a{color:var(--ember);text-decoration:none}
 
 /* Layout shell */
-.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:48px 1fr;height:100vh}
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:48px 1fr;flex:1;min-height:0}
 .topbar{
   grid-column:1/-1;
   display:flex;align-items:center;justify-content:space-between;
