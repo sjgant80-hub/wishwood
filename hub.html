@@ -187,8 +187,8 @@ a{color:var(--ember);text-decoration:none}
 .nav-item .glyph{color:var(--ember);font-size:14px;width:18px;display:inline-block}
 .nav-item .count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:var(--surface);padding:1px 6px;border-radius:9px}
 /* Dashboard v2 · FallCRM Elite pattern · added 2026-07-04 */
-.dash-layout{display:grid;grid-template-columns:1fr 320px;gap:22px;padding:28px 30px;max-width:1500px}
-@media(max-width:1100px){.dash-layout{grid-template-columns:1fr}}
+.dash-layout{display:grid;grid-template-columns:1fr 320px;gap:22px;padding:28px 30px;overflow-y:auto;height:100%;align-content:start}
+@media(max-width:1100px){.dash-layout{grid-template-columns:minmax(0,1fr)}}
 .dash-main{min-width:0}
 .dash-head{margin-bottom:22px}
 .dash-h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;color:var(--linen);margin:0 0 4px;font-weight:500}
@@ -543,10 +543,13 @@ a{color:var(--ember);text-decoration:none}
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <div class="brand">
-      <span class="glyph">◊</span>
-      <span>WISHWOOD-OS</span>
-      <span class="tag">AI-run SMB OS · sovereign</span>
+    <div style="display:flex;align-items:center;gap:10px;min-width:0">
+      <button id="backBtn" onclick="goBack()" title="Back" aria-label="Back" style="visibility:hidden;background:none;border:0;color:var(--linen);font-size:20px;line-height:1;cursor:pointer;padding:4px 9px;border-radius:5px;flex:none">←</button>
+      <div class="brand">
+        <span class="glyph">◊</span>
+        <span>WISHWOOD-OS</span>
+        <span class="tag">AI-run SMB OS · sovereign</span>
+      </div>
     </div>
     <div class="topbar-right">
       <span class="conn-info"><span class="dot"></span> 7 channels live</span>
@@ -1380,7 +1383,7 @@ const CHANNELS = [
 ];
 
 /* ────────────── STATE + RENDER ────────────── */
-let activeView = "inbox";
+let activeView = "dashboard";
 let activeChannel = "all";
 let activeMsgId = null;
 let currentMonth = new Date(2026,5,1); // June 2026
@@ -1680,23 +1683,27 @@ $("#msg-search").addEventListener("input",e=>{
   });
 });
 
-/* Nav */
-$$(".nav-item").forEach(el=>{
-  el.onclick=()=>{
-    activeView=el.dataset.view;
-    $$(".nav-item").forEach(x=>x.classList.remove("active"));
-    el.classList.add("active");
-    $$(".view").forEach(v=>v.classList.remove("active"));
-    $("#view-"+activeView).classList.add("active");
-    if(activeView==="calendar") renderCalendar();
-    if(activeView==="cabins") renderCabins();
-    if(activeView==="agents") wwBrainLoad();
-    if(activeView==="clinic") wwClinicRender();
-    if(activeView==="inbox") loadLiveMessages();
-    if(activeView==="journey") renderTasks();
-    if(activeView==="monitor") loadActivityLog();
-  };
-});
+/* Nav + back-history */
+let navHistory=[];
+function activateView(view, record){
+  if(!view) return;
+  if(record!==false && activeView && activeView!==view) navHistory.push(activeView);
+  activeView=view;
+  $$(".nav-item").forEach(x=>x.classList.remove("active"));
+  const nav=document.querySelector('.nav-item[data-view="'+view+'"]'); if(nav) nav.classList.add("active");
+  $$(".view").forEach(v=>v.classList.remove("active"));
+  const el=$("#view-"+view); if(el){ el.classList.add("active"); el.querySelectorAll(".dash,.dash-layout,.cal-wrap").forEach(s=>{s.scrollTop=0;}); }
+  if(view==="calendar") renderCalendar();
+  if(view==="cabins") renderCabins();
+  if(view==="agents") wwBrainLoad();
+  if(view==="clinic") wwClinicRender();
+  if(view==="inbox") loadLiveMessages();
+  if(view==="journey") renderTasks();
+  if(view==="monitor") loadActivityLog();
+  const b=$("#backBtn"); if(b) b.style.visibility = navHistory.length ? "visible" : "hidden";
+}
+function goBack(){ if(navHistory.length) activateView(navHistory.pop(), false); }
+$$(".nav-item").forEach(el=>{ el.onclick=()=>activateView(el.dataset.view, true); });
 
 /* Channels grid (dashboard) */
 function renderChannelsGrid(){
