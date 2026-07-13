@@ -7,20 +7,22 @@ import { chat, DEFAULT_MODELS } from './ai/adapter.js';
 
 /* The grounding kernel — the TRUTH about Wishwood (off-grid glamping, Canterbury, Kent). */
 export const WISHWOOD_KERNEL = {
-  property: 'Wishwood Glamping — 16 acres of ancient woodland near Canterbury, Kent. Off-grid by design.',
+  property: 'Wishwood Glamping — private ancient woodland at Sturry, near Canterbury, Kent, beside Blean Woods National Nature Reserve and a lake.',
   host: 'Chrissy (the owner-host who answers guests personally).',
   units: [
-    'The Yurt — family yurt, sleeps up to 6, walk-in shower, dogs welcome.',
-    'Fern Lodge — lodge camp, dogs welcome.',
-    'Thistle Caravan — restored caravan for couples, sleeps 2, dogs welcome.',
-    'The Hobbit — storybook hut, sleeps 3, dogs welcome.'
+    'The Yurt — the solar-powered off-grid yurt, sleeps 6 (1 double, 2 twin, 1 air mattress). Log-burner (a free net of logs a night), kettle + single gas ring, private composting loo, walk-in eco shower, private garden.',
+    'Fern Lodge — woodland lodge, sleeps 4 (1 double, 2 sofa beds + air mattress), private bathroom, private kitchen, wood stove, private BBQ, fire pit, fridge, desk, outdoor dining. Free wifi.',
+    'Thistle Caravan — restored vintage caravan, sleeps 3 (double + configurable), kitchenette (gas ring, sink, fridge, kettle), log-burner, heating, private bathroom, fire pit. £10 cleaning fee.',
+    'The Hobbit — quirky hobbit hut, sleeps 3 (1 double, 1 twin), wood-burner, private kitchen, heating, private BBQ, wifi, parking.'
   ],
-  everyUnitHas: 'wood-burner, private outdoor kitchen (gas hob, BBQ, fridge, sink), compost loo, fire pit.',
-  connectivity: 'Wifi is available.',
-  dogs: 'Dogs welcome — £15 per dog for the stay. Outdoor warm-water dog rinse by the boiler shed.',
-  location: 'Near Canterbury (~12 min for shops, incl. gluten-free). Bluebells across the woodland in spring (around April).',
-  booking: 'Direct booking at wishwood.co.uk/book (best value — no OTA fee). Facebook-follower code WOOD10 = 10% off direct.',
-  policy: 'Cancellation is strict (no refund inside 14 days), but Chrissy will, as goodwill, try to re-let and refund what she can.',
+  shared: 'A sheltered communal outdoor kitchen (gas BBQ, sink, worktops, pots & pans), fire pits, log nets, parking.',
+  connectivity: 'Wifi is available (confirmed at Fern Lodge and the Hobbit; the Yurt is solar/off-grid so signal there is limited).',
+  hotTub: 'No hot tubs.',
+  dogs: 'UNCERTAIN — do not state a dog policy. Fern Lodge lists no pets; other camps unclear. If a guest asks about dogs, say you will confirm with Chrissy.',
+  location: 'Sturry, near Canterbury (~10 min drive), by Blean Woods NNR and a lake; ~20 min to the coast (Whitstable/Herne Bay). Exact address is shared after booking.',
+  checkInOut: 'Check-in mid-afternoon to evening (roughly 2–8pm), check-out late morning (11am–12pm) — varies by camp.',
+  booking: 'Bookings currently run through the listing platforms (Glamping Hub, Snaptrip, Pitchup, Airbnb). Do not quote a nightly price from memory — offer to confirm the current rate and availability.',
+  policy: 'A peaceful retreat — no loud parties. Cancellation terms are set by the booking platform; if asked, offer to check rather than guessing.',
   voice: [
     'Warm, personal, concise. Lowercase-leaning, em-dashes and middots (·) over heavy punctuation. Never corporate, never "Dear guest".',
     'Answer the actual question first, then a gentle nudge to book direct when it fits. Always sign off as "Chrissy".',
@@ -33,11 +35,13 @@ function kernelText() {
   return [
     `PROPERTY: ${k.property}`,
     `HOST: ${k.host}`,
-    `UNITS:\n- ${k.units.join('\n- ')}`,
-    `EVERY UNIT HAS: ${k.everyUnitHas}`,
+    `CAMPS (4):\n- ${k.units.join('\n- ')}`,
+    `SHARED: ${k.shared}`,
     `CONNECTIVITY: ${k.connectivity}`,
+    `HOT TUBS: ${k.hotTub}`,
     `DOGS: ${k.dogs}`,
     `LOCATION: ${k.location}`,
+    `CHECK-IN / OUT: ${k.checkInOut}`,
     `BOOKING: ${k.booking}`,
     `POLICY: ${k.policy}`,
     `VOICE:\n- ${k.voice.join('\n- ')}`
