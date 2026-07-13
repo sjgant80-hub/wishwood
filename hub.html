@@ -410,6 +410,33 @@ a{color:var(--ember);text-decoration:none}
 .dash{padding:30px 36px;overflow-y:auto;height:100%}
 .dash-title{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--linen);margin-bottom:6px}
 .dash-sub{color:var(--muted);font-size:13px;margin-bottom:28px}
+
+/* AI Trainer · chat window (frontier-LLM style) */
+.chat{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--woodsmoke)}
+.chat-head{padding:15px 22px 12px;border-bottom:1px solid var(--border);flex:none}
+.chat-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--linen)}
+.chat-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.chat-scroll{flex:1;min-height:0;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:16px}
+.chat-empty{max-width:580px;margin:auto;text-align:center;padding:18px}
+.chat-empty-icon{font-size:30px}
+.chat-empty-title{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--linen);margin:6px 0 6px}
+.chat-empty-text{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+.chat-chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;text-align:left}
+.chat-chip{text-align:left;background:var(--surface);border:1px solid var(--border);color:var(--linen);padding:12px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-family:inherit;transition:border-color .15s,background .15s}
+.chat-chip:hover{border-color:var(--ember);background:var(--raised)}
+.chat-msg{display:flex;gap:10px;max-width:780px;width:100%;margin:0 auto;align-items:flex-start}
+.chat-msg.user{justify-content:flex-end}
+.chat-ava{width:28px;height:28px;border-radius:50%;background:var(--raised);color:var(--ember);display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;border:1px solid var(--border)}
+.bubble{padding:12px 15px;border-radius:14px;font-size:14px;line-height:1.65;white-space:pre-wrap;max-width:82%}
+.bubble.user{background:var(--ember);color:var(--woodsmoke)}
+.bubble.ai{background:var(--surface);color:var(--linen);border:1px solid var(--border)}
+.bubble.thinking{color:var(--muted);font-style:italic}
+.bubble-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:8px}
+.chat-input{display:flex;gap:8px;padding:14px 22px;border-top:1px solid var(--border);background:var(--deep);flex:none}
+.chat-input input{flex:1;background:var(--surface);border:1px solid var(--border);padding:12px 15px;border-radius:12px;color:var(--text);font-family:inherit;font-size:14px}
+.chat-input input:focus{outline:none;border-color:var(--ember)}
+.chat-send{background:var(--ember);color:var(--woodsmoke);border:0;width:46px;border-radius:12px;cursor:pointer;font-size:16px;flex:none}
+.chat-send:hover{background:#d68850}
 .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:28px}
 .card{
   background:var(--deep);
@@ -1013,22 +1040,30 @@ a{color:var(--ember);text-decoration:none}
 
     <!-- LEARN (the OS teaches itself · free WebLLM tutor · teaches + learns) -->
     <div class="view" id="view-learn">
-      <div class="dash">
-        <div class="dash-title">Learn the OS <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· free · runs on your machine · no key needed</span></div>
-        <div class="dash-sub">Ask anything — the built-in guide teaches you how WISHWOOD-OS works, module by module, and how it runs when fully wired. It runs on free local AI, and it learns from what people ask.</div>
-        <div style="margin-top:16px;display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('How does Guest Desk work?')">Guest Desk</button>
-          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('How do the books and the HMRC / VAT export work?')">Books &amp; HMRC</button>
-          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('How does the social strategy and posting work?')">Social strategy</button>
-          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('What is the Property Brain and why does it matter?')">Property Brain</button>
-          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('How does it stay safe — do I approve everything before it sends?')">Oversight</button>
-          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('Give me a 60-second tour of the whole OS.')">60-sec tour</button>
+      <div class="chat">
+        <div class="chat-head">
+          <div class="chat-title">AI Trainer · Lia</div>
+          <div class="chat-sub">Free · runs on your machine · ask anything and I'll walk you through it</div>
         </div>
-        <div style="margin-top:14px;display:flex;gap:8px">
-          <input id="ww-learn-q" placeholder="Ask how anything works…" style="flex:1;background:var(--surface);border:1px solid var(--border);padding:10px 12px;border-radius:4px;color:var(--text);font-family:inherit;font-size:13px" onkeydown="if(event.key==='Enter')wwAsk()">
-          <button class="btn" onclick="wwAsk()">Ask</button>
+        <div class="chat-scroll" id="ww-chat">
+          <div class="chat-empty" id="ww-chat-empty">
+            <div class="chat-empty-icon">✦</div>
+            <div class="chat-empty-title">Hi, I'm Lia 👋</div>
+            <div class="chat-empty-text">I'll walk you through how everything works, one step at a time — no tech knowledge needed. Tap a question to start, or just type your own below.</div>
+            <div class="chat-chips">
+              <button class="chat-chip" onclick="wwAsk('Give me a friendly 60-second tour of the whole thing')">✨ Give me a quick tour</button>
+              <button class="chat-chip" onclick="wwAsk('How does the guest inbox work?')">💬 How does the inbox work?</button>
+              <button class="chat-chip" onclick="wwAsk('How do I add or change a price?')">💷 How do I add a price?</button>
+              <button class="chat-chip" onclick="wwAsk('What is the Property Brain and why does it matter?')">🧠 What's the Property Brain?</button>
+              <button class="chat-chip" onclick="wwAsk('How do the books and the HMRC / VAT export work?')">📊 Books &amp; HMRC</button>
+              <button class="chat-chip" onclick="wwAsk('Does it ever send anything to a guest without me approving it first?')">🛟 Will it send things on its own?</button>
+            </div>
+          </div>
         </div>
-        <div id="ww-learn-a" style="margin-top:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--linen);line-height:1.7;white-space:pre-wrap;min-height:60px">The guide's ready — tap a question above, or ask your own. The first answer runs on free local AI, so it takes a moment to warm up the first time.</div>
+        <div class="chat-input">
+          <input id="ww-learn-q" placeholder="Ask Lia anything…" onkeydown="if(event.key==='Enter')wwAsk()">
+          <button class="chat-send" onclick="wwAsk()" aria-label="Send" title="Send">➤</button>
+        </div>
       </div>
     </div>
 
@@ -1636,15 +1671,40 @@ async function wwBrainHarvest(){
 }
 
 /* LEARN · the OS teaches itself (free local AI) + learns from what's asked */
+function wwChatAppend(role, text){
+  const box=$("#ww-chat"); if(!box) return null;
+  const empty=$("#ww-chat-empty"); if(empty) empty.remove();
+  const row=document.createElement('div');
+  row.className='chat-msg '+role;
+  const bub=document.createElement('div');
+  bub.className='bubble '+(role==='user'?'user':'ai');
+  bub.textContent=text;
+  if(role==='ai'){ const ava=document.createElement('div'); ava.className='chat-ava'; ava.textContent='✦'; row.appendChild(ava); }
+  row.appendChild(bub);
+  box.appendChild(row); box.scrollTop=box.scrollHeight;
+  return bub;
+}
 async function wwAsk(preset){
-  const inp=$("#ww-learn-q"), out=$("#ww-learn-a");
+  const inp=$("#ww-learn-q");
   const q=(preset||inp?.value||"").trim();
-  if(!q){ toast("Type a question"); return; }
+  if(!q){ if(inp) inp.focus(); return; }
   if(inp&&!preset) inp.value="";
-  if(out) out.textContent="✦ thinking…";
-  if(!window.wwTeach){ if(out)out.textContent="Guide still loading — try again in a moment."; return; }
-  try{ const {text,engine}=await window.wwTeach(q); if(out)out.textContent=(text||"—")+"\n\n— answered by "+engine; }
-  catch(e){ if(out)out.textContent="Couldn't answer — the first run downloads the free local model (~a minute), or add a key in Settings for instant answers."; console.warn(e); }
+  wwChatAppend('user', q);
+  const bub=wwChatAppend('ai', "Lia is thinking… (the first answer warms up the free local AI, ~a moment)");
+  if(bub) bub.classList.add('thinking');
+  if(!window.wwTeach){ if(bub){ bub.classList.remove('thinking'); bub.textContent="One sec — the guide's still loading. Try again in a moment."; } return; }
+  try{
+    const {text,engine}=await window.wwTeach(q);
+    if(bub){
+      bub.classList.remove('thinking');
+      bub.textContent=(text||"—");
+      const tag=document.createElement('div'); tag.className='bubble-tag'; tag.textContent='answered by '+engine; bub.appendChild(tag);
+    }
+  }catch(e){
+    if(bub){ bub.classList.remove('thinking'); bub.textContent="I couldn't answer just yet — the first run downloads the free local model (about a minute), or add a key in Settings for instant answers. Give it another go."; }
+    console.warn(e);
+  }
+  const box=$("#ww-chat"); if(box) box.scrollTop=box.scrollHeight;
 }
 
 /* CLINIC · the OS reads its own health (wired / ready / needs-setup) */
