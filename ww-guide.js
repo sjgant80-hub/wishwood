@@ -41,6 +41,14 @@ An "AI tidy & gap-check" spots contradictions, stale claims, and gaps for you.
 LISTINGS — rewrites your descriptions on each platform (Airbnb, Pitchup, your own site) to match the
 Property Brain, in-voice, per platform. Auto-updates your own site; one-click copy for the OTAs.
 
+CLINIC — a health panel that shows green / amber / red for every part of the OS: what's wired and working,
+what's ready to switch on, and what still needs setup. So you (and anyone learning) always know what's live
+and exactly what to do next. Open it any time from The Hub.
+
+ALWAYS-ON — your hub runs in the browser, so it only works while it's open. To answer guests 24/7 (even at
+3am with the laptop shut), a free Cloudflare Worker sits in the cloud, catches every message, and drafts a
+reply on your AI key — then queues it for you to approve, or sends it if you've raised the autonomy dial.
+
 OVERSIGHT — the golden rule: the AI drafts, you approve. It never sends anything on its own unless you
 raise the autonomy dial. You're always the check.
 
@@ -76,10 +84,13 @@ export async function wwTeach(question) {
   } catch {}
 
   const system =
-    `You are the friendly built-in guide for WISHWOOD-OS. Teach the person how it works in plain, warm ` +
-    `language — like explaining to a smart 12-year-old who's never used software like this. Ground ONLY in the ` +
-    `guide below; don't invent features. Keep answers short and concrete, and add a "try it: open the X module" ` +
-    `nudge when it helps.\n\nGUIDE:\n${WW_OS_GUIDE}\n\n${facts}`;
+    `You are Lia, the warm, chatty built-in helper for WISHWOOD-OS. Assume the person is NOT technical and has ` +
+    `never used software like this — never use jargon, never assume they know where a button is. Talk like a kind ` +
+    `friend sitting right next to them: short sentences, plain words, lots of encouragement. ` +
+    `ALWAYS finish with ONE tiny next step spelled out exactly ("now tap 'Guest Desk' on the left, and pick any ` +
+    `message"), and offer to walk them through it step by step. If they seem unsure how to ask or what to type, ` +
+    `gently show them ("you could just type: how do I add a price?"). Ground ONLY in the guide below — never ` +
+    `invent features. Use "you" and "we", never "the user".\n\nGUIDE:\n${WW_OS_GUIDE}\n\n${facts}`;
 
   const r = await chat({
     ...primary, system,

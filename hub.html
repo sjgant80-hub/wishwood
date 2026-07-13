@@ -561,6 +561,7 @@ a{color:var(--ember);text-decoration:none}
     <div class="nav-item active" data-view="dashboard"><span><span class="glyph">◐</span> Dashboard</span></div>
     <div class="nav-item" data-view="monitor"><span><span class="glyph">●</span> Monitor</span></div>
     <div class="nav-item" data-view="learn"><span><span class="glyph">?</span> Learn the OS</span></div>
+    <div class="nav-item" data-view="clinic"><span><span class="glyph">✚</span> Clinic</span></div>
 
     <div class="nav-section">Guest Desk</div>
     <div class="nav-item" data-view="inbox"><span><span class="glyph">✉</span> Inbox</span><span class="count" id="unread-count">5</span></div>
@@ -981,6 +982,15 @@ a{color:var(--ember);text-decoration:none}
           </tbody>
         </table>
         <p style="font-size:12px;color:var(--muted);margin-top:10px"><a href="media.html" target="_blank" style="color:var(--ember)">→ Open media tools</a></p>
+      </div>
+    </div>
+
+    <!-- CLINIC (self-diagnosing health · what's wired / needs setup) -->
+    <div class="view" id="view-clinic">
+      <div class="dash">
+        <div class="dash-title">Clinic <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· the OS reads its own health</span></div>
+        <div class="dash-sub">Green = wired and working · amber = ready, just switch it on · red = needs setup. So you always know what's live and what to do next.</div>
+        <div id="wwClinic" style="margin-top:16px"></div>
       </div>
     </div>
 
@@ -1553,6 +1563,28 @@ async function wwAsk(preset){
   catch(e){ if(out)out.textContent="Couldn't answer — the first run downloads the free local model (~a minute), or add a key in Settings for instant answers."; console.warn(e); }
 }
 
+/* CLINIC · the OS reads its own health (wired / ready / needs-setup) */
+function wwClinicRender(){
+  const box=$("#wwClinic"); if(!box)return;
+  let s={}; try{ s=JSON.parse(localStorage.getItem('wishwood.autopilot.settings')||'{}'); }catch(e){}
+  const brainSet=(()=>{try{return !!localStorage.getItem('wishwood.brain.kernel')}catch(e){return false}})();
+  const meshSet=(()=>{try{return !!localStorage.getItem('wishwood.mesh.room')}catch(e){return false}})();
+  const key=!!(s&&s.key&&s.provider&&s.provider!=='webllm');
+  const rows=[
+    ['Property Brain', brainSet?'g':'a', brainSet?'your facts are set — edit any time in Brain · Lia':'still on the starter facts — open Brain · Lia and make it yours'],
+    ['AI drafting', 'g', key?('running on your '+(s.provider||'')+' key'):'running on free local AI (add a key for instant + always-on)'],
+    ['AI key · for 24/7 + speed', key?'g':'a', key?'connected':'not set — add a Gemini Flash key in Settings for instant replies + the always-on responder'],
+    ['Books · FallAccount', 'g', 'embedded + manual entry, live'],
+    ['Learn / training', 'g', 'free self-teaching tutor, live'],
+    ['Guest channels · SMS / WhatsApp / email', 'r', 'not connected — needs the Cloudflare Worker + Twilio/Meta keys'],
+    ['Always-on responder · 24/7', 'r', 'not deployed — the free Cloudflare Worker answers when your laptop is off'],
+    ['Multi-device sync', meshSet?'g':'a', meshSet?'on':'built, not switched on yet (Sync setup)']
+  ];
+  const col=c=>c==='g'?'--leaf':c==='a'?'--brass':'--ember';
+  const lbl=c=>c==='g'?'WIRED':c==='a'?'READY':'NOT WIRED';
+  box.innerHTML=rows.map(([n,c,d])=>`<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)"><span style="width:10px;height:10px;border-radius:50%;background:var(${col(c)});flex-shrink:0"></span><div style="flex:1"><div style="color:var(--linen);font-size:14px">${n}</div><div style="color:var(--muted);font-size:12px;line-height:1.5">${d}</div></div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(${col(c)});letter-spacing:0.1em">${lbl(c)}</span></div>`).join('');
+}
+
 /* Channel filter */
 function bindChips(){
   $$("#channel-chips .chip").forEach(c=>{
@@ -1586,6 +1618,7 @@ $$(".nav-item").forEach(el=>{
     if(activeView==="calendar") renderCalendar();
     if(activeView==="cabins") renderCabins();
     if(activeView==="agents") wwBrainLoad();
+    if(activeView==="clinic") wwClinicRender();
   };
 });
 
