@@ -560,6 +560,7 @@ a{color:var(--ember);text-decoration:none}
     <div class="nav-section">The Hub</div>
     <div class="nav-item active" data-view="dashboard"><span><span class="glyph">◐</span> Dashboard</span></div>
     <div class="nav-item" data-view="monitor"><span><span class="glyph">●</span> Monitor</span></div>
+    <div class="nav-item" data-view="learn"><span><span class="glyph">?</span> Learn the OS</span></div>
 
     <div class="nav-section">Guest Desk</div>
     <div class="nav-item" data-view="inbox"><span><span class="glyph">✉</span> Inbox</span><span class="count" id="unread-count">5</span></div>
@@ -983,6 +984,27 @@ a{color:var(--ember);text-decoration:none}
       </div>
     </div>
 
+    <!-- LEARN (the OS teaches itself · free WebLLM tutor · teaches + learns) -->
+    <div class="view" id="view-learn">
+      <div class="dash">
+        <div class="dash-title">Learn the OS <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· free · runs on your machine · no key needed</span></div>
+        <div class="dash-sub">Ask anything — the built-in guide teaches you how WISHWOOD-OS works, module by module, and how it runs when fully wired. It runs on free local AI, and it learns from what people ask.</div>
+        <div style="margin-top:16px;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('How does Guest Desk work?')">Guest Desk</button>
+          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('How do the books and the HMRC / VAT export work?')">Books &amp; HMRC</button>
+          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('How does the social strategy and posting work?')">Social strategy</button>
+          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('What is the Property Brain and why does it matter?')">Property Brain</button>
+          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('How does it stay safe — do I approve everything before it sends?')">Oversight</button>
+          <button class="btn ghost" style="font-size:11px" onclick="wwAsk('Give me a 60-second tour of the whole OS.')">60-sec tour</button>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px">
+          <input id="ww-learn-q" placeholder="Ask how anything works…" style="flex:1;background:var(--surface);border:1px solid var(--border);padding:10px 12px;border-radius:4px;color:var(--text);font-family:inherit;font-size:13px" onkeydown="if(event.key==='Enter')wwAsk()">
+          <button class="btn" onclick="wwAsk()">Ask</button>
+        </div>
+        <div id="ww-learn-a" style="margin-top:14px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--linen);line-height:1.7;white-space:pre-wrap;min-height:60px">The guide's ready — tap a question above, or ask your own. The first answer runs on free local AI, so it takes a moment to warm up the first time.</div>
+      </div>
+    </div>
+
     <!-- EMAIL (guest sequences + marketing) -->
     <div class="view" id="view-email">
       <div class="dash-title" style="padding:18px 20px 6px">Email <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em">· guest sequences &amp; marketing</span></div>
@@ -1286,10 +1308,12 @@ a{color:var(--ember);text-decoration:none}
 <script type="module">
   /* real AI drafting + live Property Brain (the single source of truth) → exposed to the hub */
   import { wwDraft, loadKernel, saveKernel, wwBrainCheck } from './ww-draft.js';
+  import { wwTeach } from './ww-guide.js';
   window.wwDraft = wwDraft;
   window.wwLoadKernel = loadKernel;
   window.wwSaveKernel = saveKernel;
   window.wwBrainCheck = wwBrainCheck;
+  window.wwTeach = wwTeach;
 </script>
 <script>
 /* ────────────── DATA (inlined for sovereign single-file ops) ────────────── */
@@ -1515,6 +1539,18 @@ async function wwBrainHarvest(){
   toast("✦ AI checking the brain…");
   try{ const t=await window.wwBrainCheck(); if(box)box.textContent=t||"No issues flagged."; }
   catch(e){ if(box)box.textContent="Couldn't run — add a Gemini/BYOK key in Settings (or first load pulls the free local model)."; console.warn(e); }
+}
+
+/* LEARN · the OS teaches itself (free local AI) + learns from what's asked */
+async function wwAsk(preset){
+  const inp=$("#ww-learn-q"), out=$("#ww-learn-a");
+  const q=(preset||inp?.value||"").trim();
+  if(!q){ toast("Type a question"); return; }
+  if(inp&&!preset) inp.value="";
+  if(out) out.textContent="✦ thinking…";
+  if(!window.wwTeach){ if(out)out.textContent="Guide still loading — try again in a moment."; return; }
+  try{ const {text,engine}=await window.wwTeach(q); if(out)out.textContent=(text||"—")+"\n\n— answered by "+engine; }
+  catch(e){ if(out)out.textContent="Couldn't answer — the first run downloads the free local model (~a minute), or add a key in Settings for instant answers."; console.warn(e); }
 }
 
 /* Channel filter */
