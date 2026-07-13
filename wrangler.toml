@@ -11,6 +11,12 @@ compatibility_date = "2026-06-01"
 #   GEMINI_API_KEY       — Google Gemini key (Gemini Flash) · drafts the replies · free at aistudio.google.com/apikey
 #   GEMINI_MODEL         — optional · defaults to gemini-2.5-flash
 #   CLAUDE_API_KEY       — optional Anthropic key (fallback if no Gemini key)
+#
+#   ── GUEST CHANNELS · add each secret as you get it; its /webhook route activates automatically ──
+#   TWILIO_ACCOUNT_SID · TWILIO_AUTH_TOKEN · SMS_FROM_NUMBER · WHATSAPP_SENDER   — Twilio SMS + WhatsApp  → point Twilio webhook at /webhook/twilio
+#   META_ACCESS_TOKEN · WHATSAPP_PHONE_ID · WA_WEBHOOK_VERIFY_TOKEN              — Meta WhatsApp Cloud (alternative to Twilio) → /webhook/whatsapp
+#   RESEND_API_KEY · EMAIL_FROM                                                  — email send (Resend)   → forward OTA/guest email to /webhook/email
+#   AUTO_SEND = "1"                                                              — optional: AI auto-replies (default off = you approve every send)
 #   STRIPE_WEBHOOK_SECRET — Stripe webhook signing secret
 #   STRIPE_SECRET_KEY    — Stripe API key
 #   AIRBNB_ICAL_HOBBIT   — Airbnb iCal export URL for Hobbit Hut

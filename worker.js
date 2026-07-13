@@ -321,7 +321,93 @@ async function handleStripeWebhook(req, env) {
   return jsonResp({ ok: true });
 }
 
-/* ─── AI draft (Claude) ─── */
+/* ─── Unified inbound: normalize → AI-draft → store. Works the moment a channel points here. ─── */
+async function ingestMessage(env, { channel, from, text, to, name }) {
+  const id = `${channel}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const msg = { id, channel, from, to: to || null, fromName: name || from, text: text || '', received: new Date().toISOString(), status: 'unread' };
+  try { const d = await draftReply(env, { messageText: msg.text, fromName: msg.fromName, channel }); if (d && d.draft) msg.draft = d.draft; } catch (e) { /* draft is best-effort */ }
+  await kvPut(env, `message:${id}`, msg);
+  if (env.AUTO_SEND === '1' && msg.draft) {
+    try { await sendReply(env, { channel, to: from, text: msg.draft }); msg.status = 'auto-sent'; await kvPut(env, `message:${id}`, msg); } catch (e) {}
+  }
+  return msg;
+}
+
+/* Twilio inbound · SMS + WhatsApp (WhatsApp arrives as From "whatsapp:+…") */
+async function handleTwilioInbound(req, env) {
+  const form = new URLSearchParams(await req.text());
+  const from = form.get('From') || 'unknown';
+  const channel = from.startsWith('whatsapp:') ? 'whatsapp' : 'sms';
+  await ingestMessage(env, { channel, from: from.replace('whatsapp:', ''), to: form.get('To') || '', text: form.get('Body') || '' });
+  return new Response('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', { status: 200, headers: { 'content-type': 'text/xml', ...CORS } });
+}
+
+/* Meta WhatsApp Cloud inbound (GET verify + POST messages) */
+async function handleWhatsAppCloudInbound(req, env) {
+  const url = new URL(req.url);
+  if (req.method === 'GET') {
+    if (url.searchParams.get('hub.mode') === 'subscribe' && url.searchParams.get('hub.verify_token') === env.WA_WEBHOOK_VERIFY_TOKEN) return textResp(url.searchParams.get('hub.challenge'));
+    return textResp('forbidden', 403);
+  }
+  const body = await req.json();
+  for (const entry of (body.entry || [])) for (const change of (entry.changes || [])) {
+    const value = change.value || {};
+    const name0 = value.contacts?.[0]?.profile?.name;
+    for (const m of (value.messages || [])) await ingestMessage(env, { channel: 'whatsapp', from: m.from, text: m.text?.body || '', name: name0 || m.from });
+  }
+  return jsonResp({ ok: true });
+}
+
+/* Generic email / OTA-forward inbound (JSON) — Airbnb/Booking/Pitchup forward guest messages here */
+async function handleEmailInbound(req, env) {
+  const b = await req.json().catch(() => ({}));
+  const text = b.text || b.body || [b.subject, b.snippet].filter(Boolean).join('\n\n');
+  await ingestMessage(env, { channel: b.channel || 'email', from: b.from || 'unknown', name: b.name || b.from, text });
+  return jsonResp({ ok: true });
+}
+
+/* ─── Unified outbound send · each path activates as its secret lands ─── */
+async function sendReply(env, { channel, to, text }) {
+  if (channel === 'sms') return sendViaTwilio(env, { channel, to, text });
+  if (channel === 'whatsapp') return (env.META_ACCESS_TOKEN ? sendViaWhatsAppCloud(env, { to, text }) : sendViaTwilio(env, { channel, to, text }));
+  if (channel === 'email') return sendEmail(env, { to, subject: 'Re: your Wishwood enquiry', text });
+  return { queued: false, note: `${channel} has no host send API — copy the approved draft into the platform` };
+}
+async function sendViaTwilio(env, { channel, to, text }) {
+  if (!env.TWILIO_ACCOUNT_SID || !env.TWILIO_AUTH_TOKEN) return { error: 'Twilio not configured' };
+  const rawFrom = channel === 'whatsapp' ? (env.WHATSAPP_SENDER || env.SMS_FROM_NUMBER) : env.SMS_FROM_NUMBER;
+  const To = channel === 'whatsapp' ? `whatsapp:${to}` : to;
+  const From = channel === 'whatsapp' && !String(rawFrom).startsWith('whatsapp:') ? `whatsapp:${rawFrom}` : rawFrom;
+  const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${env.TWILIO_ACCOUNT_SID}/Messages.json`, {
+    method: 'POST',
+    headers: { 'Authorization': 'Basic ' + btoa(`${env.TWILIO_ACCOUNT_SID}:${env.TWILIO_AUTH_TOKEN}`), 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ To, From, Body: text }),
+  });
+  const data = await res.json().catch(() => ({}));
+  return res.ok ? { sent: true, sid: data.sid } : { error: data.message || 'Twilio send failed' };
+}
+async function sendViaWhatsAppCloud(env, { to, text }) {
+  if (!env.META_ACCESS_TOKEN || !env.WHATSAPP_PHONE_ID) return { error: 'WhatsApp Cloud not configured' };
+  const res = await fetch(`https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_ID}/messages`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${env.META_ACCESS_TOKEN}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ messaging_product: 'whatsapp', to, type: 'text', text: { body: text } }),
+  });
+  const data = await res.json().catch(() => ({}));
+  return res.ok ? { sent: true, id: data.messages?.[0]?.id } : { error: data.error?.message || 'WhatsApp send failed' };
+}
+async function sendEmail(env, { to, subject, text }) {
+  if (!env.RESEND_API_KEY) return { error: 'email not configured (set RESEND_API_KEY)' };
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ from: env.EMAIL_FROM || 'Wishwood <hello@wishwood.co.uk>', to, subject, text }),
+  });
+  const data = await res.json().catch(() => ({}));
+  return res.ok ? { sent: true, id: data.id } : { error: data.message || 'email send failed' };
+}
+
+/* ─── AI draft (Gemini Flash · Claude fallback) ─── */
 async function draftReply(env, { messageText, fromName, channel, context }) {
   // Facts kept in sync with the hub's Property Brain (single source of truth).
   const systemPrompt = `You are drafting a reply on behalf of Chrissy, who runs Wishwood Glamping — private semi-ancient woodland at Sturry, near Canterbury, Kent, beside Blean Woods and a lake. FOUR camps: The Yurt (solar off-grid, sleeps 6), Fern Lodge (woodland lodge, sleeps 4, private bathroom, wifi), Thistle Caravan (couples, sleeps 3, private bathroom, £10 cleaning fee), The Hobbit (sleeps 3, wifi). Every camp has a wood-burner, private outdoor kitchen, compost loo and fire pit. Wifi is available. NO hot tubs. NO dogs — it is protected woodland (explain warmly if asked). Prices and availability live on the booking channels — NEVER quote a nightly price; point the guest to book/check on the channel they came from. Reply in Chrissy's voice: warm, brief, uses "·" instead of comma lists, signs off "Chrissy". Only state facts above; if unsure, say you'll check. Reply is going via ${channel}.`;
@@ -453,8 +539,8 @@ async function handle(req, env) {
       status: 'ok',
       site: 'Wishwood Glamping & Forestry · Canterbury, Kent',
       endpoints: {
-        public: ['GET /', 'GET /health', 'GET /ical/:cabin', 'POST /booking/direct', 'POST /webhook/{facebook,instagram,whatsapp,stripe}'],
-        operator: ['GET /bookings', 'GET /messages', 'POST /draft', 'GET /pricing/:cabin/:date'],
+        public: ['GET /', 'GET /health', 'GET /ical/:cabin', 'POST /booking/direct', 'POST /webhook/{facebook,instagram,twilio,whatsapp,email,stripe}'],
+        operator: ['GET /bookings', 'GET /messages', 'POST /draft', 'POST /send', 'GET /pricing/:cabin/:date'],
       },
       cabins: Object.keys(CABINS),
     });
@@ -474,6 +560,9 @@ async function handle(req, env) {
   if (path === '/webhook/facebook') return handleFacebookWebhook(req, env);
   if (path === '/webhook/instagram') return handleFacebookWebhook(req, env); // shared IG/FB
   if (path === '/webhook/stripe' && method === 'POST') return handleStripeWebhook(req, env);
+  if (path === '/webhook/twilio') return handleTwilioInbound(req, env);           // Twilio SMS + WhatsApp
+  if (path === '/webhook/whatsapp') return handleWhatsAppCloudInbound(req, env);  // Meta WhatsApp Cloud
+  if (path === '/webhook/email' && method === 'POST') return handleEmailInbound(req, env); // email / OTA forward
 
   // Public: browser session auth
   if (method === 'POST' && path === '/auth/login')  return handleAuthLogin(req, env);
@@ -495,6 +584,10 @@ async function handle(req, env) {
     const body = await req.json();
     const out = await draftReply(env, body);
     return jsonResp(out);
+  }
+  if (method === 'POST' && path === '/send') {
+    const { channel, to, text } = await req.json();
+    return jsonResp(await sendReply(env, { channel, to, text }));
   }
   if (method === 'GET' && path.startsWith('/pricing/')) {
     const [, , cabin, date] = path.split('/');
