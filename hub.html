@@ -873,7 +873,7 @@ a{color:var(--ember);text-decoration:none}
 
         <div class="card" style="margin-top:16px;border-left:4px solid var(--brass)">
           <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen)">Turnarounds &amp; staff tasks</div><span style="font-size:11px;color:var(--muted)">auto-made from every booking · everyone on the app sees these</span></div>
-          <div style="font-size:12px;color:var(--muted);margin:4px 0 8px">A booking lands → the OS reads the dates and creates the jobs: welcome on arrival, clean on checkout. Nobody has to remember or coordinate.</div>
+          <div style="font-size:12px;color:var(--muted);margin:4px 0 8px">A booking lands → the OS reads the dates &amp; stay length and creates the jobs: 🪣 workaway upkeep (bins · compost toilets · oil lamps · water + shower top-up), 🔑 welcome on arrival, 🧹 clean on checkout. Nobody has to remember or coordinate.</div>
           <div id="tasks"></div>
         </div>
 
@@ -1264,6 +1264,9 @@ a{color:var(--ember);text-decoration:none}
           </tbody>
         </table>
 
+        <div class="section-title" style="margin-top:30px"><span class="glyph">☷</span> Activity log <span style="font-size:11px;color:var(--muted);font-weight:normal">· everything the OS has actually done · newest first · shared to everyone</span></div>
+        <div class="card"><div id="activity-log"><div style="color:var(--muted);font-size:13px">Loading…</div></div></div>
+
         <div class="section-title" style="margin-top:30px"><span class="glyph">⚠</span> Recent alerts</div>
         <div class="card">
           <div style="color:var(--muted);font-size:14px;font-style:italic">Nothing in the last 14 days. Last alert: "Solar battery below 30%" auto-cleared after 4 hours of sun.</div>
@@ -1493,7 +1496,23 @@ async function loadLiveMessages(){
   }catch(e){ /* worker not up yet — keep the sample data */ }
 }
 
-/* TURNAROUNDS · every booking auto-makes its jobs (welcome on arrival, clean on checkout) — shared to all staff */
+/* ACTIVITY LOG · the shared feed of everything the OS has done · pulled live from the always-on worker */
+async function loadActivityLog(){
+  const box=$("#activity-log"); if(!box) return;
+  const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+  try{
+    if(!window.WW_AUTH){ box.innerHTML='<div style="color:var(--muted);font-size:13px;font-style:italic">Connect the engine to see live activity.</div>'; return; }
+    const r=await WW_AUTH.fetch('/logs');
+    if(!r||!r.ok){ box.innerHTML='<div style="color:var(--muted);font-size:13px">Log unavailable right now.</div>'; return; }
+    const d=await r.json(); const logs=d.logs||[];
+    if(!logs.length){ box.innerHTML='<div style="color:var(--muted);font-size:13px;font-style:italic">Nothing yet — activity shows here the moment a message or booking comes in.</div>'; return; }
+    const IC={message:"💬",sent:"📤",booking:"📅",tasks:"🔔",draft:"✍️",error:"⚠️"};
+    const fmt=ts=>{ try{ return new Date(ts).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}); }catch(e){ return ts; } };
+    box.innerHTML=logs.slice(0,60).map(l=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px">${IC[l.kind]||"•"}</span><div style="flex:1;color:var(--linen);font-size:13px;line-height:1.5">${esc(l.message)}</div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap">${fmt(l.ts)}</span></div>`).join("");
+  }catch(e){ box.innerHTML='<div style="color:var(--muted);font-size:13px">Log unavailable · '+esc(e.message||String(e))+'</div>'; }
+}
+
+/* TURNAROUNDS · every booking auto-makes its jobs (workaway upkeep on arrival, welcome on arrival, clean on checkout) — shared to all staff */
 function renderTasks(){
   const box=$("#tasks"); if(!box) return;
   const fmtD=d=>{ try{ return new Date(d+"T00:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}); }catch(e){ return d; } };
@@ -1503,14 +1522,17 @@ function renderTasks(){
   BOOKINGS.forEach(b=>{
     if(b.status==="cancelled") return;
     const c=CABINS.find(x=>x.id===b.cabin); const name=c?c.name:(b.cabin||"a camp");
+    if(b.checkin)  tasks.push({date:b.checkin, type:"workaway",label:`Workaway upkeep · ${name}`, detail:`Ready for ${b.guest||"guest"} · empty bins · service compost toilets · refill oil lamps · top up water + shower water`});
     if(b.checkin)  tasks.push({date:b.checkin, type:"arrival", label:`Welcome · ${name}`, detail:`${b.guest||"guest"} arriving · ${b.nights||""} nights · gate code + welcome pack`});
     if(b.checkout) tasks.push({date:b.checkout,type:"clean",   label:`Clean needed · ${name}`, detail:`${b.guest||"guest"} checks out · turnaround before the next guest`});
   });
-  const up=tasks.filter(t=>t.date && new Date(t.date+"T00:00:00").getTime()>=cutoff).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,24);
+  const rank={workaway:0,arrival:1,clean:2};
+  const up=tasks.filter(t=>t.date && new Date(t.date+"T00:00:00").getTime()>=cutoff).sort((a,b)=>a.date.localeCompare(b.date)||(rank[a.type]-rank[b.type])).slice(0,30);
   if(!up.length){ box.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0">No upcoming turnarounds.</div>'; return; }
-  const ic={clean:"🧹",arrival:"🔑"};
+  const ic={clean:"🧹",arrival:"🔑",workaway:"🪣"};
+  const col={clean:"--brass",arrival:"--leaf",workaway:"--ember"};
   box.innerHTML=up.map(t=>{
-    const cl=t.type==="clean"?"--brass":"--leaf";
+    const cl=col[t.type]||"--muted";
     return `<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)"><span style="font-size:18px">${ic[t.type]||"•"}</span><div style="flex:1"><div style="color:var(--linen);font-size:14px">${t.label}</div><div style="color:var(--muted);font-size:12px;line-height:1.5">${t.detail}</div></div><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(${cl})">${fmtD(t.date)}</span></div>`;
   }).join("");
 }
@@ -1672,6 +1694,7 @@ $$(".nav-item").forEach(el=>{
     if(activeView==="clinic") wwClinicRender();
     if(activeView==="inbox") loadLiveMessages();
     if(activeView==="journey") renderTasks();
+    if(activeView==="monitor") loadActivityLog();
   };
 });
 

@@ -28,10 +28,14 @@
 const VERSION = '1.0.0';
 const SEAL = '◊·κ=1';
 
+// The 4 real camps — identity kept in step with the hub's Property Brain (single source of truth).
+// Prices live on the booking channels and are NEVER quoted to guests; any figures here are internal
+// fallbacks only (direct Stripe bookings carry their own amount).
 const CABINS = {
-  hobbit:  { name: 'The Hobbit Hut',     base: 95,  weekend: 120, peak: 145, airbnbId: '23775088' },
-  caravan: { name: 'The Vintage Caravan', base: 85,  weekend: 110, peak: 130, airbnbId: '33665585' },
-  yurt:    { name: 'The Family Yurt',     base: 135, weekend: 165, peak: 195, airbnbId: '16653222' },
+  yurt:    { name: 'The Yurt',          base: 135, weekend: 165, peak: 195, airbnbId: '16653222' },
+  fern:    { name: 'Fern Lodge',        base: 110, weekend: 135, peak: 160, airbnbId: '' },
+  caravan: { name: 'Thistle Caravan',   base: 85,  weekend: 110, peak: 130, airbnbId: '33665585' },
+  hobbit:  { name: 'The Hobbit',        base: 95,  weekend: 120, peak: 145, airbnbId: '23775088' },
 };
 
 const CORS = {
@@ -149,6 +153,21 @@ async function kvPut(env, key, val) {
   await env.WISHWOOD_KV.put(key, JSON.stringify(val));
 }
 
+/* ─── Activity log ───
+ * A plain, shared, human-readable feed of everything the OS does: message in, reply drafted,
+ * reply sent, booking landed, jobs raised. Newest first, capped at 300. Everyone sees the same
+ * log — it's how you (and anyone learning in the trainer) watch the system actually work, and
+ * the audit trail behind "the AI drafts, you approve". Never throws: a log failure must not
+ * break the real request. Stored in one key so /logs is a single fast read.
+ */
+async function logEvent(env, kind, message, meta = {}) {
+  try {
+    const cur = JSON.parse((await env.WISHWOOD_KV.get('log:events')) || '[]');
+    cur.unshift({ ts: new Date().toISOString(), kind, message, ...meta });
+    await env.WISHWOOD_KV.put('log:events', JSON.stringify(cur.slice(0, 300)));
+  } catch (e) { /* logging must never break the request */ }
+}
+
 /* ─── iCal generation (RFC 5545) ─── */
 function bookingToIcalEvent(b) {
   const fmt = d => d.replace(/-/g, '');
@@ -233,6 +252,7 @@ async function importIcal(env, cabin, sourceUrl, channel) {
       await enqueueTurnaround(env, b); // OTA booking → same staff alerts as a direct booking
       imported++;
     }
+    if (imported) await logEvent(env, 'booking', `Synced ${imported} new booking${imported > 1 ? 's' : ''} · ${channel} · ${(CABINS[cabin] && CABINS[cabin].name) || cabin}`, { source: 'ical', channel, cabin, imported });
     return { ok: true, imported, total: events.length };
   } catch (err) {
     return { error: err.message };
@@ -240,16 +260,28 @@ async function importIcal(env, cabin, sourceUrl, channel) {
 }
 
 /* ─── Staff turnaround alerts ───
- * Every booking — direct (Stripe) OR OTA (Airbnb/Booking via iCal) — auto-creates its two jobs:
- * welcome on arrival, clean on checkout. Written to KV as task:* so the always-on layer can push
- * them out (SMS the cleaner etc.) the moment a channel is wired. The hub already SHOWS these,
- * derived from bookings; these records are the shared server-side queue behind that. Idempotent.
+ * Every booking — direct (Stripe) OR OTA (Airbnb/Booking via iCal) — auto-creates its jobs:
+ *   · workaway — camp readiness/upkeep (bins · toilets · oil lamps · water + shower top-up)
+ *   · welcome  — host greeting on arrival (gate code + welcome pack)
+ *   · clean    — turnaround on checkout
+ * Written to KV as task:* so the always-on layer can push them out (SMS the cleaner/volunteer etc.)
+ * the moment a channel is wired. The hub already SHOWS these, derived from bookings; these records
+ * are the shared server-side queue behind that. Idempotent.
  */
 async function enqueueTurnaround(env, b) {
   if (!b || !b.id || !b.checkin) return;
   const camp = (CABINS[b.cabin] && CABINS[b.cabin].name) || b.cabin || 'a camp';
   const nights = b.nights || 1;
   const stamp = new Date().toISOString();
+  // Workaway upkeep — the volunteer's camp-readiness checklist, done before/around arrival.
+  await kvPut(env, `task:workaway:${b.id}`, {
+    bookingId: b.id, cabin: b.cabin, type: 'workaway', status: 'open',
+    guest: b.guest, checkin: b.checkin,
+    note: `Workaway upkeep · ${camp} · ready for ${b.checkin} · empty bins · service compost toilets · refill + trim oil lamps · top up water + shower water`,
+    checklist: ['Empty bins', 'Service compost toilets', 'Refill + trim oil lamps', 'Top up water', 'Top up shower water'],
+    runAt: new Date(b.checkin + 'T07:00:00Z').getTime(),
+    created: stamp,
+  });
   await kvPut(env, `task:welcome:${b.id}`, {
     bookingId: b.id, cabin: b.cabin, type: 'welcome', status: 'open',
     guest: b.guest, checkin: b.checkin,
@@ -264,6 +296,7 @@ async function enqueueTurnaround(env, b) {
     runAt: new Date(b.checkout + 'T10:00:00Z').getTime(),
     created: stamp,
   });
+  await logEvent(env, 'tasks', `Jobs raised · ${camp} · workaway + welcome + clean`, { bookingId: b.id, cabin: b.cabin, checkin: b.checkin, checkout: b.checkout || null });
 }
 
 /* ─── Pricing engine ─── */
@@ -339,13 +372,14 @@ async function handleStripeWebhook(req, env) {
       created: new Date().toISOString(),
     };
     await kvPut(env, `booking:${booking.id}`, booking);
+    await logEvent(env, 'booking', `Direct booking · ${(CABINS[booking.cabin] && CABINS[booking.cabin].name) || booking.cabin} · ${booking.guest} · ${booking.checkin}→${booking.checkout}`, { source: 'stripe', bookingId: booking.id });
     // Enqueue T+5min welcome
     await kvPut(env, `journey:welcome:${booking.id}`, {
       bookingId: booking.id,
       trigger: 'T+5min',
       runAt: Date.now() + 5 * 60_000,
     });
-    // Auto-tasks: welcome on arrival + clean on checkout (visible to all staff)
+    // Auto-tasks: workaway upkeep + welcome on arrival + clean on checkout (visible to all staff)
     await enqueueTurnaround(env, booking);
   }
   return jsonResp({ ok: true });
@@ -357,6 +391,7 @@ async function ingestMessage(env, { channel, from, text, to, name }) {
   const msg = { id, channel, from, to: to || null, fromName: name || from, text: text || '', received: new Date().toISOString(), status: 'unread' };
   try { const d = await draftReply(env, { messageText: msg.text, fromName: msg.fromName, channel }); if (d && d.draft) msg.draft = d.draft; } catch (e) { /* draft is best-effort */ }
   await kvPut(env, `message:${id}`, msg);
+  await logEvent(env, 'message', `Message in · ${channel} · ${msg.fromName}${msg.draft ? ' · reply drafted, awaiting approval' : ''}`, { channel, drafted: !!msg.draft });
   if (env.AUTO_SEND === '1' && msg.draft) {
     try { await sendReply(env, { channel, to: from, text: msg.draft }); msg.status = 'auto-sent'; await kvPut(env, `message:${id}`, msg); } catch (e) {}
   }
@@ -398,10 +433,14 @@ async function handleEmailInbound(req, env) {
 
 /* ─── Unified outbound send · each path activates as its secret lands ─── */
 async function sendReply(env, { channel, to, text }) {
-  if (channel === 'sms') return sendViaTwilio(env, { channel, to, text });
-  if (channel === 'whatsapp') return (env.META_ACCESS_TOKEN ? sendViaWhatsAppCloud(env, { to, text }) : sendViaTwilio(env, { channel, to, text }));
-  if (channel === 'email') return sendEmail(env, { to, subject: 'Re: your Wishwood enquiry', text });
-  return { queued: false, note: `${channel} has no host send API — copy the approved draft into the platform` };
+  let res;
+  if (channel === 'sms') res = await sendViaTwilio(env, { channel, to, text });
+  else if (channel === 'whatsapp') res = await (env.META_ACCESS_TOKEN ? sendViaWhatsAppCloud(env, { to, text }) : sendViaTwilio(env, { channel, to, text }));
+  else if (channel === 'email') res = await sendEmail(env, { to, subject: 'Re: your Wishwood enquiry', text });
+  else res = { queued: false, note: `${channel} has no host send API — copy the approved draft into the platform` };
+  const outcome = res && res.sent ? 'sent' : (res && res.error ? 'failed' : 'queued');
+  await logEvent(env, 'sent', `Reply ${outcome} · ${channel} · ${to}`, { channel, ok: !!(res && res.sent), error: (res && res.error) || null });
+  return res;
 }
 async function sendViaTwilio(env, { channel, to, text }) {
   if (!env.TWILIO_ACCOUNT_SID || !env.TWILIO_AUTH_TOKEN) return { error: 'Twilio not configured' };
@@ -538,10 +577,14 @@ async function scheduled(event, env) {
   const results = {};
   // iCal sync (every 60s · only fires if cron set to 1min)
   const sources = [
-    { cabin: 'hobbit', url: env.AIRBNB_ICAL_HOBBIT, channel: 'airbnb' },
-    { cabin: 'caravan', url: env.AIRBNB_ICAL_CARAVAN, channel: 'airbnb' },
     { cabin: 'yurt', url: env.AIRBNB_ICAL_YURT, channel: 'airbnb' },
+    { cabin: 'fern', url: env.AIRBNB_ICAL_FERN, channel: 'airbnb' },
+    { cabin: 'caravan', url: env.AIRBNB_ICAL_CARAVAN, channel: 'airbnb' },
+    { cabin: 'hobbit', url: env.AIRBNB_ICAL_HOBBIT, channel: 'airbnb' },
     { cabin: 'yurt', url: env.PITCHUP_ICAL_YURT, channel: 'pitchup' },
+    { cabin: 'fern', url: env.PITCHUP_ICAL_FERN, channel: 'pitchup' },
+    { cabin: 'caravan', url: env.PITCHUP_ICAL_CARAVAN, channel: 'pitchup' },
+    { cabin: 'hobbit', url: env.PITCHUP_ICAL_HOBBIT, channel: 'pitchup' },
   ];
   for (const s of sources) {
     if (!s.url) continue;
@@ -570,7 +613,7 @@ async function handle(req, env) {
       site: 'Wishwood Glamping & Forestry · Canterbury, Kent',
       endpoints: {
         public: ['GET /', 'GET /health', 'GET /ical/:cabin', 'POST /booking/direct', 'POST /webhook/{facebook,instagram,twilio,whatsapp,email,stripe}'],
-        operator: ['GET /bookings', 'GET /messages', 'POST /draft', 'POST /send', 'GET /pricing/:cabin/:date'],
+        operator: ['GET /bookings', 'GET /messages', 'GET /tasks', 'GET /logs', 'POST /draft', 'POST /send', 'GET /pricing/:cabin/:date'],
       },
       cabins: Object.keys(CABINS),
     });
@@ -611,9 +654,14 @@ async function handle(req, env) {
     return jsonResp({ count: items.length, messages: items });
   }
   if (method === 'GET' && path === '/tasks') {
-    // Shared staff turnaround queue (welcome + clean), soonest first — the always-on alert feed.
+    // Shared staff/volunteer job queue (workaway · welcome · clean), soonest first — the alert feed.
     const items = (await kvList(env, 'task:')).sort((a, b) => (a.runAt || 0) - (b.runAt || 0));
     return jsonResp({ count: items.length, tasks: items });
+  }
+  if (method === 'GET' && path === '/logs') {
+    // Shared activity feed — everything the OS has done, newest first.
+    const items = JSON.parse((await env.WISHWOOD_KV.get('log:events')) || '[]');
+    return jsonResp({ count: items.length, logs: items });
   }
   if (method === 'POST' && path === '/draft') {
     const body = await req.json();

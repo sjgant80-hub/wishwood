@@ -11,7 +11,8 @@ export const WW_OS_GUIDE = `
 WISHWOOD-OS is an AI-run operating system for a small business. One dashboard, six modules,
 you (the human) approve everything. It runs in your browser — your data stays yours. The AI can
 run free on your own machine (WebLLM) or on your own API key. It replaces a stack of separate
-SaaS tools + a part-time social person + a bookkeeper.
+SaaS tools + a part-time social person + a bookkeeper. The whole point is LESS friction for you,
+your staff and your helpers — the system does the remembering and the chasing, so people don't have to.
 
 THE HUB — your one dashboard. See everything at a glance; nothing happens without your say-so.
 
@@ -41,13 +42,34 @@ An "AI tidy & gap-check" spots contradictions, stale claims, and gaps for you.
 LISTINGS — rewrites your descriptions on each platform (Airbnb, Pitchup, your own site) to match the
 Property Brain, in-voice, per platform. Auto-updates your own site; one-click copy for the OTAs.
 
+AUTO-JOBS (the alert engine) — the moment ANY booking lands — direct, or from Airbnb / Booking / Pitchup —
+the OS reads the dates and stay length and automatically raises the jobs for that stay, so nobody has to
+remember or coordinate. Three jobs per booking, shared to everyone who can see the app:
+  · WORKAWAY UPKEEP (camp readiness) — empty bins · service the compost toilets · refill + trim the oil
+    lamps · top up the water and shower water. This is the volunteer/helper checklist, ready for arrival day.
+  · WELCOME (arrival) — gate code + welcome pack, so the guest is greeted properly.
+  · CLEAN (checkout) — the turnaround before the next guest.
+Each job knows its camp, its date and who it's for. When you wire a channel like text/WhatsApp, the system
+can even ping the right person automatically ("cleaner needed Sunday for the Yurt checkout"). It's the
+whole point of the OS: reduce friction for people and staff.
+
+ACTIVITY LOG — a plain, shared, running feed of everything the OS does: a message came in, a reply was
+drafted, a reply was sent, a booking landed, jobs were raised. Newest first. It's how you — and anyone
+learning — can watch the system actually working, and it's the honest audit trail behind "the AI drafts,
+you approve". Nothing happens in the dark.
+
 CLINIC — a health panel that shows green / amber / red for every part of the OS: what's wired and working,
 what's ready to switch on, and what still needs setup. So you (and anyone learning) always know what's live
 and exactly what to do next. Open it any time from The Hub.
 
 ALWAYS-ON — your hub runs in the browser, so it only works while it's open. To answer guests 24/7 (even at
-3am with the laptop shut), a free Cloudflare Worker sits in the cloud, catches every message, and drafts a
-reply on your AI key — then queues it for you to approve, or sends it if you've raised the autonomy dial.
+3am with the laptop shut), a free Cloudflare Worker sits in the cloud, catches every message, drafts a
+reply on your AI key, raises the booking jobs and writes the activity log — then queues everything for you
+to approve, or sends it if you've raised the autonomy dial. That's how it runs without a server of your own.
+
+LEARNS AS IT'S USED — it gets smarter the more you use it: your edits teach it your voice, which posts land
+shape the next ones, and every question you ask this trainer is logged as a signal to improve the guide.
+The system grows with you.
 
 OVERSIGHT — the golden rule: the AI drafts, you approve. It never sends anything on its own unless you
 raise the autonomy dial. You're always the check.

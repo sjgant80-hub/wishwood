@@ -19,10 +19,9 @@ compatibility_date = "2026-06-01"
 #   AUTO_SEND = "1"                                                              — optional: AI auto-replies (default off = you approve every send)
 #   STRIPE_WEBHOOK_SECRET — Stripe webhook signing secret
 #   STRIPE_SECRET_KEY    — Stripe API key
-#   AIRBNB_ICAL_HOBBIT   — Airbnb iCal export URL for Hobbit Hut
-#   AIRBNB_ICAL_CARAVAN  — Airbnb iCal export URL for Vintage Caravan
-#   AIRBNB_ICAL_YURT     — Airbnb iCal export URL for Family Yurt
-#   PITCHUP_ICAL_YURT    — Pitchup iCal export URL
+#   ── OTA calendar sync · paste each camp's iCal export URL; bookings + staff alerts flow in automatically ──
+#   AIRBNB_ICAL_YURT · AIRBNB_ICAL_FERN · AIRBNB_ICAL_CARAVAN · AIRBNB_ICAL_HOBBIT     — Airbnb iCal per camp (Yurt · Fern Lodge · Thistle Caravan · The Hobbit)
+#   PITCHUP_ICAL_YURT · PITCHUP_ICAL_FERN · PITCHUP_ICAL_CARAVAN · PITCHUP_ICAL_HOBBIT — Pitchup iCal per camp
 
 # KV namespace for bookings, messages, journey queue
 [[kv_namespaces]]
