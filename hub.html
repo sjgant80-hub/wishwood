@@ -165,6 +165,8 @@ a{color:var(--ember);text-decoration:none}
 .dot.bad{background:var(--bad);box-shadow:0 0 6px var(--bad)}
 .conn-info{color:var(--muted);font-size:10px}
 .conn-info b{color:var(--leaf)}
+.menuBtn{display:none}
+.nav-backdrop{display:none;position:fixed;inset:48px 0 0 0;background:rgba(0,0,0,.45);z-index:55}
 
 /* Sidebar */
 .sidebar{
@@ -500,6 +502,9 @@ a{color:var(--ember);text-decoration:none}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .sidebar{display:none}
+  .menuBtn{display:inline-flex;align-items:center}
+  .app.nav-open .sidebar{display:flex;position:fixed;top:48px;left:0;bottom:0;width:240px;z-index:60;box-shadow:2px 0 16px rgba(0,0,0,.5)}
+  .app.nav-open .nav-backdrop{display:block}
   .inbox{grid-template-columns:1fr}
   .detail{display:none}
   .detail.mobile-show{display:block;position:fixed;inset:48px 0 0 0;z-index:50;background:var(--woodsmoke);overflow-y:auto}
@@ -541,9 +546,12 @@ a{color:var(--ember);text-decoration:none}
 
 <div class="app">
 
+  <div class="nav-backdrop" onclick="closeMenu()"></div>
+
   <!-- TOPBAR -->
   <div class="topbar">
-    <div style="display:flex;align-items:center;gap:10px;min-width:0">
+    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+      <button class="menuBtn" onclick="toggleMenu()" title="Menu" aria-label="Menu" style="background:none;border:0;color:var(--linen);font-size:20px;line-height:1;cursor:pointer;padding:4px 9px;border-radius:5px;flex:none">☰</button>
       <button id="backBtn" onclick="goBack()" title="Back" aria-label="Back" style="visibility:hidden;background:none;border:0;color:var(--linen);font-size:20px;line-height:1;cursor:pointer;padding:4px 9px;border-radius:5px;flex:none">←</button>
       <div class="brand">
         <span class="glyph">◊</span>
@@ -1701,8 +1709,11 @@ function activateView(view, record){
   if(view==="journey") renderTasks();
   if(view==="monitor") loadActivityLog();
   const b=$("#backBtn"); if(b) b.style.visibility = navHistory.length ? "visible" : "hidden";
+  closeMenu();
 }
 function goBack(){ if(navHistory.length) activateView(navHistory.pop(), false); }
+function toggleMenu(){ const a=$(".app"); if(a) a.classList.toggle("nav-open"); }
+function closeMenu(){ const a=$(".app"); if(a) a.classList.remove("nav-open"); }
 $$(".nav-item").forEach(el=>{ el.onclick=()=>activateView(el.dataset.view, true); });
 
 /* Channels grid (dashboard) */
