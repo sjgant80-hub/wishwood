@@ -1259,6 +1259,11 @@ a{color:var(--ember);text-decoration:none}
 
 </div>
 
+<script type="module">
+  /* real AI drafting (grounded on true property facts) → exposed for the inbox */
+  import { wwDraft } from './ww-draft.js';
+  window.wwDraft = wwDraft;
+</script>
 <script>
 /* ────────────── DATA (inlined for sovereign single-file ops) ────────────── */
 const CABINS = [
@@ -1397,7 +1402,28 @@ function approveSend(){
   $("#msg-detail").innerHTML=`<div class="detail-empty">Sent · pick the next message</div>`;
 }
 function editFirst(){$("#draft-text").focus();$("#draft-text").select()}
-function regenDraft(){toast("⟳ Regenerating draft…");setTimeout(()=>{toast("✓ New draft ready");selectMsg(activeMsgId)},900)}
+async function regenDraft(){
+  const m=MESSAGES.find(x=>x.id===activeMsgId); if(!m) return;
+  const ta=$("#draft-text"); if(!ta) return;
+  const prev=ta.value;
+  ta.value="⟳ drafting a real reply in your voice…"; ta.disabled=true;
+  toast("⟳ AI is drafting…");
+  try{
+    if(!window.wwDraft) throw new Error("ai module not loaded");
+    const voice=MESSAGES.filter(x=>x.id!==m.id && x.draft && x.draft.length>40).slice(0,2).map(x=>x.draft);
+    const {text,engine}=await window.wwDraft(m,voice);
+    if(text){
+      ta.value=text; m.draft=text;
+      const meta=ta.parentElement.querySelector('.draft-meta');
+      if(meta) meta.innerHTML=`<span>real draft · grounded on your property facts · you approve before it sends</span><span>drafted just now · ${engine}</span>`;
+      toast("✓ Real draft ready — edit or approve");
+    } else { ta.value=prev; toast("AI returned nothing — kept your draft"); }
+  }catch(e){
+    ta.value=prev;
+    toast("AI not ready — add a key in Settings, or first run downloads free local AI");
+    console.warn("[wwDraft]",e);
+  }finally{ ta.disabled=false; }
+}
 function skipMsg(){activeMsgId=null;$("#msg-detail").innerHTML=`<div class="detail-empty">Skipped · pick the next message</div>`}
 
 function toast(msg){
