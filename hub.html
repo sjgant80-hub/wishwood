@@ -1454,14 +1454,37 @@ function selectMsg(id){
   `;
 }
 
-function approveSend(){
-  const m=MESSAGES.find(x=>x.id===activeMsgId);
-  if(!m)return;
-  toast(`✓ Sent via ${m.channel.replace('_com','')} · ${m.from}`);
+async function approveSend(){
+  const m=MESSAGES.find(x=>x.id===activeMsgId); if(!m) return;
+  const text=($("#draft-text")?.value)||m.draft||"";
+  try{
+    if(window.WW_AUTH){
+      const r=await WW_AUTH.fetch('/send',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({channel:m.channel,to:m.from,text})});
+      const d=await r.json().catch(()=>({}));
+      if(d&&d.sent){ toast(`✓ Sent via ${m.channel.replace('_com','')} · ${m.from}`); }
+      else if(d&&d.note){ toast(`Approved · ${d.note}`); }
+      else { toast(`✓ Approved · ${m.from}`); }
+    } else { toast(`✓ Sent via ${m.channel.replace('_com','')} · ${m.from}`); }
+  }catch(e){ toast(`✓ Approved · connect the worker to auto-send`); }
   MESSAGES.splice(MESSAGES.indexOf(m),1);
-  activeMsgId=null;
-  renderMsgList();
+  activeMsgId=null; renderMsgList();
   $("#msg-detail").innerHTML=`<div class="detail-empty">Sent · pick the next message</div>`;
+}
+
+/* Pull real guest messages from the always-on worker (graceful until it's deployed) */
+async function loadLiveMessages(){
+  try{
+    if(!window.WW_AUTH) return;
+    const r=await WW_AUTH.fetch('/messages');
+    if(!r||!r.ok) return;
+    const data=await r.json();
+    const live=data.messages||[];
+    if(!live.length) return;
+    const ids=new Set(MESSAGES.map(m=>m.id));
+    let added=0;
+    for(const m of live){ if(ids.has(m.id))continue; MESSAGES.unshift({id:m.id,channel:m.channel,from:m.fromName||m.from,cabin:m.cabin||null,subject:m.subject||((m.channel||'message')+' message'),preview:m.text||'',received:m.received||new Date().toISOString(),status:m.status||'unread',urgency:m.urgency||'normal',sentiment:m.sentiment||'neutral',draft:m.draft||''}); added++; }
+    if(added) renderMsgList();
+  }catch(e){ /* worker not up yet — keep the sample data */ }
 }
 function editFirst(){$("#draft-text").focus();$("#draft-text").select()}
 async function regenDraft(){
@@ -1619,6 +1642,7 @@ $$(".nav-item").forEach(el=>{
     if(activeView==="cabins") renderCabins();
     if(activeView==="agents") wwBrainLoad();
     if(activeView==="clinic") wwClinicRender();
+    if(activeView==="inbox") loadLiveMessages();
   };
 });
 
@@ -1716,6 +1740,7 @@ function netInfo(){
 /* Boot */
 renderMsgList();
 bindChips();
+loadLiveMessages();
 renderChannelsGrid();
 renderCabins();
 renderCalendar();
