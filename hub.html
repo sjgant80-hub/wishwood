@@ -940,7 +940,7 @@ a{color:var(--ember);text-decoration:none}
     <div class="view" id="view-posts">
       <div class="dash">
         <div class="dash-title">Posts &amp; media</div>
-        <div class="dash-sub">Drop a video → extract stills → AI writes the caption → one tap publishes to FB, IG, roost · powered by fallseed-creator-os</div>
+        <div class="dash-sub">Plan a social post for any event or deal — Lia writes it grounded on your real camps, then you post to your channels.</div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
           <div class="card">
@@ -954,16 +954,17 @@ a{color:var(--ember);text-decoration:none}
           </div>
 
           <div class="card">
-            <div class="card-label">✎ AI-drafted post</div>
-            <div style="background:var(--surface);padding:14px;border-radius:5px;margin-top:10px;font-size:14px;line-height:1.6;color:var(--linen)">
-              Bluebells out a week early this year · the woods are thick with them. Booking the yurt for May? You'll catch the carpet at its peak. <br><br>The Hobbit Hut + Caravan have Sep dates wide open · midweek £85, weekend £110, anniversary energy on tap. <br><br>FB-follower code WOOD10 = 10% off direct.<br><br>#offgridglamping #kentwoodland #wishwood #bluebellwood
+            <div class="card-label">✎ Plan a post · event or deal</div>
+            <div style="font-size:12px;color:var(--muted);margin:8px 0 10px">Describe what's on and Lia writes a ready-to-post caption, grounded on your real camps — never a made-up price.</div>
+            <textarea id="social-brief" class="ww-input" rows="2" placeholder="e.g. August bank holiday · last-minute Fern Lodge deal — or: the bluebells are out"></textarea>
+            <div style="display:flex;gap:6px;margin:10px 0;flex-wrap:wrap">
+              <button class="btn ghost" style="font-size:11px" onclick="wwSocialPlan('Write a short, warm social post for this event: ')">✨ Plan an event</button>
+              <button class="btn ghost" style="font-size:11px" onclick="wwSocialPlan('Write a short social post promoting this deal (no fixed price · point people to book direct): ')">💷 Plan a deal</button>
+              <button class="btn ghost" style="font-size:11px" onclick="wwSocialPlan('Write a warm seasonal social post about: ')">🍂 Seasonal</button>
+              <button class="btn" onclick="wwSocialPlan()">Write the post</button>
             </div>
-            <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
-              <button class="btn">▸ Publish to FB</button>
-              <button class="btn ghost">+ IG story</button>
-              <button class="btn ghost">+ Roost feed</button>
-              <button class="btn ghost">Edit caption</button>
-            </div>
+            <div id="social-out" style="background:var(--surface);padding:14px;border-radius:5px;font-size:14px;line-height:1.6;color:var(--linen);white-space:pre-wrap;min-height:46px">Your drafted post appears here — review it, tweak it, then post to your channels.</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px">Runs on your Gemini Flash key (same always-on engine as your guest replies).</div>
           </div>
         </div>
 
@@ -971,13 +972,14 @@ a{color:var(--ember);text-decoration:none}
         <table class="table">
           <thead><tr><th>Asset</th><th>Type</th><th>Where</th><th>Agents can use it</th></tr></thead>
           <tbody>
-            <tr><td>Hobbit Hut · drone flyover</td><td>MP4</td><td><code style="font-size:11px;color:var(--gold)">media/hobbit-drone.mp4</code></td><td>✓ via media.json</td></tr>
-            <tr><td>Yurt · 360° interior</td><td>Equirectangular</td><td><code style="font-size:11px;color:var(--gold)">media/yurt-360.jpg</code></td><td>✓ AI can describe to guest</td></tr>
-            <tr><td>Caravan · walk-through</td><td>Three.js scene</td><td><code style="font-size:11px;color:var(--gold)">media/caravan-3d.html</code></td><td>✓ interactive</td></tr>
+            <tr><td>The Yurt · 360° interior</td><td>Equirectangular</td><td><code style="font-size:11px;color:var(--gold)">media/yurt-360.jpg</code></td><td>✓ AI can describe to guest</td></tr>
+            <tr><td>Fern Lodge · walk-through</td><td>Three.js scene</td><td><code style="font-size:11px;color:var(--gold)">media/fern-3d.html</code></td><td>✓ interactive</td></tr>
+            <tr><td>Thistle Caravan · walk-through</td><td>Three.js scene</td><td><code style="font-size:11px;color:var(--gold)">media/thistle-3d.html</code></td><td>✓ interactive</td></tr>
+            <tr><td>The Hobbit · drone flyover</td><td>MP4</td><td><code style="font-size:11px;color:var(--gold)">media/hobbit-drone.mp4</code></td><td>✓ via media.json</td></tr>
             <tr><td>Site map · ancient woodland</td><td>SVG</td><td><code style="font-size:11px;color:var(--gold)">media/site-map.svg</code></td><td>✓ navigable</td></tr>
           </tbody>
         </table>
-        <p style="font-size:12px;color:var(--muted);margin-top:10px"><a href="media.html" target="_blank" style="color:var(--ember)">→ Open media tools</a></p>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px">These 3D / video assets let the AI describe each camp to guests. <a href="media.html" target="_blank" style="color:var(--ember)">→ Media asset tools</a></p>
       </div>
     </div>
 
@@ -1544,6 +1546,23 @@ async function checkEngine(){
     if(r&&r.ok){ el.innerHTML='<span style="color:var(--leaf)">● Live</span> · always-on worker reachable · '+(Date.now()-t)+'ms round-trip'; }
     else{ el.innerHTML='<span style="color:var(--warn)">● Unreachable</span> · the engine isn\'t responding right now.'; }
   }catch(e){ el.innerHTML='<span style="color:var(--warn)">● Offline</span> · can\'t reach the engine from here.'; }
+}
+
+/* SOCIAL PLANNER · describe an event/deal → Lia writes a ready-to-post caption (real camps, no fake prices) */
+async function wwSocialPlan(prefix){
+  const inp=$("#social-brief"), out=$("#social-out");
+  const brief=((inp&&inp.value)||"").trim();
+  if(!brief){ if(inp)inp.focus(); if(out)out.textContent="Type what's on first — an event, a deal, or a seasonal moment."; return; }
+  if(out) out.textContent="✦ writing your post…";
+  const system="You are Chrissy's social-media copywriter for Wishwood Glamping — private semi-ancient woodland near Canterbury, Kent. FOUR camps: The Yurt (solar off-grid, sleeps 6), Fern Lodge (woodland lodge, sleeps 4, private bathroom, wifi), Thistle Caravan (couples, sleeps 3, private bathroom), The Hobbit (sleeps 3, wifi). Every camp has a wood-burner, private outdoor kitchen, compost loo and fire pit. NO dogs (protected woodland). NO hot tubs. NEVER invent or quote a nightly price — say 'book direct' or 'check the link'. Write ONE warm, genuine social post (2-4 short lines, British spelling, not salesy) then 4-6 relevant hashtags on their own line. Only use the camps/facts above.";
+  try{
+    if(!window.WW_AUTH) throw new Error("engine not connected");
+    const r=await WW_AUTH.fetch('/teach',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({question:(prefix||'Write a social post about: ')+brief, system})});
+    if(!r||!r.ok) throw new Error("save failed");
+    const d=await r.json();
+    if(out) out.textContent=(d.answer||"—").trim();
+    if(typeof toast==="function") toast("Post drafted");
+  }catch(e){ if(out) out.textContent="Couldn't write it just now — "+(e.message||e)+". Give it another go."; }
 }
 
 function editFirst(){$("#draft-text").focus();$("#draft-text").select()}
