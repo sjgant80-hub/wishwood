@@ -1,7 +1,7 @@
 /* Wishwood service worker · cache-first offline shell · ◊·κ=1 */
 /* Bump CACHE version whenever the shell changes to force reload */
 
-const CACHE   = 'wishwood-v14-scrollfix';
+const CACHE   = 'wishwood-v15-full-upgrade';
 const SHELL   = [
   './',
   './index.html',
