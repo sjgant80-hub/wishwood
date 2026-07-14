@@ -520,6 +520,38 @@ a{color:var(--ember);text-decoration:none}
   .detail.mobile-show{display:block;position:fixed;inset:48px 0 0 0;z-index:50;background:var(--woodsmoke);overflow-y:auto}
 }
 
+/* ── Phone · Android + iOS (≤640px) ── */
+@media (max-width:640px){
+  .topbar{padding:0 8px}
+  .topbar-right{gap:8px}
+  .topbar-right .conn-info{display:none}        /* keep ☰ · brand · Log out; drop the verbose net/sync text */
+  .brand .tag{display:none}
+  .brand{font-size:16px}
+  .dash{padding:16px 14px}
+  .cal-wrap{padding:14px 10px}
+  .dash-title{font-size:24px}
+  .dash-h1{font-size:25px}
+  /* the clean views (dashboard / problems) use inline padding — trim it on phones */
+  #view-dashboard>div,#view-problems>div{padding:16px 14px !important}
+  .chat-head,.chat-input{padding-left:14px !important;padding-right:14px !important}
+  .chat-scroll{padding:16px 12px}
+  /* every data table scrolls sideways instead of breaking the page */
+  .table{display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+  /* stack all 2-up grids to a single column */
+  .stat-row{grid-template-columns:1fr}
+  .price-grid,.channels-grid,.dash-grid{grid-template-columns:1fr}
+  [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
+  .chat-chips{grid-template-columns:1fr}
+  /* chat bubbles use the full width */
+  .chat-msg{max-width:100%}
+  .bubble{max-width:90%}
+  /* touch-friendly targets */
+  .nav-item{padding:12px 14px;font-size:14px}
+  .btn{padding:11px 16px}
+  /* iOS: inputs ≥16px so Safari doesn't auto-zoom the page on focus */
+  input,textarea,select,.ww-input{font-size:16px}
+}
+
 /* Empty channel cards */
 .add-channel{
   background:transparent;border:1px dashed var(--border-strong);border-radius:5px;

@@ -1,7 +1,7 @@
 /* Wishwood service worker · cache-first offline shell · ◊·κ=1 */
 /* Bump CACHE version whenever the shell changes to force reload */
 
-const CACHE   = 'wishwood-v18-social-planner';
+const CACHE   = 'wishwood-v19-mobile';
 const SHELL   = [
   './',
   './index.html',
