@@ -647,6 +647,17 @@ async function handle(req, env) {
       seal: SEAL,
       status: 'ok',
       site: 'Wishwood Glamping & Forestry · Canterbury, Kent',
+      // What's actually configured on the always-on Worker (so the hub's Clinic reflects reality, not a browser key).
+      wired: {
+        ai: !!(env.GEMINI_API_KEY || env.CLAUDE_API_KEY),
+        gemini: !!env.GEMINI_API_KEY,
+        sms: !!(env.TWILIO_ACCOUNT_SID && env.TWILIO_AUTH_TOKEN),
+        whatsapp: !!(env.META_ACCESS_TOKEN || env.WHATSAPP_SENDER),
+        email: !!env.RESEND_API_KEY,
+        stripe: !!env.STRIPE_SECRET_KEY,
+        ical: !!(env.AIRBNB_ICAL_YURT || env.AIRBNB_ICAL_FERN || env.AIRBNB_ICAL_CARAVAN || env.AIRBNB_ICAL_HOBBIT || env.PITCHUP_ICAL_YURT),
+        autoSend: env.AUTO_SEND === '1',
+      },
       endpoints: {
         public: ['GET /', 'GET /health', 'GET /ical/:cabin', 'POST /booking/direct', 'POST /webhook/{facebook,instagram,twilio,whatsapp,email,stripe}'],
         operator: ['GET /bookings', 'GET /messages', 'GET /tasks', 'GET /logs', 'POST /draft', 'POST /send', 'GET /pricing/:cabin/:date'],

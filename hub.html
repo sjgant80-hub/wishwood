@@ -1671,21 +1671,27 @@ async function wwAsk(preset){
   const box=$("#ww-chat"); if(box) box.scrollTop=box.scrollHeight;
 }
 
-/* CLINIC · the OS reads its own health (wired / ready / needs-setup) */
-function wwClinicRender(){
+/* CLINIC · the OS reads its OWN real health — asks the always-on Worker what's actually wired
+   (not a browser key), so it reflects the deployed engine + Gemini key, not localStorage. */
+async function wwClinicRender(){
   const box=$("#wwClinic"); if(!box)return;
   let s={}; try{ s=JSON.parse(localStorage.getItem('wishwood.autopilot.settings')||'{}'); }catch(e){}
   const brainSet=(()=>{try{return !!localStorage.getItem('wishwood.brain.kernel')}catch(e){return false}})();
   const meshSet=(()=>{try{return !!localStorage.getItem('wishwood.mesh.room')}catch(e){return false}})();
-  const key=!!(s&&s.key&&s.provider&&s.provider!=='webllm');
+  const browserKey=!!(s&&s.key&&s.provider&&s.provider!=='webllm');
+  // Ask the deployed Worker what's really configured
+  let engineUp=false, w={};
+  try{ if(window.WW_AUTH){ const r=await WW_AUTH.fetch('/health'); if(r&&r.ok){ const h=await r.json(); engineUp=true; w=h.wired||{}; } } }catch(e){}
+  const aiLive=w.ai||browserKey;
+  const chOn=[]; if(w.sms)chOn.push('SMS'); if(w.whatsapp)chOn.push('WhatsApp'); if(w.email)chOn.push('email'); if(w.ical)chOn.push('OTA calendars');
   const rows=[
-    ['Property Brain', brainSet?'g':'a', brainSet?'your facts are set — edit any time in Brain · Lia':'still on the starter facts — open Brain · Lia and make it yours'],
-    ['AI drafting', 'g', key?('running on your '+(s.provider||'')+' key'):'running on free local AI (add a key for instant + always-on)'],
-    ['AI key · for 24/7 + speed', key?'g':'a', key?'connected':'not set — add a Gemini Flash key in Settings for instant replies + the always-on responder'],
+    ['Property Brain', brainSet?'g':'a', brainSet?'your facts are set — edit any time in Property Brain':'still on the starter facts — open Property Brain and make it yours'],
+    ['Always-on engine · 24/7', engineUp?'g':'r', engineUp?'live — the Cloudflare Worker answers even when your laptop is off':'not reachable right now — check the Worker'],
+    ['AI drafting + trainer', aiLive?'g':'a', w.ai?'running on your Gemini Flash key on the Worker · 24/7, instant':(browserKey?('running on your '+(s.provider||'')+' key'):'on free local AI — add a key for instant + always-on')],
     ['Books · FallAccount', 'g', 'embedded + manual entry, live'],
     ['Learn / training', 'g', 'free self-teaching tutor, live'],
-    ['Guest channels · SMS / WhatsApp / email', 'r', 'not connected — needs the Cloudflare Worker + Twilio/Meta keys'],
-    ['Always-on responder · 24/7', 'r', 'not deployed — the free Cloudflare Worker answers when your laptop is off'],
+    ['Guest channels · SMS / WhatsApp / email', chOn.length?'g':'a', chOn.length?('live: '+chOn.join(' · ')):'add Twilio / Meta / email keys in Setup — each lights up here automatically'],
+    ['Payments · Stripe', w.stripe?'g':'a', w.stripe?'connected':'add a Stripe key when you want direct bookings + deposits'],
     ['Multi-device sync', meshSet?'g':'a', meshSet?'on':'built, not switched on yet (Sync setup)']
   ];
   const col=c=>c==='g'?'--leaf':c==='a'?'--brass':'--ember';
