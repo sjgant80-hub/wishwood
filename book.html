@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Book direct · Wishwood Glamping & Forestry · Kent</title>
-<meta name="description" content="Book direct with Wishwood — 16 acres of ancient Kent woodland near Canterbury. Hobbit Hut, Vintage Caravan, Family Yurt. Off-grid. No middleman.">
+<meta name="description" content="Book direct with Wishwood — 16 acres of ancient Kent woodland near Canterbury. The Yurt, Fern Lodge, Thistle Caravan, The Hobbit. Off-grid. No middleman.">
 <meta name="theme-color" content="#18171a">
 <style>
 :root{
@@ -269,7 +269,7 @@ footer{
     <div class="trust-row">
       <span>★ <b>4.81</b> / 5 · <span class="gold">779 reviews</span></span>
       <span><b>9 years</b> hosting</span>
-      <span>Family + <b>dog</b> friendly</span>
+      <span>Off-grid · <b>woodland</b> retreat</span>
       <span>Adjacent <b>Blean Woods</b> NNR</span>
     </div>
   </div>
@@ -277,7 +277,7 @@ footer{
 
 <!-- CABINS -->
 <section id="cabins">
-  <div class="section-eyebrow">The three cabins</div>
+  <div class="section-eyebrow">The four camps</div>
   <h2 class="section-h2">Pick your <em style="font-style:italic;color:var(--ember)">corner of the wood</em>.</h2>
   <p class="section-lead">Each is independent, private, off-grid. All have wood-burners, outdoor kitchens, composting loos and a fire pit. Log nets included.</p>
 
@@ -354,8 +354,8 @@ footer{
       <p style="margin-top:12px;color:var(--muted);line-height:1.7">Solar powers low-draw lights. Wood-burner heats the cabin and the water (with the gas backup for the shower). Composting loos. Gas hob in the outdoor kitchen for cooking. You're not roughing it — you've just stepped out of the grid for a few days.</p>
     </details>
     <details style="border-bottom:1px solid var(--border);padding:18px 0">
-      <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">Can we bring our dog(s)?</summary>
-      <p style="margin-top:12px;color:var(--muted);line-height:1.7">Yes — all three cabins are dog-friendly. £15 per dog flat for the whole stay. Outdoor warm-water rinse by the boiler shed. 16 acres to roam. Just keep them on the lead near the boundary.</p>
+      <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">Can we bring a dog?</summary>
+      <p style="margin-top:12px;color:var(--muted);line-height:1.7">Sorry, no dogs — Wishwood sits in protected semi-ancient woodland, so we keep it dog-free to look after the wildlife and the bluebells. Thank you for understanding.</p>
     </details>
     <details style="border-bottom:1px solid var(--border);padding:18px 0">
       <summary style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);cursor:pointer;list-style:none">Wifi? Phone signal?</summary>
@@ -418,9 +418,10 @@ footer{
 
 <script>
 const CABINS=[
-  {id:"hobbit",name:"The Hobbit Hut",glyph:"⌬",type:"Hut · storybook",sleeps:3,beds:"1 double · 1 twin",base:95,weekend:120,peak:145,description:"Storybook hobbit hole tucked into ancient woodland. Wood-burner, outdoor kitchen, fire pit. Looks like it grew there.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq"],dogs:true},
-  {id:"caravan",name:"The Vintage Caravan",glyph:"◬",type:"Camper · retro",sleeps:2,beds:"1 double",base:85,weekend:110,peak:130,description:"Restored vintage caravan with wood-burner. The couple's hideaway. Private outdoor kitchen and fire circle.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq"],dogs:true},
-  {id:"yurt",name:"The Family Yurt",glyph:"◊",type:"Yurt · family",sleeps:6,beds:"1 double · 2 twin · 1 air bed",base:135,weekend:165,peak:195,description:"Family-sized yurt with wood-burner, full outdoor kitchen, big fire circle. Bluebells in spring, log fires in autumn.",amenities:["wood-burner","outdoor-kitchen","compost-loo","fire-pit","log-net","gas-bbq","walk-in-shower"],dogs:true}
+  {id:"yurt",name:"The Yurt",glyph:"◊",type:"Yurt · solar off-grid",sleeps:6,beds:"1 double · 2 twin · 1 air bed",base:135,weekend:165,peak:195,description:"Solar-powered off-grid yurt in the woodland — log-burner, walk-in eco shower, private composting loo, private garden. Bluebells in spring, log fires in autumn.",amenities:["solar","wood-burner","eco-shower","compost-loo","fire-pit","outdoor-kitchen"],dogs:false},
+  {id:"fern",name:"Fern Lodge",glyph:"⌂",type:"Woodland lodge",sleeps:4,beds:"1 double · 2 sofa beds · 1 air bed",base:110,weekend:135,peak:160,description:"Woodland lodge with a private bathroom and private kitchen — wood stove, private BBQ, fire pit, outdoor dining, free wifi.",amenities:["private-bathroom","private-kitchen","wood-stove","bbq","fire-pit","wifi"],dogs:false},
+  {id:"caravan",name:"Thistle Caravan",glyph:"◬",type:"Vintage caravan · couples",sleeps:3,beds:"1 double · configurable",base:85,weekend:110,peak:130,description:"Restored vintage caravan for couples — kitchenette, log-burner, heating, private bathroom, fire pit.",amenities:["private-bathroom","wood-burner","kitchenette","fire-pit","heating"],dogs:false},
+  {id:"hobbit",name:"The Hobbit",glyph:"⌬",type:"Hut · storybook",sleeps:3,beds:"1 double · 1 twin",base:95,weekend:120,peak:145,description:"Quirky storybook hobbit hut with wood-burner — private kitchen, heating, private BBQ, wifi, parking.",amenities:["wood-burner","private-kitchen","bbq","wifi","heating"],dogs:false}
 ];
 
 const BOOKED=[
@@ -484,10 +485,9 @@ function renderBookingForm(){
   const c=bookingCabin;
   const base=c.base;
   const total=base*bookingNights;
-  const dogsFee=bookingDogs*15;
   const longStay=bookingNights>=7?Math.round(total*0.12):0;
   const code=bookingCode.trim().toUpperCase()==="WOOD10"?Math.round(total*0.10):0;
-  const subtotal=total+dogsFee-longStay-code;
+  const subtotal=total-longStay-code;
 
   document.getElementById("modal-body").innerHTML=`
     <h3>${c.name}</h3>
@@ -499,7 +499,7 @@ function renderBookingForm(){
     </div>
     <div class="field-row">
       <div class="field"><label>Adults</label><select><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
-      <div class="field"><label>Dogs · £15 each</label><select id="dogs-sel" onchange="bookingDogs=+this.value;renderBookingForm()"><option ${bookingDogs===0?'selected':''}>0</option><option ${bookingDogs===1?'selected':''}>1</option><option ${bookingDogs===2?'selected':''}>2</option></select></div>
+      <div class="field"><label>Children</label><select><option selected>0</option><option>1</option><option>2</option><option>3</option></select></div>
     </div>
     <div class="field">
       <label>Promo code (optional)</label>
@@ -508,7 +508,6 @@ function renderBookingForm(){
 
     <div class="quote-box">
       <div class="quote-line"><span>${c.name} · ${bookingNights} nights</span><span>£${total}</span></div>
-      ${bookingDogs?`<div class="quote-line"><span>${bookingDogs} dog${bookingDogs>1?'s':''}</span><span>+£${dogsFee}</span></div>`:""}
       ${longStay?`<div class="quote-line" style="color:var(--leaf)"><span>Long-stay discount (12%)</span><span>−£${longStay}</span></div>`:""}
       ${code?`<div class="quote-line" style="color:var(--leaf)"><span>WOOD10 follower code (10%)</span><span>−£${code}</span></div>`:""}
       <div class="quote-line total"><span>Total</span><span>£${subtotal}</span></div>
