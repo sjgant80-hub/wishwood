@@ -1742,6 +1742,14 @@ function goBack(){ if(navHistory.length) activateView(navHistory.pop(), false); 
 function toggleMenu(){ const a=$(".app"); if(a) a.classList.toggle("nav-open"); }
 function closeMenu(){ const a=$(".app"); if(a) a.classList.remove("nav-open"); }
 $$(".nav-item").forEach(el=>{ el.onclick=()=>activateView(el.dataset.view, true); });
+/* Any button that isn't wired yet (Social publish, HMRC export, book engineer, autopilot prompts…) gives
+   honest feedback instead of silently doing nothing — it turns on when you connect the channel/tool. */
+$$("button").forEach(b=>{
+  if((b.getAttribute("onclick")||"").trim()) return;
+  if(b.closest("form")) return;
+  if(b.id==="backBtn"||b.classList.contains("menuBtn")||b.classList.contains("chat-send")||b.classList.contains("chat-chip")) return;
+  b.addEventListener("click",()=>{ if(typeof toast==="function") toast("That switches on once it's connected — see the Setup checklist"); });
+});
 
 /* Channels grid (dashboard) */
 function renderChannelsGrid(){
