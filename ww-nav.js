@@ -17,12 +17,15 @@
     ]},
     { header: 'DAILY · operator', items: [
       { href: 'hub.html',       icon: '⌬',  label: 'Operator hub' },
-      { href: 'autopilot.html', icon: '⚡', label: 'AI autopilot' },
-      { href: 'social.html',    icon: '◐',  label: 'Social autopilot' },
-      { href: 'sim.html',       icon: '🎯', label: 'Training sim' },
+      { href: 'hub.html#learn', icon: '🎓', label: 'AI Trainer · Lia' },
+      { href: 'social.html',    icon: '◐',  label: 'Social planner' },
       { href: 'book.html',      icon: '◊',  label: 'Guest booking site' },
       { href: 'hubphone.html',  icon: '📱', label: 'Duty phone' },
       { href: 'media.html',     icon: '⛁',  label: 'Media tools' },
+    ]},
+    { header: 'AI · setup', items: [
+      { href: 'autopilot.html', icon: '⚡', label: 'Autopilot · keys + autonomy' },
+      { href: 'sim.html',       icon: '🎯', label: 'Practice replies (sim)' },
     ]},
     { header: 'SETUP · once', items: [
       { href: 'credentials.html',       icon: '🔑', label: 'Setup checklist' },

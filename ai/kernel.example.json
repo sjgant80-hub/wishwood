@@ -7,22 +7,27 @@
     "sources": ["placeholder"]
   },
   "property": {
-    "name": "Wishwood",
-    "type": "cottage",
-    "sleeps": 6,
-    "bedrooms": 3,
-    "bathrooms": 2,
+    "name": "Wishwood Glamping & Forestry",
+    "type": "off-grid woodland glamping",
+    "sleeps": 16,
+    "units_count": 4,
+    "units": [
+      {"name": "The Yurt", "sleeps": 6, "note": "solar off-grid · walk-in eco shower · private garden"},
+      {"name": "Fern Lodge", "sleeps": 4, "note": "woodland lodge · private bathroom · private kitchen · free wifi"},
+      {"name": "Thistle Caravan", "sleeps": 3, "note": "couples · private bathroom · kitchenette · log-burner"},
+      {"name": "The Hobbit", "sleeps": 3, "note": "storybook hut · wifi · private kitchen"}
+    ],
     "location": {
-      "address": "TBC",
-      "lat": null,
-      "lng": null,
-      "region": "TBC",
+      "address": "Calcott / Sturry, CT3 4NG, near Canterbury, Kent",
+      "lat": 51.31,
+      "lng": 1.10,
+      "region": "Kent · adjacent Blean Woods NNR",
       "country": "GB"
     },
-    "amenities": ["wifi", "log burner", "garden", "parking", "fully equipped kitchen"],
-    "not_present": ["hot tub", "swimming pool", "sauna", "gym"],
+    "amenities": ["wood-burner in every camp", "private outdoor kitchen", "compost loo", "fire pit", "solar power", "wifi at Fern Lodge + The Hobbit"],
+    "not_present": ["hot tub", "swimming pool", "dogs (protected woodland)", "mains grid"],
     "photos": [],
-    "quirks": ["placeholder — fill after real harvest"]
+    "quirks": ["16 acres of protected semi-ancient woodland", "bluebells carpet the woods in April", "kept dog-free for the wildlife"]
   },
   "voice": {
     "tone": "warm",
@@ -32,7 +37,7 @@
     "example_replies": [
       {
         "situation": "guest asks if pets allowed",
-        "reply": "Hi {name} — we welcome one well-behaved dog with a £30 pet cleaning fee. Bedding not provided, so bring their basket. Any specific breed to check?"
+        "reply": "Hi {name} — sorry, no dogs at Wishwood. We sit in protected semi-ancient woodland, so we keep it dog-free for the wildlife and the bluebells. Thank you for understanding."
       }
     ]
   },
@@ -42,7 +47,7 @@
     "min_nights": 2,
     "max_nights": 21,
     "cancellation": "Full refund up to 14 days before arrival",
-    "pets": "on_request",
+    "pets": "no — protected semi-ancient woodland, kept dog-free",
     "children": "yes",
     "smoking": false,
     "events_parties": false,

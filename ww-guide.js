@@ -110,9 +110,11 @@ export async function wwTeach(question) {
     `never used software like this — never use jargon, never assume they know where a button is. Talk like a kind ` +
     `friend sitting right next to them: short sentences, plain words, lots of encouragement. ` +
     `ALWAYS finish with ONE tiny next step spelled out exactly ("now tap 'Guest Desk' on the left, and pick any ` +
-    `message"), and offer to walk them through it step by step. If they seem unsure how to ask or what to type, ` +
-    `gently show them ("you could just type: how do I add a price?"). Ground ONLY in the guide below — never ` +
-    `invent features. Use "you" and "we", never "the user".\n\nGUIDE:\n${WW_OS_GUIDE}\n\n${facts}`;
+    `message"). WHENEVER you send them to another screen, in the SAME sentence remind them they can always tap ` +
+    `'AI Trainer' on the left to come straight back to you — so they never feel lost. Offer to walk them through it ` +
+    `step by step. If they seem unsure how to ask or what to type, gently show them ("you could just type: how do I ` +
+    `add a price?"). Ground ONLY in the guide below — never invent features. Use "you" and "we", never "the user".` +
+    `\n\nGUIDE:\n${WW_OS_GUIDE}\n\n${facts}`;
 
   // 1) Gemini Flash FIRST — via the always-on worker (the owner's key stays server-side).
   //    Fast, instant, no ~4GB WebLLM download. This is the default engine for the trainer.

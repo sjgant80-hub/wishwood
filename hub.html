@@ -984,7 +984,7 @@ a{color:var(--ember);text-decoration:none}
     <div class="view" id="view-posts">
       <div class="dash">
         <div class="dash-title">Posts &amp; media</div>
-        <div class="dash-sub">Plan a social post for any event or deal — Lia writes it grounded on your real camps, then you post to your channels.</div>
+        <div class="dash-sub">Quick-draft a post for any event or deal below. For the full tool — research engine, 30-day content calendar, approval queue — <a href="social.html" style="color:var(--ember)">open the Social autopilot →</a></div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
           <div class="card">
@@ -1976,6 +1976,11 @@ setInterval(netInfo,15000);
 setInterval(()=>{$("#last-sync").textContent=new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})},60000);
 
 window.WISHWOOD={CABINS,MESSAGES,BOOKINGS,CHANNELS,selectMsg,approveSend,renderCalendar};
+
+/* Deep-link: hub.html#learn opens the AI Trainer (Lia), #posts the social planner, #problems etc. */
+function openFromHash(){ const h=(location.hash||'').replace('#','').trim(); const el=h&&document.querySelector('.nav-item[data-view="'+h+'"]'); if(el){ activateView(h, false); } }
+openFromHash();
+window.addEventListener('hashchange', openFromHash);
 </script>
 </body>
 </html>

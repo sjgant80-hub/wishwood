@@ -1,7 +1,7 @@
 /* Wishwood service worker · cache-first offline shell · ◊·κ=1 */
 /* Bump CACHE version whenever the shell changes to force reload */
 
-const CACHE   = 'wishwood-v22-continuity';
+const CACHE   = 'wishwood-v23-coherence';
 const SHELL   = [
   './',
   './index.html',
