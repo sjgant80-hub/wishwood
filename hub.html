@@ -1007,7 +1007,11 @@ a{color:var(--ember);text-decoration:none}
               <button class="btn" onclick="wwSocialPlan()">Write the post</button>
             </div>
             <div id="social-out" style="background:var(--surface);padding:14px;border-radius:5px;font-size:14px;line-height:1.6;color:var(--linen);white-space:pre-wrap;min-height:46px">Your drafted post appears here — review it, tweak it, then post to your channels.</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:8px">Runs on your Gemini Flash key (same always-on engine as your guest replies).</div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
+              <button class="btn" onclick="wwSocialPost()">Post to channels</button>
+              <span id="social-post-msg" style="font-size:12px;color:var(--muted)"></span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px">Runs on your Gemini Flash key. Posts auto-publish to Facebook once it's connected in Setup — until then they're saved and go out the moment you wire it.</div>
           </div>
         </div>
 
@@ -1632,6 +1636,24 @@ function wwReviewRowReply(btn){
   const inp=$("#review-in"); if(inp) inp.value=snippet;
   wwReviewReply(snippet, guest);
   const out=$("#review-out"); if(out) out.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+/* SOCIAL · post the drafted caption to the wired channels (auto-publishes when Facebook is connected; queued until then) */
+async function wwSocialPost(){
+  const out=$("#social-out"), msg=$("#social-post-msg");
+  const text=((out&&out.textContent)||"").trim();
+  const set=(c,x)=>{ if(msg){ msg.style.color=c; msg.textContent=x; } };
+  if(!text || /appears here|writing your post/i.test(text)){ set("var(--ember)","Write a post first."); return; }
+  set("var(--muted)","Posting…");
+  try{
+    if(!window.WW_AUTH) throw new Error("engine not connected");
+    const r=await WW_AUTH.fetch('/social/publish',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text})});
+    const d=await r.json();
+    if(d.published) set("var(--leaf)","Posted to Facebook ✓");
+    else if(d.queued) set("var(--brass)","Saved ✓ — auto-posts the moment you connect Facebook (Setup)");
+    else set("var(--ember)", d.error||"Couldn't post");
+    if(typeof toast==="function") toast(d.published?"Posted":"Saved to post");
+  }catch(e){ set("var(--ember)","Couldn't post — "+(e.message||e)); }
 }
 
 function editFirst(){$("#draft-text").focus();$("#draft-text").select()}

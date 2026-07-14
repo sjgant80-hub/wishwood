@@ -594,6 +594,55 @@ async function createDirectBooking(req, env) {
 }
 
 /* ─── Journey queue ─── */
+/* ─── Social publishing ─── posts to the wired social channels. Credential-gated: activates the
+ * moment META_ACCESS_TOKEN + FB_PAGE_ID are set. Until then posts QUEUE and the cron auto-publishes
+ * them the instant the channel is connected — so "draft now, auto-post when wired" just works. */
+function socialWired(env) { return !!(env.META_ACCESS_TOKEN && env.FB_PAGE_ID); }
+async function sendSocial(env, { text }) {
+  const out = {};
+  const token = env.META_ACCESS_TOKEN;
+  if (token && env.FB_PAGE_ID) {
+    try {
+      const r = await fetch(`https://graph.facebook.com/v20.0/${env.FB_PAGE_ID}/feed`, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ message: text, access_token: token }),
+      });
+      const d = await r.json().catch(() => ({}));
+      out.facebook = r.ok ? { posted: true, id: d.id } : { error: d.error?.message || 'Facebook post failed' };
+    } catch (e) { out.facebook = { error: e.message }; }
+  }
+  // Instagram Graph API needs an image/video container — text-only can't auto-post.
+  if (token && env.IG_USER_ID) out.instagram = { skipped: 'Instagram needs an image/video attached to auto-post' };
+  return out;
+}
+async function publishSocial(env, { text, id }) {
+  if (!text || !text.trim()) return { error: 'no text' };
+  const pid = id || `post-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  if (socialWired(env)) {
+    const res = await sendSocial(env, { text });
+    const posted = Object.values(res).some(v => v && v.posted);
+    await env.WISHWOOD_KV.delete(`post:pending:${pid}`);
+    await logEvent(env, 'sent', `Social post ${posted ? 'published' : 'attempted'} · ${Object.keys(res).join(', ') || 'no channel'}`, { social: true });
+    return { published: posted, channels: res };
+  }
+  await kvPut(env, `post:pending:${pid}`, { id: pid, text, created: new Date().toISOString() });
+  await logEvent(env, 'sent', 'Social post queued — auto-publishes when Facebook is connected', { social: true, queued: true });
+  return { queued: true, id: pid, note: 'saved — auto-publishes the moment you connect Facebook (Setup)' };
+}
+async function flushPendingPosts(env) {
+  const pending = await kvList(env, 'post:pending:');
+  if (!socialWired(env)) return { flushed: 0, pending: pending.length };
+  let flushed = 0;
+  for (const p of pending) {
+    const res = await sendSocial(env, { text: p.text });
+    if (Object.values(res).some(v => v && v.posted)) {
+      await env.WISHWOOD_KV.delete(`post:pending:${p.id}`); flushed++;
+      await logEvent(env, 'sent', 'Queued social post auto-published (Facebook now connected)', { social: true });
+    }
+  }
+  return { flushed };
+}
+
 async function runJourneyQueue(env) {
   const queue = await kvList(env, 'journey:');
   const now = Date.now();
@@ -628,6 +677,8 @@ async function scheduled(event, env) {
   }
   // Journey queue
   results.journey = await runJourneyQueue(env);
+  // Auto-publish any queued social posts the moment the channel is connected
+  results.social = await flushPendingPosts(env);
   return results;
 }
 
@@ -654,6 +705,7 @@ async function handle(req, env) {
         sms: !!(env.TWILIO_ACCOUNT_SID && env.TWILIO_AUTH_TOKEN),
         whatsapp: !!(env.META_ACCESS_TOKEN || env.WHATSAPP_SENDER),
         email: !!env.RESEND_API_KEY,
+        social: !!(env.META_ACCESS_TOKEN && env.FB_PAGE_ID),
         stripe: !!env.STRIPE_SECRET_KEY,
         ical: !!(env.AIRBNB_ICAL_YURT || env.AIRBNB_ICAL_FERN || env.AIRBNB_ICAL_CARAVAN || env.AIRBNB_ICAL_HOBBIT || env.PITCHUP_ICAL_YURT),
         autoSend: env.AUTO_SEND === '1',
@@ -756,6 +808,14 @@ async function handle(req, env) {
   }
   if (method === 'POST' && path === '/journey/trigger') {
     return jsonResp(await runJourneyQueue(env));
+  }
+  if (method === 'POST' && path === '/social/publish') {
+    const b = await req.json().catch(() => ({}));
+    return jsonResp(await publishSocial(env, b));
+  }
+  if (method === 'GET' && path === '/social/pending') {
+    const items = await kvList(env, 'post:pending:');
+    return jsonResp({ count: items.length, wired: socialWired(env), posts: items });
   }
 
   return jsonResp({ error: 'not found' }, 404);
