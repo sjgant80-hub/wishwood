@@ -44,7 +44,7 @@ Booking.com's Partner API is gated — most small operators use the iCal export 
 |---|---|---|
 | Booking.com **Extranet** login | https://admin.booking.com/ | Confirmed working: Yes / No |
 | Property ID (numeric) | Extranet URL — the digits after `/hotel/gb/` | `<paste>` |
-| **iCal export URL** (per unit — Hobbit Hut, Vintage Caravan, etc.) | Extranet → Property → Rates & Availability → Sync calendars → Export | `<paste unit 1>` · `<paste unit 2>` · `<paste unit 3>` · `<paste unit 4>` |
+| **iCal export URL** (per camp — The Yurt, Fern Lodge, Thistle Caravan, The Hobbit) | Extranet → Property → Rates & Availability → Sync calendars → Export | `<paste The Yurt>` · `<paste Fern Lodge>` · `<paste Thistle Caravan>` · `<paste The Hobbit>` |
 | **iCal import** — the URL Wishwood will publish for Booking.com to hit | (Wishwood generates this: `https://wishwood.co.uk/cal/<unit-slug>.ics`) | Auto-generated |
 
 **Env vars:**

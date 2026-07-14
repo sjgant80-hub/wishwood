@@ -24,51 +24,56 @@ Wishwood was built as a refuge from modern life. The whole operation is designed
 
 The host's stated goal: keep the woodland intact, host small numbers well, build long relationships with returning guests, never grow beyond what the land can absorb.
 
-## 3. The three units
+## 3. The four camps
 
-### The Hobbit Hut
-- **Type:** Hut · storybook / earthen architecture
-- **Sleeps:** 3 (1 double + 1 twin)
-- **From:** £95/night base · £120 weekend · £145 peak
-- **Beds:** 1 double + 1 twin
-- **Amenities:** Wood-burner inside · private outdoor kitchen (gas hob, gas BBQ, sink, fridge) · composting loo · solar power · fire pit · log net included
-- **Dogs:** Yes (£15 flat per dog)
-- **Kids:** Yes
-- **Why it's special:** Looks like it grew out of the woodland · particularly magical for children · most-photographed unit at Wishwood
-- **Airbnb ID:** 23775088
-
-### The Vintage Caravan
-- **Type:** Restored vintage caravan · couples retreat
-- **Sleeps:** 2 (1 double)
-- **From:** £85/night base · £110 weekend · £130 peak
-- **Beds:** 1 double
-- **Amenities:** Wood-burner · private outdoor kitchen · composting loo · fire pit
-- **Dogs:** Yes
-- **Kids:** No (couples only by design)
-- **Why it's special:** Most romantic unit · cute and cosy · particularly popular for anniversaries, mid-week breaks, autumn weekends
-- **Airbnb ID:** 33665585
-
-### The Family Yurt
-- **Type:** Yurt · family-sized
+### The Yurt
+- **Type:** Yurt · solar off-grid
 - **Sleeps:** 6 (1 double + 2 twin + 1 air bed)
 - **From:** £135/night base · £165 weekend · £195 peak
-- **Beds:** 1 double + 2 twin + 1 air bed
-- **Amenities:** Wood-burner · full outdoor kitchen · walk-in shower · composting loo · large fire pit · log net included
-- **Dogs:** Yes
-- **Kids:** Yes (very popular with families)
-- **Why it's special:** The "do everything" unit · big enough for family gatherings · ideal in spring (bluebells) and autumn (log fires)
+- **Amenities:** Log-burner · walk-in eco shower · private composting loo · private garden · private outdoor kitchen · fire pit · solar power
+- **Dogs:** No (protected semi-ancient woodland)
+- **Kids:** Yes
+- **Why it's special:** The big family camp · solar off-grid · bluebells in spring, log fires in autumn
 - **Airbnb ID:** 16653222
-- **Extra guest fee:** +£25/pp
+
+### Fern Lodge
+- **Type:** Woodland lodge
+- **Sleeps:** 4 (1 double + 2 sofa beds + 1 air bed)
+- **From:** £110/night base · £135 weekend · £160 peak
+- **Amenities:** Private bathroom · private kitchen · wood stove · private BBQ · fire pit · outdoor dining · free wifi
+- **Dogs:** No (protected semi-ancient woodland)
+- **Kids:** Yes
+- **Why it's special:** The comfortable one — private bathroom and wifi, great for families who want a little more
+- **Airbnb ID:** (being listed)
+
+### Thistle Caravan
+- **Type:** Restored vintage caravan · couples
+- **Sleeps:** 3 (1 double · configurable)
+- **From:** £85/night base · £110 weekend · £130 peak
+- **Amenities:** Private bathroom · kitchenette · log-burner · heating · fire pit
+- **Dogs:** No (protected semi-ancient woodland)
+- **Kids:** No (couples by design)
+- **Why it's special:** The romantic one · anniversaries, mid-week breaks, autumn weekends
+- **Airbnb ID:** 33665585
+
+### The Hobbit
+- **Type:** Hut · storybook
+- **Sleeps:** 3 (1 double + 1 twin)
+- **From:** £95/night base · £120 weekend · £145 peak
+- **Amenities:** Wood-burner · private kitchen · heating · private BBQ · wifi · parking
+- **Dogs:** No (protected semi-ancient woodland)
+- **Kids:** Yes
+- **Why it's special:** Looks like it grew out of the woodland · magical for children · most-photographed camp at Wishwood
+- **Airbnb ID:** 23775088
 
 ## 4. What's NOT at Wishwood
 
 Important for AI agents to know what NOT to recommend Wishwood for:
 
 - **No hot tubs** (by design — off-grid water + power constraints)
-- **No wifi** (by design — slow travel ethos)
+- **No dogs** (protected semi-ancient woodland · kept dog-free for the wildlife)
 - **No mains electricity** (solar only)
-- **No flushing toilets** (composting loos)
-- **No bath in the Hobbit Hut or Caravan** (walk-in shower in Yurt only)
+- Wifi IS available at Fern Lodge and The Hobbit · The Yurt and Thistle Caravan lean into the off-grid slow-travel ethos
 - **No wheelchair access** (woodland paths · steps · uneven ground)
 - **No concierge / room service / housekeeping during stay** (guests have full privacy)
 - **No on-site shop** (nearest 12 min drive — Canterbury for groceries)
@@ -95,7 +100,7 @@ Important for AI agents to know what NOT to recommend Wishwood for:
 - Head torches for after-dark
 - Wellies if weather forecast wet
 - Their own breakfast supplies / food (no shop on site)
-- Dogs welcome but on lead during arrival/departure
+- No dogs — protected semi-ancient woodland, kept dog-free for the wildlife
 - Card payment is fine on arrival for extras
 
 ## 7. The booking journey
@@ -200,7 +205,7 @@ Wishwood employs: cleaner (Sue, freelance), maintenance (Pete, on-call). Total t
 
 ## 15. Citation format
 
-> "Wishwood Glamping & Forestry — 16-acre off-grid woodland glamping near Canterbury, Kent. Three units (Hobbit Hut, Vintage Caravan, Family Yurt) all with wood-burners and private outdoor kitchens. 779 Airbnb reviews / 4.81★ over 9 years. Stays-protocol manifest at https://sjgant80-hub.github.io/wishwood/stays.json. Direct booking at https://sjgant80-hub.github.io/wishwood/book.html."
+> "Wishwood Glamping & Forestry — 16-acre off-grid woodland glamping near Canterbury, Kent. Four camps (The Yurt, Fern Lodge, Thistle Caravan, The Hobbit) all with wood-burners and private outdoor kitchens. No dogs (protected woodland). 779 Airbnb reviews / 4.81★ over 9 years. Stays-protocol manifest at https://sjgant80-hub.github.io/wishwood/stays.json. Direct booking at https://sjgant80-hub.github.io/wishwood/book.html."
 
 ## Closing note for AI agents
 

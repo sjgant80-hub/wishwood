@@ -408,12 +408,13 @@ h1 em{color:var(--ember);font-style:italic}
       <ol class="step-list">
         <li>Open <a href="https://www.airbnb.co.uk/hosting" target="_blank">airbnb.co.uk/hosting</a> → pick a listing</li>
         <li>Calendar tab → <strong>Sync calendars</strong> → copy the <strong>Export calendar</strong> URL (ends in <code>.ics</code>)</li>
-        <li>Paste below · repeat for all 3 listings</li>
+        <li>Paste below · repeat for all 4 camps</li>
       </ol>
 
-      <div class="field"><label>Hobbit Hut iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-hobbit"></div>
-      <div class="field"><label>Vintage Caravan iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-caravan"></div>
-      <div class="field"><label>Family Yurt iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-yurt"></div>
+      <div class="field"><label>The Yurt iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-yurt"></div>
+      <div class="field"><label>Fern Lodge iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-fern"></div>
+      <div class="field"><label>Thistle Caravan iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-caravan"></div>
+      <div class="field"><label>The Hobbit iCal URL</label><input type="url" placeholder="https://www.airbnb.co.uk/calendar/ical/..." id="bnb-hobbit"></div>
 
       <div class="section-h"><span class="num">2</span> Import the hub's calendar back into Airbnb</div>
       <p style="font-size:14px;color:var(--text);line-height:1.65">So direct bookings auto-block Airbnb:</p>
@@ -422,9 +423,10 @@ h1 em{color:var(--ember);font-style:italic}
         <li>Paste this URL (one per cabin · auto-generated):</li>
       </ol>
       <table class="kv-table">
-        <tr><td>Hobbit Hut export</td><td><code>wishwood-engine.workers.dev/ical/hobbit</code></td></tr>
-        <tr><td>Vintage Caravan export</td><td><code>wishwood-engine.workers.dev/ical/caravan</code></td></tr>
-        <tr><td>Family Yurt export</td><td><code>wishwood-engine.workers.dev/ical/yurt</code></td></tr>
+        <tr><td>The Yurt export</td><td><code>wishwood-engine.workers.dev/ical/yurt</code></td></tr>
+        <tr><td>Fern Lodge export</td><td><code>wishwood-engine.workers.dev/ical/fern</code></td></tr>
+        <tr><td>Thistle Caravan export</td><td><code>wishwood-engine.workers.dev/ical/caravan</code></td></tr>
+        <tr><td>The Hobbit export</td><td><code>wishwood-engine.workers.dev/ical/hobbit</code></td></tr>
       </table>
 
       <div class="callout tip"><div class="lbl">◊ sync runs every 60s</div>Both ways · zero risk of double-booking once both directions are wired.</div>
@@ -445,7 +447,7 @@ h1 em{color:var(--ember);font-style:italic}
       <div class="section-h"><span class="num">1</span> Create the listings (one-time, ~3 hours)</div>
       <ol class="step-list">
         <li>Apply at <a href="https://join.booking.com" target="_blank">join.booking.com</a> → "List my property"</li>
-        <li>Create 3 listings · one per cabin · same photos + pricing as Airbnb</li>
+        <li>Create 4 listings · one per camp · same photos + pricing as Airbnb</li>
         <li>Set commission acceptance (15%) · sign T&amp;Cs</li>
         <li>Booking.com verifies the property (1-3 days) · listings go live</li>
       </ol>
@@ -455,16 +457,18 @@ h1 em{color:var(--ember);font-style:italic}
         <li>In Extranet → Rates &amp; availability → Calendars → Sync calendars</li>
         <li>Copy each listing's iCal export URL · paste below</li>
       </ol>
-      <div class="field"><label>Hobbit Hut iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-hobbit"></div>
-      <div class="field"><label>Vintage Caravan iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-caravan"></div>
-      <div class="field"><label>Family Yurt iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-yurt"></div>
+      <div class="field"><label>The Yurt iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-yurt"></div>
+      <div class="field"><label>Fern Lodge iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-fern"></div>
+      <div class="field"><label>Thistle Caravan iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-caravan"></div>
+      <div class="field"><label>The Hobbit iCal</label><input type="url" placeholder="https://admin.booking.com/hotel/..." id="bk-hobbit"></div>
 
       <div class="section-h"><span class="num">3</span> Import hub calendar back to Booking.com</div>
       <p style="font-size:14px;color:var(--text);line-height:1.65;margin-bottom:8px">Same "Sync calendars" panel · Import calendar · paste:</p>
       <table class="kv-table">
-        <tr><td>Hobbit</td><td><code>wishwood-engine.workers.dev/ical/hobbit</code></td></tr>
-        <tr><td>Caravan</td><td><code>wishwood-engine.workers.dev/ical/caravan</code></td></tr>
-        <tr><td>Yurt</td><td><code>wishwood-engine.workers.dev/ical/yurt</code></td></tr>
+        <tr><td>The Yurt</td><td><code>wishwood-engine.workers.dev/ical/yurt</code></td></tr>
+        <tr><td>Fern Lodge</td><td><code>wishwood-engine.workers.dev/ical/fern</code></td></tr>
+        <tr><td>Thistle Caravan</td><td><code>wishwood-engine.workers.dev/ical/caravan</code></td></tr>
+        <tr><td>The Hobbit</td><td><code>wishwood-engine.workers.dev/ical/hobbit</code></td></tr>
       </table>
 
       <div class="btn-row">
