@@ -1,7 +1,7 @@
 /* Wishwood service worker · cache-first offline shell · ◊·κ=1 */
 /* Bump CACHE version whenever the shell changes to force reload */
 
-const CACHE   = 'wishwood-v19-mobile';
+const CACHE   = 'wishwood-v20-review-reply';
 const SHELL   = [
   './',
   './index.html',

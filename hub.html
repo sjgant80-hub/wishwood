@@ -849,9 +849,20 @@ a{color:var(--ember);text-decoration:none}
     <!-- REVIEWS -->
     <div class="view" id="view-reviews">
       <div class="dash">
-        <div class="dash-title">Reviews · 779 across the estate</div>
-        <div class="dash-sub">4.81★ Airbnb · 4.0★ Tripadvisor (7) · 7.1 HeyCamping · AI drafts replies in your voice for one-tap approval</div>
-        <div class="dash-grid">
+        <div class="dash-title">Reviews</div>
+        <div class="dash-sub">Paste any guest review and Lia drafts a warm reply in your voice — or tap "Draft reply" on any review below.</div>
+
+        <div class="card" style="border-left:4px solid var(--ember);margin-top:16px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--linen);margin-bottom:10px">Reply to a review</div>
+          <textarea id="review-in" class="ww-input" rows="3" placeholder="Paste a review here — from Airbnb, Booking, Tripadvisor, anywhere"></textarea>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
+            <button class="btn" onclick="wwReviewReply()">Draft a reply</button>
+            <span style="font-size:11px;color:var(--muted)">Runs on your Gemini Flash key · grounded on your camps · never quotes a price</span>
+          </div>
+          <div id="review-out" style="display:none;background:var(--surface);padding:14px;border-radius:5px;margin-top:12px;font-size:14px;line-height:1.6;color:var(--linen);white-space:pre-wrap"></div>
+        </div>
+
+        <div class="dash-grid" style="margin-top:22px">
           <div class="card hero">
             <div class="card-label">Airbnb · 9 years hosting</div>
             <div class="card-value">4.81<span style="font-size:24px;color:var(--gold)">★</span></div>
@@ -878,10 +889,10 @@ a{color:var(--ember);text-decoration:none}
         <table class="table">
           <thead><tr><th>Guest</th><th>Channel</th><th>Cabin</th><th>Rating</th><th>Snippet</th><th>Reply</th></tr></thead>
           <tbody>
-            <tr><td>Linda C.</td><td><span class="badge airbnb">AIRBNB</span></td><td>Family Yurt</td><td>5★</td><td>"The most peaceful weekend we've had in years. The bluebells, the fire pit at night…"</td><td><span style="color:var(--ember)">draft ready</span></td></tr>
-            <tr><td>Davtinbl</td><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span></td><td>—</td><td>5★</td><td>"So peaceful and beautiful with the blue bells everywhere. Hosts are lovely and helpful."</td><td><span style="color:var(--ember)">draft ready</span></td></tr>
+            <tr><td>Linda C.</td><td><span class="badge airbnb">AIRBNB</span></td><td>Family Yurt</td><td>5★</td><td>"The most peaceful weekend we've had in years. The bluebells, the fire pit at night…"</td><td><button class="btn ghost" style="font-size:10px;padding:5px 10px" onclick="wwReviewRowReply(this)">Draft reply</button></td></tr>
+            <tr><td>Davtinbl</td><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span></td><td>—</td><td>5★</td><td>"So peaceful and beautiful with the blue bells everywhere. Hosts are lovely and helpful."</td><td><button class="btn ghost" style="font-size:10px;padding:5px 10px" onclick="wwReviewRowReply(this)">Draft reply</button></td></tr>
             <tr><td>Luke J</td><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span></td><td>—</td><td>5★</td><td>"Could not think of enough good words to say about the place."</td><td><span style="color:var(--leaf)">sent</span></td></tr>
-            <tr><td>Frenchfay</td><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span></td><td>Hobbit Hut</td><td>4★</td><td>"Treat for our Grandson, stayed in a Hobbit Hut! Host really lovely…"</td><td><span style="color:var(--ember)">draft ready</span></td></tr>
+            <tr><td>Frenchfay</td><td><span class="badge" style="background:#8b1a1a22;color:#d68b8b">TA</span></td><td>Hobbit Hut</td><td>4★</td><td>"Treat for our Grandson, stayed in a Hobbit Hut! Host really lovely…"</td><td><button class="btn ghost" style="font-size:10px;padding:5px 10px" onclick="wwReviewRowReply(this)">Draft reply</button></td></tr>
           </tbody>
         </table>
       </div>
@@ -1595,6 +1606,32 @@ async function wwSocialPlan(prefix){
     if(out) out.textContent=(d.answer||"—").trim();
     if(typeof toast==="function") toast("Post drafted");
   }catch(e){ if(out) out.textContent="Couldn't write it just now — "+(e.message||e)+". Give it another go."; }
+}
+
+/* REVIEWS · draft a warm public reply to any review (paste one, or tap a row) */
+async function wwReviewReply(text, guest){
+  const inp=$("#review-in"), out=$("#review-out");
+  const review=(text||(inp&&inp.value)||"").trim();
+  if(!review){ if(inp)inp.focus(); if(out){ out.style.display='block'; out.textContent="Paste a review first."; } return; }
+  if(out){ out.style.display='block'; out.textContent="✦ drafting a reply…"; }
+  const system="You are Chrissy, replying publicly to a guest review of Wishwood Glamping — private semi-ancient woodland near Canterbury, Kent (four camps: The Yurt, Fern Lodge, Thistle Caravan, The Hobbit). Write ONE warm, genuine, SHORT public reply in Chrissy's voice: thank them, pick up a specific detail they mentioned, invite them back. British spelling. If the review is critical, be gracious and offer to put it right. Never quote a price. Sign off 'Chrissy'.";
+  try{
+    if(!window.WW_AUTH) throw new Error("engine not connected");
+    const r=await WW_AUTH.fetch('/teach',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({question:"Review"+(guest?(" from "+guest):"")+":\n\""+review+"\"\n\nWrite Chrissy's public reply.", system})});
+    if(!r||!r.ok) throw new Error("failed");
+    const d=await r.json();
+    if(out){ out.style.display='block'; out.textContent=(d.answer||"—").trim(); }
+    if(typeof toast==="function") toast("Reply drafted");
+  }catch(e){ if(out){ out.style.display='block'; out.textContent="Couldn't draft it — "+(e.message||e)+". Give it another go."; } }
+}
+function wwReviewRowReply(btn){
+  const tr=btn&&btn.closest('tr'); if(!tr) return;
+  const c=tr.querySelectorAll('td');
+  const guest=c[0]?c[0].textContent.trim():'';
+  const snippet=c[4]?c[4].textContent.trim().replace(/^"|"$/g,''):'';
+  const inp=$("#review-in"); if(inp) inp.value=snippet;
+  wwReviewReply(snippet, guest);
+  const out=$("#review-out"); if(out) out.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 
 function editFirst(){$("#draft-text").focus();$("#draft-text").select()}
