@@ -418,7 +418,16 @@ async function handleWhatsAppCloudInbound(req, env) {
   for (const entry of (body.entry || [])) for (const change of (entry.changes || [])) {
     const value = change.value || {};
     const name0 = value.contacts?.[0]?.profile?.name;
-    for (const m of (value.messages || [])) await ingestMessage(env, { channel: 'whatsapp', from: m.from, text: m.text?.body || '', name: name0 || m.from });
+    for (const m of (value.messages || [])) {
+      const text = m.text?.body || '';
+      const groupId = m.group_id || value.group_id || (m.context && m.context.group_id);
+      if (groupId) {
+        // Talking Lia in the group chat — answer factual questions from the hard facts
+        await handleGroupMessage(env, { groupId, from: m.from, name: name0, text });
+      } else {
+        await ingestMessage(env, { channel: 'whatsapp', from: m.from, text, name: name0 || m.from });
+      }
+    }
   }
   return jsonResp({ ok: true });
 }
@@ -465,6 +474,40 @@ async function sendViaWhatsAppCloud(env, { to, text }) {
   const data = await res.json().catch(() => ({}));
   return res.ok ? { sent: true, id: data.messages?.[0]?.id } : { error: data.error?.message || 'WhatsApp send failed' };
 }
+
+/* ─── Talking Lia in a WhatsApp GROUP ───
+ * Uses the official WhatsApp Groups API (recipient_type:"group"). Activates when META_ACCESS_TOKEN +
+ * WHATSAPP_PHONE_ID are set and the number is an Official Business Account with a group created via the
+ * Groups API. Lia answers questions grounded ONLY on the hard facts — never guesses, never quotes a price. */
+async function sendWhatsAppGroup(env, groupId, text) {
+  if (!env.META_ACCESS_TOKEN || !env.WHATSAPP_PHONE_ID) return { error: 'WhatsApp Cloud not configured' };
+  const res = await fetch(`https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_ID}/messages`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${env.META_ACCESS_TOKEN}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'group', to: groupId, type: 'text', text: { body: text } }),
+  });
+  const data = await res.json().catch(() => ({}));
+  return res.ok ? { sent: true, id: data.messages?.[0]?.id } : { error: data.error?.message || 'WhatsApp group send failed' };
+}
+async function groupAnswer(env, question, name) {
+  const system = "You are Lia, Wishwood's helper answering in the group WhatsApp chat. Answer ONLY from these hard facts, warmly, in 1-3 short sentences. Wishwood Glamping — off-grid, protected semi-ancient woodland near Canterbury, Kent, beside Blean Woods and a lake. FOUR camps: The Yurt (solar off-grid, sleeps 6), Fern Lodge (woodland lodge, sleeps 4, private bathroom, wifi), Thistle Caravan (couples, sleeps 3, private bathroom, £10 cleaning fee), The Hobbit (sleeps 3, wifi). Every camp has a wood-burner, private outdoor kitchen, compost loo and fire pit. Wifi is available at Fern Lodge and The Hobbit. NO dogs (protected woodland). NO hot tubs. Prices and availability live on the booking channels — NEVER quote a nightly price. If the question is not about Wishwood or you are not sure, say you'll check with Chrissy rather than guessing. British spelling.";
+  return teachReply(env, { question: (name ? name + ' asks: ' : '') + question, system });
+}
+async function handleGroupMessage(env, { groupId, from, name, text }) {
+  const t = (text || '').trim();
+  if (!t) return;
+  // Only pipe up when addressed ("lia …") or asked a question — never spam the group
+  if (!/\blia\b/i.test(t) && !t.includes('?')) return;
+  const question = t.replace(/\blia[,:]?\s*/i, '').trim() || t;
+  await logEvent(env, 'message', `Group question · ${name || from}: ${t.slice(0, 70)}`, { group: true });
+  const a = await groupAnswer(env, question, name);
+  if (a && a.answer) {
+    await sendWhatsAppGroup(env, groupId, a.answer.trim());
+    await logEvent(env, 'sent', `Lia answered in the group (${a.model || 'AI'})`, { group: true });
+  }
+  return a;
+}
+
 async function sendEmail(env, { to, subject, text }) {
   if (!env.RESEND_API_KEY) return { error: 'email not configured (set RESEND_API_KEY)' };
   const res = await fetch('https://api.resend.com/emails', {
